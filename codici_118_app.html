@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codici 118 - Consultazione Rapida</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .search-container {
+            background: white;
+            padding: 15px;
+            border-bottom: 2px solid #ecf0f1;
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #bdc3c7;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .tabs {
+            display: flex;
+            background: #ecf0f1;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab {
+            flex: 0 0 auto;
+            padding: 12px 16px;
+            background: #bdc3c7;
+            color: #2c3e50;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .tab:hover {
+            background: #34495e;
+            color: white;
+        }
+
+        .content {
+            padding: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .category {
+            display: none;
+        }
+
+        .category.active {
+            display: block;
+        }
+
+        .class-title {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 15px;
+            margin: 15px 0 10px 0;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .code-item {
+            background: white;
+            border: 1px solid #ecf0f1;
+            margin: 8px 0;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .code-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .code-number {
+            background: #e74c3c;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .code-description {
+            font-size: 1rem;
+            color: #2c3e50;
+            display: inline;
+        }
+
+        .highlight {
+            background: yellow;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .dynamics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .prestations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.2rem;
+            }
+            
+            .tab {
+                font-size: 11px;
+                padding: 10px 12px;
+            }
+            
+            .content {
+                padding: 15px;
+                max-height: 60vh;
+            }
+            
+            .code-item {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚑 Codici 118</h1>
+            <p>Consultazione Rapida</p>
+        </div>
+
+        <div class="search-container">
+            <input type="text" class="search-box" placeholder="🔍 Cerca codice, patologia, dinamica..." id="searchInput">
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" data-category="patologie">Patologie</button>
+            <button class="tab" data-category="dinamiche">Dinamiche</button>
+            <button class="tab" data-category="prestazioni">Prestazioni</button>
+            <button class="tab" data-category="anamnesi">Anamnesi</button>
+        </div>
+
+        <div class="content">
+            <div class="category active" id="patologie">
+                <div class="class-title">01 - TRAUMATICA</div>
+                <div class="code-item"><span class="code-number">001</span><span class="code-description">addome</span></div>
+                <div class="code-item"><span class="code-number">002</span><span class="code-description">amputazione</span></div>
+                <div class="code-item"><span class="code-number">003</span><span class="code-description">arti</span></div>
+                <div class="code-item"><span class="code-number">004</span><span class="code-description">contusione</span></div>
+                <div class="code-item"><span class="code-number">005</span><span class="code-description">cranio</span></div>
+                <div class="code-item"><span class="code-number">006</span><span class="code-description">emorragia</span></div>
+                <div class="code-item"><span class="code-number">007</span><span class="code-description">ferita</span></div>
+                <div class="code-item"><span class="code-number">008</span><span class="code-description">folgorazione/elettrocuzione</span></div>
+                <div class="code-item"><span class="code-number">009</span><span class="code-description">frattura</span></div>
+                <div class="code-item"><span class="code-number">010</span><span class="code-description">frattura di femore</span></div>
+                <div class="code-item"><span class="code-number">011</span><span class="code-description">lesione agli occhi</span></div>
+                <div class="code-item"><span class="code-number">012</span><span class="code-description">lesione da freddo</span></div>
+                <div class="code-item"><span class="code-number">013</span><span class="code-description">politraumatismo</span></div>
+                <div class="code-item"><span class="code-number">014</span><span class="code-description">rachide</span></div>
+                <div class="code-item"><span class="code-number">015</span><span class="code-description">torace</span></div>
+                <div class="code-item"><span class="code-number">016</span><span class="code-description">ustione</span></div>
+                <div class="code-item"><span class="code-number">017</span><span class="code-description">altra traumatica</span></div>
+
+                <div class="class-title">02 - CARDIOCIRCOLATORIA</div>
+                <div class="code-item"><span class="code-number">021</span><span class="code-description">arresto cardiocircolatorio</span></div>
+                <div class="code-item"><span class="code-number">022</span><span class="code-description">cardiopalmo/aritmia</span></div>
+                <div class="code-item"><span class="code-number">023</span><span class="code-description">crisi ipertensiva</span></div>
+                <div class="code-item"><span class="code-number">024</span><span class="code-description">dolore toracico < 2 H</span></div>
+                <div class="code-item"><span class="code-number">024.1</span><span class="code-description">dolore toracico 2 - 12 H</span></div>
+                <div class="code-item"><span class="code-number">024.2</span><span class="code-description">dolore toracico 12 - 24 H</span></div>
+                <div class="code-item"><span class="code-number">024.3</span><span class="code-description">dolore toracico > 24 H</span></div>
+                <div class="code-item"><span class="code-number">025</span><span class="code-description">scompenso cardiocircolatorio</span></div>
+                <div class="code-item"><span class="code-number">026</span><span class="code-description">sindrome coronarica acuta < 2 H</span></div>
+                <div class="code-item"><span class="code-number">026.1</span><span class="code-description">sindrome coronarica acuta 2 - 12 H</span></div>
+                <div class="code-item"><span class="code-number">026.2</span><span class="code-description">sindrome coronarica acuta 12 - 24 H</span></div>
+                <div class="code-item"><span class="code-number">026.3</span><span class="code-description">sindrome coronarica acuta > 24 H</span></div>
+                <div class="code-item"><span class="code-number">027</span><span class="code-description">altra cardiocircolatoria</span></div>
+
+                <div class="class-title">03 - RESPIRATORIA</div>
+                <div class="code-item"><span class="code-number">031</span><span class="code-description">corpo estraneo</span></div>
+                <div class="code-item"><span class="code-number">032</span><span class="code-description">crisi asmatica</span></div>
+                <div class="code-item"><span class="code-number">033</span><span class="code-description">distress respiratorio</span></div>
+                <div class="code-item"><span class="code-number">034</span><span class="code-description">immersione/sommersione</span></div>
+                <div class="code-item"><span class="code-number">035</span><span class="code-description">insufficienza respiratoria cronica</span></div>
+                <div class="code-item"><span class="code-number">036</span><span class="code-description">altra respiratoria</span></div>
+
+                <div class="class-title">04 - NEUROLOGICA</div>
+                <div class="code-item"><span class="code-number">041</span><span class="code-description">cefalea</span></div>
+                <div class="code-item"><span class="code-number">042</span><span class="code-description">coma</span></div>
+                <div class="code-item"><span class="code-number">043</span><span class="code-description">convulsioni</span></div>
+                <div class="code-item"><span class="code-number">044</span><span class="code-description">decadimento psichico</span></div>
+                <div class="code-item"><span class="code-number">045</span><span class="code-description">ictus < 3 H</span></div>
+                <div class="code-item"><span class="code-number">046</span><span class="code-description">ictus > 3 H</span></div>
+                <div class="code-item"><span class="code-number">047</span><span class="code-description">perdita di coscienza</span></div>
+                <div class="code-item"><span class="code-number">048</span><span class="code-description">altra neurologica</span></div>
+
+                <div class="class-title">05 - PSICHIATRICA</div>
+                <div class="code-item"><span class="code-number">051</span><span class="code-description">agitazione psicomotoria</span></div>
+                <div class="code-item"><span class="code-number">052</span><span class="code-description">tentato suicidio</span></div>
+                <div class="code-item"><span class="code-number">053</span><span class="code-description">altra psichiatrica</span></div>
+
+                <div class="class-title">06 - NEOPLASTICA</div>
+                <div class="code-item"><span class="code-number">061</span><span class="code-description">neoplastica</span></div>
+
+                <div class="class-title">07 - TOSSICOLOGICA</div>
+                <div class="code-item"><span class="code-number">071</span><span class="code-description">alimenti</span></div>
+                <div class="code-item"><span class="code-number">072</span><span class="code-description">farmaci</span></div>
+                <div class="code-item"><span class="code-number">073</span><span class="code-description">intossicazione etilica</span></div>
+                <div class="code-item"><span class="code-number">074</span><span class="code-description">ossido di carbonio</span></div>
+                <div class="code-item"><span class="code-number">075</span><span class="code-description">overdose/stupefacenti</span></div>
+                <div class="code-item"><span class="code-number">076</span><span class="code-description">sostanze chimiche</span></div>
+                <div class="code-item"><span class="code-number">077</span><span class="code-description">altra intossicazione</span></div>
+
+                <div class="class-title">08 - METABOLICA</div>
+                <div class="code-item"><span class="code-number">081</span><span class="code-description">iperglicemia</span></div>
+                <div class="code-item"><span class="code-number">082</span><span class="code-description">ipoglicemia</span></div>
+                <div class="code-item"><span class="code-number">083</span><span class="code-description">altro</span></div>
+
+                <div class="class-title">09 - GASTROENTEROLOGICA</div>
+                <div class="code-item"><span class="code-number">091</span><span class="code-description">dolore addominale</span></div>
+                <div class="code-item"><span class="code-number">092</span><span class="code-description">emorragia digestiva</span></div>
+                <div class="code-item"><span class="code-number">093</span><span class="code-description">altro</span></div>
+
+                <div class="class-title">10 - UROLOGICA</div>
+                <div class="code-item"><span class="code-number">101</span><span class="code-description">colica renale</span></div>
+                <div class="code-item"><span class="code-number">102</span><span class="code-description">ritenzione urinaria</span></div>
+                <div class="code-item"><span class="code-number">103</span><span class="code-description">altro</span></div>
+
+                <div class="class-title">11 - OCULISTICA</div>
+                <div class="code-item"><span class="code-number">111</span><span class="code-description">ferita penetrante occhio</span></div>
+                <div class="code-item"><span class="code-number">112</span><span class="code-description">altro</span></div>
+
+                <div class="class-title">12 - OTORINOLARINGOIATRICA</div>
+                <div class="code-item"><span class="code-number">121</span><span class="code-description">corpo estraneo</span></div>
+                <div class="code-item"><span class="code-number">122</span><span class="code-description">epistassi</span></div>
+                <div class="code-item"><span class="code-number">123</span><span class="code-description">altro</span></div>
+
+                <div class="class-title">13 - DERMATOLOGICA</div>
+                <div class="code-item"><span class="code-number">131</span><span class="code-description">parassitosi</span></div>
+                <div class="code-item"><span class="code-number">132</span><span class="code-description">allergia reazione orticaloide</span></div>
+                <div class="code-item"><span class="code-number">133</span><span class="code-description">altro</span></div>
+
+                <div class="class-title">14 - OSTETRICO-GINECOLOGICA</div>
+                <div class="code-item"><span class="code-number">141</span><span class="code-description">metrorragia</span></div>
+                <div class="code-item"><span class="code-number">142</span><span class="code-description">minaccia aborto</span></div>
+                <div class="code-item"><span class="code-number">143</span><span class="code-description">parto</span></div>
+                <div class="code-item"><span class="code-number">144</span><span class="code-description">altro</span></div>
+
+                <div class="class-title">15 - INFETTIVA</div>
+                <div class="code-item"><span class="code-number">151</span><span class="code-description">stato febbrile</span></div>
+                <div class="code-item"><span class="code-number">152</span><span class="code-description">altro</span></div>
+
+                <div class="class-title">19 - ALTRA PATOLOGIA</div>
+                <div class="code-item"><span class="code-number">191</span><span class="code-description">NBCR (catastrofe o emergenza nucleare, batteriologica, chimica o radioattiva)</span></div>
+                <div class="code-item"><span class="code-number">192</span><span class="code-description">stato febbrile</span></div>
+                <div class="code-item"><span class="code-number">193</span><span class="code-description">allergia-laringospasmo</span></div>
+                <div class="code-item"><span class="code-number">194</span><span class="code-description">allergia-shock anafilattico</span></div>
+                <div class="code-item"><span class="code-number">195</span><span class="code-description">altra patologia</span></div>
+
+                <div class="class-title">20 - PATOLOGIA NON IDENTIFICATA</div>
+                <div class="code-item"><span class="code-number">201</span><span class="code-description">patologia non identificata</span></div>
+            </div>
+
+            <div class="category" id="dinamiche">
+                <div class="class-title">DINAMICHE DELL'EVENTO</div>
+                <div class="dynamics-grid">
+                    <div class="code-item"><span class="code-number">01</span><span class="code-description">aggressione</span></div>
+                    <div class="code-item"><span class="code-number">02</span><span class="code-description">arma bianca</span></div>
+                    <div class="code-item"><span class="code-number">03</span><span class="code-description">arma da fuoco</span></div>
+                    <div class="code-item"><span class="code-number">04</span><span class="code-description">esplosione</span></div>
+                    <div class="code-item"><span class="code-number">05</span><span class="code-description">incastrato</span></div>
+                    <div class="code-item"><span class="code-number">06</span><span class="code-description">incidente auto</span></div>
+                    <div class="code-item"><span class="code-number">07</span><span class="code-description">incidente bicicletta</span></div>
+                    <div class="code-item"><span class="code-number">08</span><span class="code-description">incidente mezzo pesante</span></div>
+                    <div class="code-item"><span class="code-number">09</span><span class="code-description">incidente moto</span></div>
+                    <div class="code-item"><span class="code-number">10</span><span class="code-description">incidente pedone</span></div>
+                    <div class="code-item"><span class="code-number">11</span><span class="code-description">incendio</span></div>
+                    <div class="code-item"><span class="code-number">12</span><span class="code-description">morso di animale</span></div>
+                    <div class="code-item"><span class="code-number">13</span><span class="code-description">precipitato < 3 mt</span></div>
+                    <div class="code-item"><span class="code-number">14</span><span class="code-description">precipitato > 3 mt</span></div>
+                    <div class="code-item"><span class="code-number">15</span><span class="code-description">proiettato</span></div>
+                    <div class="code-item"><span class="code-number">16</span><span class="code-description">soccorso a persona</span></div>
+                    <div class="code-item"><span class="code-number">17</span><span class="code-description">tuffo/immersione</span></div>
+                    <div class="code-item"><span class="code-number">18</span><span class="code-description">violenza sessuale</span></div>
+                    <div class="code-item"><span class="code-number">19</span><span class="code-description">altra dinamica</span></div>
+                    <div class="code-item"><span class="code-number">20</span><span class="code-description">non definita</span></div>
+                </div>
+            </div>
+
+            <div class="category" id="prestazioni">
+                <div class="class-title">PRESTAZIONI 118</div>
+                <div class="prestations-grid">
+                    <div class="code-item"><span class="code-number">03</span><span class="code-description">Aspirazione secreti</span></div>
+                    <div class="code-item"><span class="code-number">04</span><span class="code-description">Bendaggio arti</span></div>
+                    <div class="code-item"><span class="code-number">07</span><span class="code-description">Clampaggio e taglio cordone ombelicale dopo il parto</span></div>
+                    <div class="code-item"><span class="code-number">09</span><span class="code-description">Controllo saturazione O2</span></div>
+                    <div class="code-item"><span class="code-number">10</span><span class="code-description">Controllo emorragia esterna</span></div>
+                    <div class="code-item"><span class="code-number">11</span><span class="code-description">Controllo pneumotorace (pnx) aperto</span></div>
+                    <div class="code-item"><span class="code-number">14</span><span class="code-description">Defibrillazione semiautomatica</span></div>
+                    <div class="code-item"><span class="code-number">15</span><span class="code-description">Determinazione CO ambientale</span></div>
+                    <div class="code-item"><span class="code-number">16</span><span class="code-description">Disostruzione vie aeree</span></div>
+                    <div class="code-item"><span class="code-number">23</span><span class="code-description">Elettrocardiogramma</span></div>
+                    <div class="code-item"><span class="code-number">27</span><span class="code-description">Estricazione di incastrati</span></div>
+                    <div class="code-item"><span class="code-number">30</span><span class="code-description">Gestione paziente in agitazione psicomotoria</span></div>
+                    <div class="code-item"><span class="code-number">31</span><span class="code-description">Gestione paziente in agitazione psicomotoria (in crisi)</span></div>
+                    <div class="code-item"><span class="code-number">32</span><span class="code-description">Glicemia su sangue capillare</span></div>
+                    <div class="code-item"><span class="code-number">37</span><span class="code-description">Immobilizzazione arti</span></div>
+                    <div class="code-item"><span class="code-number">38</span><span class="code-description">Immobilizzazione colonna con collare cervicale</span></div>
+                    <div class="code-item"><span class="code-number">39</span><span class="code-description">Immobilizzazione colonna con estricatore</span></div>
+                    <div class="code-item"><span class="code-number">41</span><span class="code-description">Immobilizzazione colonna con tavola spinale</span></div>
+                    <div class="code-item"><span class="code-number">45</span><span class="code-description">Massaggio cardiaco esterno a torace chiuso</span></div>
+                    <div class="code-item"><span class="code-number">47</span><span class="code-description">Medicazioni varie</span></div>
+                    <div class="code-item"><span class="code-number">48</span><span class="code-description">Monitoraggio della pressione arteriosa sistemica</span></div>
+                    <div class="code-item"><span class="code-number">51</span><span class="code-description">Prevenzione ipotermia</span></div>
+                    <div class="code-item"><span class="code-number">55</span><span class="code-description">Rianimazione cardiopolmonare di base</span></div>
+                    <div class="code-item"><span class="code-number">65</span><span class="code-description">Somministrazione ossigeno</span></div>
+                    <div class="code-item"><span class="code-number">66</span><span class="code-description">Supporto psicologico al paziente</span></div>
+                    <div class="code-item"><span class="code-number">73</span><span class="code-description">Ventilazione con pallone autoespansibile</span></div>
+                </div>
+            </div>
+
+            <div class="category" id="anamnesi">
+                <div class="class-title">ANAMNESI - CHECKLIST</div>
+                <div class="code-item">
+                    <span class="code-number">📋</span>
+                    <span class="code-description"><strong>Allergie:</strong> Chiedere se il soggetto soffre di allergie. Se sì, chiedere di esibire il tesserino del Registro Regionale Allergie.</span>
+                </div>
+                <div class="code-item">
+                    <span class="code-number">💊</span>
+                    <span class="code-description"><strong>Medicinali:</strong> Chiedere se il soggetto assume farmaci.</span>
+                </div>
+                <div class="code-item">
+                    <span class="code-number">🏥</span>
+                    <span class="code-description"><strong>Patologie:</strong> Chiedere se il soggetto soffre di qualche malattia.</span>
+                </div>
+                <div class="code-item">
+                    <span class="code-number">🍽️</span>
+                    <span class="code-description"><strong>Pasto:</strong> Chiedere l'orario dell'ultimo pasto.</span>
+                </div>
+                <div class="code-item">
+                    <span class="code-number">⚡</span>
+                    <span class="code-description"><strong>Evento:</strong> Chiedere la dinamica dell'accaduto o quale evento si correla con l'inizio dei sintomi. Annotare tutte le nozioni sul riquadro Anamnesi.</span>
+                </div>
+            </div>
+
+            <div class="no-results" id="noResults" style="display: none;">
+                <p>🔍 Nessun risultato trovato</p>
+                <p>Prova con un termine diverso</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const tabs = document.querySelectorAll('.tab');
+        const categories = document.querySelectorAll('.category');
+        const noResults = document.getElementById('noResults');
+        let allItems = [];
+        let currentCategory = 'patologie';
+
+        // Inizializza array di tutti gli elementi
+        function initializeItems() {
+            allItems = [];
+            document.querySelectorAll('.code-item').forEach(item => {
+                const code = item.querySelector('.code-number')?.textContent || '';
+                const description = item.querySelector('.code-description')?.textContent || '';
+                const category = item.closest('.category')?.id || '';
+                allItems.push({
+                    element: item,
+                    code: code,
+                    description: description,
+                    category: category,
+                    searchText: (code + ' ' + description).toLowerCase()
+                });
+            });
+        }
+
+        // Gestione tab
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                categories.forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                currentCategory = tab.dataset.category;
+                document.getElementById(currentCategory).classList.add('active');
+                
+                // Reset search quando cambi tab
+                searchInput.value = '';
+                showAllItems();
+            });
+        });
+
+        // Funzione di ricerca
+        function search(query) {
+            const searchTerm = query.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                showAllItems();
+                return;
+            }
+
+            let hasResults = false;
+            
+            // Nascondi tutte le categorie
+            categories.forEach(cat => cat.classList.remove('active'));
+            
+            // Nascondi tutti gli elementi
+            allItems.forEach(item => {
+                item.element.style.display = 'none';
+                // Rimuovi evidenziazioni precedenti
+                item.element.innerHTML = item.element.innerHTML.replace(/<span class="highlight">(.*?)<\/span>/gi, '$1');
+            });
+
+            // Filtra e mostra elementi che corrispondono
+            const matchingItems = allItems.filter(item => 
+                item.searchText.includes(searchTerm)
+            );
+
+            if (matchingItems.length > 0) {
+                hasResults = true;
+                
+                // Raggruppa per categoria
+                const categoriesWithResults = {};
+                matchingItems.forEach(item => {
+                    if (!categoriesWithResults[item.category]) {
+                        categoriesWithResults[item.category] = [];
+                    }
+                    categoriesWithResults[item.category].push(item);
+                });
+
+                // Mostra tutte le categorie che hanno risultati
+                Object.keys(categoriesWithResults).forEach(categoryId => {
+                    const category = document.getElementById(categoryId);
+                    if (category) {
+                        category.classList.add('active');
+                        
+                        // Evidenzia i termini di ricerca e mostra gli elementi
+                        categoriesWithResults[categoryId].forEach(item => {
+                            highlightSearchTerm(item.element, searchTerm);
+                            item.element.style.display = 'block';
+                        });
+                    }
+                });
+            }
+
+            // Mostra/nascondi messaggio "nessun risultato"
+            noResults.style.display = hasResults ? 'none' : 'block';
+            
+            // Se non ci sono risultati, nascondi tutte le categorie
+            if (!hasResults) {
+                categories.forEach(cat => cat.classList.remove('active'));
+            }
+        }
+
+        // Evidenzia il termine di ricerca
+        function highlightSearchTerm(element, searchTerm) {
+            const codeElement = element.querySelector('.code-description');
+            if (codeElement) {
+                const text = codeElement.textContent;
+                const regex = new RegExp(`(${searchTerm})`, 'gi');
+                const highlightedText = text.replace(regex, '<span class="highlight">$1</span>');
+                codeElement.innerHTML = highlightedText;
+            }
+        }
+
+        // Mostra tutti gli elementi
+        function showAllItems() {
+            // Nascondi tutte le categorie
+            categories.forEach(cat => cat.classList.remove('active'));
+            
+            // Mostra solo la categoria attiva
+            document.getElementById(currentCategory).classList.add('active');
+            
+            // Mostra tutti gli elementi della categoria attiva
+            allItems.forEach(item => {
+                if (item.category === currentCategory) {
+                    item.element.style.display = 'block';
+                    // Rimuovi evidenziazioni
+                    item.element.innerHTML = item.element.innerHTML.replace(/<span class="highlight">(.*?)<\/span>/gi, '$1');
+                }
+            });
+            
+            noResults.style.display = 'none';
+        }
+
+        // Event listener per la ricerca
+        searchInput.addEventListener('input', (e) => {
+            search(e.target.value);
+        });
+
+        // Inizializza l'app
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeItems();
+            showAllItems();
+        });
+
+        // Previeni zoom su focus input (iOS)
+        searchInput.addEventListener('focus', function() {
+            this.style.fontSize = '16px';
+        });
+    </script>
+</body>
+</html>
