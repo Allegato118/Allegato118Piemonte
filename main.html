@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codici Emergenza 118 e Alfabeto ICAO</title>
+    <meta name="description" content="App completa per consultare i codici di emergenza 118, patologie, dinamiche e tradurre parole in alfabeto ICAO">
+    <meta name="theme-color" content="#1a237e">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #1a237e;
+            --primary-light: #534bae;
+            --secondary: #ff6f00;
+            --light: #f5f5f5;
+            --dark: #212121;
+            --gray: #757575;
+            --success: #43a047;
+            --warning: #ff9800;
+            --danger: #e53935;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-bottom: 60px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .back-button {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s;
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-2px);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .logo i {
+            font-size: 2.2rem;
+            color: var(--secondary);
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .logo span {
+            font-weight: 300;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .tabs {
+            display: flex;
+            background: var(--primary-light);
+            border-radius: 8px;
+            overflow: hidden;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab {
+            flex: 0 0 auto;
+            text-align: center;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        
+        .tab.active {
+            background: var(--secondary);
+        }
+        
+        .tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card h2 i {
+            color: var(--secondary);
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--primary);
+        }
+        
+        .input-container {
+            display: flex;
+            gap: 10px;
+        }
+        
+        input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: var(--primary-light);
+        }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .result-container {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            min-height: 80px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+        
+        .result-content {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .icao-result {
+            font-weight: 600;
+            color: var(--primary);
+            background: #e3f2fd;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-top: 8px;
+            display: inline-block;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+        
+        th {
+            background: var(--primary);
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        tr:nth-child(even) {
+            background: #f5f5f5;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .code {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .emergency-white { background-color: #f5f5f5; }
+        .emergency-green { background-color: #e8f5e9; }
+        .emergency-yellow { background-color: #fffde7; }
+        .emergency-red { background-color: #ffebee; }
+        .emergency-black { background-color: #e0e0e0; }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-top: 30px;
+        }
+
+        /* Stili per la sezione Patologie 118 */
+        .search-container {
+            background: white;
+            padding: 15px;
+            border-bottom: 2px solid #ecf0f1;
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #bdc3c7;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .class-title {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 15px;
+            margin: 15px 0 10px 0;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .code-item {
+            background: white;
+            border: 1px solid #ecf0f1;
+            margin: 8px 0;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .code-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .code-number {
+            background: #e74c3c;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .code-description {
+            font-size: 1rem;
+            color: #2c3e50;
+            display: inline;
+        }
+
+        .highlight {
+            background: yellow;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .dynamics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .prestations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+        }
+
+        .category {
+            display: none;
+        }
+
+        .category.active {
+            display: block;
+        }
+
+        .sub-tabs {
+            display: flex;
+            background: #ecf0f1;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+
+        .sub-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .sub-tab {
+            flex: 0 0 auto;
+            padding: 12px 16px;
+            background: #bdc3c7;
+            color: #2c3e50;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .sub-tab.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .sub-tab:hover {
+            background: #34495e;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .logo h1 {
+                font-size: 1.3rem;
+            }
+            
+            .logo span {
+                font-size: 0.9rem;
+            }
+            
+            .input-container {
+                flex-direction: column;
+            }
+            
+            button {
+                padding: 12px;
+                width: 100%;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            th, td {
+                padding: 10px 8px;
+                font-size: 0.9rem;
+            }
+
+            .header-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .back-button {
+                align-self: flex-start;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .logo h1 {
+                font-size: 1.2rem;
+            }
+
+            .code-item {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="https://allegato118.github.io/Allegato118Piemonte/" class="back-button">
+                <i class="fas fa-arrow-left"></i> Torna al sito
+            </a>
+            <div class="logo">
+                <i class="fas fa-ambulance"></i>
+                <div>
+                    <h1>Codici Emergenza 118 <span>e Alfabeto ICAO</span></h1>
+                </div>
+            </div>
+        </div>
+        <div class="tabs">
+            <div class="tab active" data-target="icao">Traduttore ICAO</div>
+            <div class="tab" data-target="emergency">Codici Criticità</div>
+            <div class="tab" data-target="pathology">Codici Patologia</div>
+            <div class="tab" data-target="dynamics">Dinamiche</div>
+            <div class="tab" data-target="prestations">Prestazioni</div>
+            <div class="tab" data-target="anamnesi">Anamnesi</div>
+            <div class="tab" data-target="location">Codici Luogo</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Traduttore ICAO -->
+        <section id="icao" class="content-section active">
+            <div class="card">
+                <h2><i class="fas fa-language"></i> Traduttore Alfabeto ICAO</h2>
+                <p>Inserisci una parola per convertirla nel corrispondente codice ICAO (es: "Roma" → "ROMEO OSCAR MIKE ALFA")</p>
+                
+                <div class="input-group">
+                    <label for="word-input">Parola da tradurre:</label>
+                    <div class="input-container">
+                        <input type="text" id="word-input" placeholder="Scrivi qui la parola..." autocomplete="off">
+                        <button id="translate-btn"><i class="fas fa-exchange-alt"></i> Traduci</button>
+                    </div>
+                </div>
+                
+                <div class="result-container">
+                    <div class="result-title">Risultato:</div>
+                    <div id="icao-result" class="result-content">Il risultato della traduzione apparirà qui...</div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2><i class="fas fa-book"></i> Alfabeto ICAO Completo</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Lettera</th>
+                            <th>Codice ICAO</th>
+                        </tr>
+                    </thead>
+                    <tbody id="icao-table-body">
+                        <!-- Popolato dinamicamente con JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Codici di Emergenza -->
+        <section id="emergency" class="content-section">
+            <div class="card">
+                <h2><i class="fas fa-exclamation-triangle"></i> Codici di Criticità</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Codice</th>
+                            <th>Descrizione</th>
+                        </tr>
+                    </thead>
+                    <tbody id="emergency-table-body">
+                        <!-- Popolato dinamicamente con JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Codici Patologia -->
+        <section id="pathology" class="content-section">
+            <div class="card">
+                <h2><i class="fas fa-stethoscope"></i> Ricerca Codice Patologia</h2>
+                <p>Inserisci un codice per visualizzarne il significato (es: "01" per "Traumatica")</p>
+                
+                <div class="input-group">
+                    <label for="pathology-input">Codice patologia:</label>
+                    <div class="input-container">
+                        <input type="text" id="pathology-input" placeholder="Es: 01, 02..." maxlength="2" autocomplete="off">
+                        <button id="pathology-btn"><i class="fas fa-search"></i> Cerca</button>
+                    </div>
+                </div>
+                
+                <div class="result-container">
+                    <div class="result-title">Descrizione:</div>
+                    <div id="pathology-result" class="result-content">Il risultato della ricerca apparirà qui...</div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2><i class="fas fa-list"></i> Codici Patologia Completi</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Codice</th>
+                            <th>Patologia</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pathology-table-body">
+                        <!-- Popolato dinamicamente con JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Dinamiche -->
+        <section id="dynamics" class="content-section">
+            <div class="card">
+                <h2><i class="fas fa-car-crash"></i> Dinamiche dell'Evento</h2>
+                <div class="search-container">
+                    <input type="text" class="search-box" placeholder="🔍 Cerca dinamica..." id="dynamicsSearch">
+                </div>
+                <div class="dynamics-grid" id="dynamicsContent">
+                    <!-- Popolato dinamicamente con JS -->
+                </div>
+                <div class="no-results" id="dynamicsNoResults" style="display: none;">
+                    <p>🔍 Nessun risultato trovato</p>
+                    <p>Prova con un termine diverso</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Prestazioni -->
+        <section id="prestations" class="content-section">
+            <div class="card">
+                <h2><i class="fas fa-procedures"></i> Prestazioni 118</h2>
+                <div class="search-container">
+                    <input type="text" class="search-box" placeholder="🔍 Cerca prestazione..." id="prestationsSearch">
+                </div>
+                <div class="prestations-grid" id="prestationsContent">
+                    <!-- Popolato dinamicamente con JS -->
+                </div>
+                <div class="no-results" id="prestationsNoResults" style="display: none;">
+                    <p>🔍 Nessun risultato trovato</p>
+                    <p>Prova con un termine diverso</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Anamnesi -->
+        <section id="anamnesi" class="content-section">
+            <div class="card">
+                <h2><i class="fas fa-clipboard-list"></i> Anamnesi - Checklist</h2>
+                <div id="anamnesiContent">
+                    <!-- Popolato dinamicamente con JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Codici Luogo -->
+        <section id="location" class="content-section">
+            <div class="card">
+                <h2><i class="fas fa-map-marker-alt"></i> Codici Luogo</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Codice</th>
+                            <th>Luogo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="location-table-body">
+                        <!-- Popolato dinamicamente con JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>PWA per Codici Emergenza 118 e Alfabeto ICAO | Pubblicato su GitHub</p>
+    </footer>
+
+    <script>
+        // Dati per l'app
+        const icaoAlphabet = {
+            'A': 'ALFA', 'B': 'BRAVO', 'C': 'CHARLIE', 'D': 'DELTA', 'E': 'ECO', 
+            'F': 'FOXTROT', 'G': 'GOLF', 'H': 'HOTEL', 'I': 'INDIA', 'J': 'JULIET', 
+            'K': 'KILO', 'L': 'LIMA', 'M': 'MIKE', 'N': 'NOVEMBER', 'O': 'OSCAR', 
+            'P': 'PAPA', 'Q': 'QUEBEC', 'R': 'ROMEO', 'S': 'SIERRA', 'T': 'TANGO', 
+            'U': 'UNIFORM', 'V': 'VICTOR', 'W': 'WHISKEY', 'X': 'XRAY', 'Y': 'YANKEE', 
+            'Z': 'ZULU'
+        };
+
+        const emergencyCodes = {
+            'B': {code: 'B – 0 (bianco)', desc: 'NON EMERGENZA: situazione di intervento differibile e/o programmabile', class: 'emergency-white'},
+            'V': {code: 'V – 1 (verde)', desc: 'NON EMERGENZA: situazione differibile ma prioritaria rispetto al codice bianco (lesioni che non compromettono le funzioni vitali)', class: 'emergency-green'},
+            'G': {code: 'G – 2 (giallo)', desc: 'EMERGENZA SANITARIA: situazione a rischio, intervento non differibile (funzioni vitali non direttamente compromesse ma in stato di evoluzione)', class: 'emergency-yellow'},
+            'R': {code: 'R – 3 (rosso)', desc: 'EMERGENZA ASSOLUTA: intervento prioritario(una o più funzioni vitali assenti o direttamente compromesse)', class: 'emergency-red'},
+            'N': {code: 'N – 4 (nero)', desc: 'PAZIENTE DECEDUTO: (ovviamente non è mai un codice di invio ma un codice di rientro e solo dopo la constatazione medica)', class: 'emergency-black'}
+        };
+
+        const pathologyCodes = [
+            {code: '01', desc: 'Traumatica'},
+            {code: '02', desc: 'Cardiocircolatoria'},
+            {code: '03', desc: 'Respiratoria'},
+            {code: '04', desc: 'Neurologica'},
+            {code: '05', desc: 'Psichiatrica'},
+            {code: '06', desc: 'Neoplastica'},
+            {code: '07', desc: 'Intossicazione'},
+            {code: '08', desc: 'Metabolica'},
+            {code: '09', desc: 'Gastroenterologica'},
+            {code: '10', desc: 'Urologica'},
+            {code: '11', desc: 'Oculistica'},
+            {code: '12', desc: 'Otorinolaringoiatrica'},
+            {code: '13', desc: 'Dermatologica'},
+            {code: '14', desc: 'Ostetrico-ginecologica'},
+            {code: '15', desc: 'Infettiva'},
+            {code: '19', desc: 'Altra patologia'},
+            {code: '20', desc: 'Patologia non identificata'}
+        ];
+
+        const locationCodes = [
+            {code: 'S', desc: 'STRADA'},
+            {code: 'P', desc: 'LUOGO - ESERCIZIO PUBBLICO'},
+            {code: 'Y', desc: 'IMPIANTO SPORTIVO'},
+            {code: 'K', desc: 'CASA'},
+            {code: 'L', desc: 'LAVORO'},
+            {code: 'Q', desc: 'SCUOLA'},
+            {code: 'Z', desc: 'ALTRO LUOGO'}
+        ];
+
+        // Dati per le sezioni 118
+        const dynamicsData = [
+            {code: '01', desc: 'aggressione'},
+            {code: '02', desc: 'arma bianca'},
+            {code: '03', desc: 'arma da fuoco'},
+            {code: '04', desc: 'esplosione'},
+            {code: '05', desc: 'incastrato'},
+            {code: '06', desc: 'incidente auto'},
+            {code: '07', desc: 'incidente bicicletta'},
+            {code: '08', desc: 'incidente mezzo pesante'},
+            {code: '09', desc: 'incidente moto'},
+            {code: '10', desc: 'incidente pedone'},
+            {code: '11', desc: 'incendio'},
+            {code: '12', desc: 'morso di animale'},
+            {code: '13', desc: 'precipitato < 3 mt'},
+            {code: '14', desc: 'precipitado > 3 mt'},
+            {code: '15', desc: 'proiettato'},
+            {code: '16', desc: 'soccorso a persona'},
+            {code: '17', desc: 'tuffo/immersione'},
+            {code: '18', desc: 'violenza sessuale'},
+            {code: '19', desc: 'altra dinamica'},
+            {code: '20', desc: 'non definita'}
+        ];
+
+        const prestationsData = [
+            {code: '03', desc: 'Aspirazione secreti'},
+            {code: '04', desc: 'Bendaggio arti'},
+            {code: '07', desc: 'Clampaggio e taglio cordone ombelicale dopo il parto'},
+            {code: '09', desc: 'Controllo saturazione O2'},
+            {code: '10', desc: 'Controllo emorragia esterna'},
+            {code: '11', desc: 'Controllo pneumotorace (pnx) aperto'},
+            {code: '14', desc: 'Defibrillazione semiautomatica'},
+            {code: '15', desc: 'Determinazione CO ambientale'},
+            {code: '16', desc: 'Disostruzione vie aeree'},
+            {code: '23', desc: 'Elettrocardiogramma'},
+            {code: '27', desc: 'Estricazione di incastrati'},
+            {code: '30', desc: 'Gestione paziente in agitazione psicomotoria'},
+            {code: '31', desc: 'Gestione paziente in agitazione psicomotoria (in crisi)'},
+            {code: '32', desc: 'Glicemia su sangue capillare'},
+            {code: '37', desc: 'Immobilizzazione arti'},
+            {code: '38', desc: 'Immobilizzazione colonna con collare cervicale'},
+            {code: '39', desc: 'Immobilizzazione colonna con estricatore'},
+            {code: '41', desc: 'Immobilizzazione colonna con tavola spinale'},
+            {code: '45', desc: 'Massaggio cardiaco esterno a torace chiuso'},
+            {code: '47', desc: 'Medicazioni varie'},
+            {code: '48', desc: 'Monitoraggio della pressione arteriosa sistemica'},
+            {code: '51', desc: 'Prevenzione ipotermia'},
+            {code: '55', desc: 'Rianimazione cardiopolmonare di base'},
+            {code: '65', desc: 'Somministrazione ossigeno'},
+            {code: '66', desc: 'Supporto psicologico al paziente'},
+            {code: '73', desc: 'Ventilazione con pallone autoespansibile'}
+        ];
+
+        const anamnesiData = [
+            {code: '📋', desc: '<strong>Allergie:</strong> Chiedere se il soggetto soffre di allergie. Se sì, chiedere di esibire il tesserino del Registro Regionale Allergie.'},
+            {code: '💊', desc: '<strong>Medicinali:</strong> Chiedere se il soggetto assume farmaci.'},
+            {code: '🏥', desc: '<strong>Patologie:</strong> Chiedere se il soggetto soffre di qualche malattia.'},
+            {code: '🍽️', desc: '<strong>Pasto:</strong> Chiedere l\'orario dell\'ultimo pasto.'},
+            {code: '⚡', desc: '<strong>Evento:</strong> Chiedere la dinamica dell\'accaduto o quale evento si correla con l\'inizio dei sintomi. Annotare tutte le nozioni sul riquadro Anamnesi.'}
+        ];
+
+        const pathologyDetails = {
+            '01': [
+                {code: '001', desc: 'addome'},
+                {code: '002', desc: 'amputazione'},
+                {code: '003', desc: 'arti'},
+                {code: '004', desc: 'contusione'},
+                {code: '005', desc: 'cranio'},
+                {code: '006', desc: 'emorragia'},
+                {code: '007', desc: 'ferita'},
+                {code: '008', desc: 'folgorazione/elettrocuzione'},
+                {code: '009', desc: 'frattura'},
+                {code: '010', desc: 'frattura di femore'},
+                {code: '011', desc: 'lesione agli occhi'},
+                {code: '012', desc: 'lesione da freddo'},
+                {code: '013', desc: 'politraumatismo'},
+                {code: '014', desc: 'rachide'},
+                {code: '015', desc: 'torace'},
+                {code: '016', desc: 'ustione'},
+                {code: '017', desc: 'altra traumatica'}
+            ],
+            '02': [
+                {code: '021', desc: 'arresto cardiocircolatorio'},
+                {code: '022', desc: 'cardiopalmo/aritmia'},
+                {code: '023', desc: 'crisi ipertensiva'},
+                {code: '024', desc: 'dolore toracico < 2 H'},
+                {code: '024.1', desc: 'dolore toracico 2 - 12 H'},
+                {code: '024.2', desc: 'dolore toracico 12 - 24 H'},
+                {code: '024.3', desc: 'dolore toracico > 24 H'},
+                {code: '025', desc: 'scompenso cardiocircolatorio'},
+                {code: '026', desc: 'sindrome coronarica acuta < 2 H'},
+                {code: '026.1', desc: 'sindrome coronarica acuta 2 - 12 H'},
+                {code: '026.2', desc: 'sindrome coronarica acuta 12 - 24 H'},
+                {code: '026.3', desc: 'sindrome coronarica acuta > 24 H'},
+                {code: '027', desc: 'altra cardiocircolatoria'}
+            ],
+            '03': [
+                {code: '031', desc: 'corpo estraneo'},
+                {code: '032', desc: 'crisi asmatica'},
+                {code: '033', desc: 'distress respiratorio'},
+                {code: '034', desc: 'immersione/sommersione'},
+                {code: '035', desc: 'insufficienza respiratoria cronica'},
+                {code: '036', desc: 'altra respiratoria'}
+            ],
+            '04': [
+                {code: '041', desc: 'cefalea'},
+                {code: '042', desc: 'coma'},
+                {code: '043', desc: 'convulsioni'},
+                {code: '044', desc: 'decadimento psichico'},
+                {code: '045', desc: 'ictus < 3 H'},
+                {code: '046', desc: 'ictus > 3 H'},
+                {code: '047', desc: 'perdita di coscienza'},
+                {code: '048', desc: 'altra neurologica'}
+            ],
+            '05': [
+                {code: '051', desc: 'agitazione psicomotoria'},
+                {code: '052', desc: 'tentato suicidio'},
+                {code: '053', desc: 'altra psichiatrica'}
+            ],
+            '06': [
+                {code: '061', desc: 'neoplastica'}
+            ],
+            '07': [
+                {code: '071', desc: 'alimenti'},
+                {code: '072', desc: 'farmaci'},
+                {code: '073', desc: 'intossicazione etilica'},
+                {code: '074', desc: 'ossido di carbonio'},
+                {code: '075', desc: 'overdose/stupefacenti'},
+                {code: '076', desc: 'sostanze chimiche'},
+                {code: '077', desc: 'altra intossicazione'}
+            ],
+            '08': [
+                {code: '081', desc: 'iperglicemia'},
+                {code: '082', desc: 'ipoglicemia'},
+                {code: '083', desc: 'altro'}
+            ],
+            '09': [
+                {code: '091', desc: 'dolore addominale'},
+                {code: '092', desc: 'emorragia digestiva'},
+                {code: '093', desc: 'altro'}
+            ],
+            '10': [
+                {code: '101', desc: 'colica renale'},
+                {code: '102', desc: 'ritenzione urinaria'},
+                {code: '103', desc: 'altro'}
+            ],
+            '11': [
+                {code: '111', desc: 'ferita penetrante occhio'},
+                {code: '112', desc: 'altro'}
+            ],
+            '12': [
+                {code: '121', desc: 'corpo estraneo'},
+                {code: '122', desc: 'epistassi'},
+                {code: '123', desc: 'altro'}
+            ],
+            '13': [
+                {code: '131', desc: 'parassitosi'},
+                {code: '132', desc: 'allergia reazione orticaloide'},
+                {code: '133', desc: 'altro'}
+            ],
+            '14': [
+                {code: '141', desc: 'metrorragia'},
+                {code: '142', desc: 'minaccia aborto'},
+                {code: '143', desc: 'parto'},
+                {code: '144', desc: 'altro'}
+            ],
+            '15': [
+                {code: '151', desc: 'stato febbrile'},
+                {code: '152', desc: 'altro'}
+            ],
+            '19': [
+                {code: '191', desc: 'NBCR (catastrofe o emergenza nucleare, batteriologica, chimica o radioattiva)'},
+                {code: '192', desc: 'stato febbrile'},
+                {code: '193', desc: 'allergia-laringospasmo'},
+                {code: '194', desc: 'allergia-shock anafilattico'},
+                {code: '195', desc: 'altra patologia'}
+            ],
+            '20': [
+                {code: '201', desc: 'patologia non identificata'}
+            ]
+        };
+
+        // Inizializza le tabelle e i contenuti
+        document.addEventListener('DOMContentLoaded', function() {
+            // Popola tabella ICAO
+            const icaoTable = document.getElementById('icao-table-body');
+            for (const [letter, word] of Object.entries(icaoAlphabet)) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td class="code">${letter}</td><td>${word}</td>`;
+                icaoTable.appendChild(row);
+            }
+
+            // Popola tabella Codici Emergenza
+            const emergencyTable = document.getElementById('emergency-table-body');
+            for (const [code, data] of Object.entries(emergencyCodes)) {
+                const row = document.createElement('tr');
+                row.className = data.class;
+                row.innerHTML = `<td class="code">${data.code}</td><td>${data.desc}</td>`;
+                emergencyTable.appendChild(row);
+            }
+
+            // Popola tabella Codici Patologia
+            const pathologyTable = document.getElementById('pathology-table-body');
+            pathologyCodes.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td class="code">${item.code}</td><td>${item.desc}</td>`;
+                pathologyTable.appendChild(row);
+            });
+
+            // Popola tabella Codici Luogo
+            const locationTable = document.getElementById('location-table-body');
+            locationCodes.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td class="code">${item.code}</td><td>${item.desc}</td>`;
+                locationTable.appendChild(row);
+            });
+
+            // Popola Dinamiche
+            const dynamicsContent = document.getElementById('dynamicsContent');
+            dynamicsData.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'code-item';
+                div.innerHTML = `<span class="code-number">${item.code}</span><span class="code-description">${item.desc}</span>`;
+                dynamicsContent.appendChild(div);
+            });
+
+            // Popola Prestazioni
+            const prestationsContent = document.getElementById('prestationsContent');
+            prestationsData.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'code-item';
+                div.innerHTML = `<span class="code-number">${item.code}</span><span class="code-description">${item.desc}</span>`;
+                prestationsContent.appendChild(div);
+            });
+
+            // Popola Anamnesi
+            const anamnesiContent = document.getElementById('anamnesiContent');
+            anamnesiData.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'code-item';
+                div.innerHTML = `<span class="code-number">${item.code}</span><span class="code-description">${item.desc}</span>`;
+                anamnesiContent.appendChild(div);
+            });
+
+            // Gestione dei tab principali
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Rimuovi classe active da tutti i tab e sezioni
+                    tabs.forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.content-section').forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    
+                    // Aggiungi classe active al tab cliccato e alla sezione corrispondente
+                    tab.classList.add('active');
+                    const target = tab.getAttribute('data-target');
+                    document.getElementById(target).classList.add('active');
+                });
+            });
+
+            // Traduttore ICAO
+            document.getElementById('translate-btn').addEventListener('click', translateToICAO);
+            document.getElementById('word-input').addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') translateToICAO();
+            });
+
+            // Ricerca codice patologia
+            document.getElementById('pathology-btn').addEventListener('click', lookupPathologyCode);
+            document.getElementById('pathology-input').addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') lookupPathologyCode();
+            });
+
+            // Ricerca dinamiche
+            document.getElementById('dynamicsSearch').addEventListener('input', (e) => {
+                searchInSection('dynamicsContent', 'dynamicsNoResults', e.target.value);
+            });
+
+            // Ricerca prestazioni
+            document.getElementById('prestationsSearch').addEventListener('input', (e) => {
+                searchInSection('prestationsContent', 'prestationsNoResults', e.target.value);
+            });
+        });
+
+        function translateToICAO() {
+            const input = document.getElementById('word-input').value.trim().toUpperCase();
+            const resultElement = document.getElementById('icao-result');
+            
+            if (!input) {
+                resultElement.innerHTML = '<span style="color: #e53935;">Inserisci una parola da tradurre</span>';
+                return;
+            }
+            
+            // Rimuove caratteri non alfabetici
+            const cleanInput = input.replace(/[^A-Z]/g, '');
+            
+            if (!cleanInput) {
+                resultElement.innerHTML = '<span style="color: #e53935;">La parola contiene solo caratteri non validi</span>';
+                return;
+            }
+            
+            let result = '';
+            for (let char of cleanInput) {
+                if (icaoAlphabet[char]) {
+                    result += `<span class="icao-result">${icaoAlphabet[char]}</span> `;
+                } else {
+                    result += `<span style="color: #e53935;">[${char}?]</span> `;
+                }
+            }
+            
+            resultElement.innerHTML = result;
+        }
+
+        function lookupPathologyCode() {
+            const input = document.getElementById('pathology-input').value.trim();
+            const resultElement = document.getElementById('pathology-result');
+            
+            if (!input) {
+                resultElement.innerHTML = '<span style="color: #e53935;">Inserisci un codice patologia (es: "01")</span>';
+                return;
+            }
+            
+            const found = pathologyCodes.find(item => item.code === input);
+            
+            if (found) {
+                let details = '';
+                if (pathologyDetails[input]) {
+                    details = '<div style="margin-top: 15px;"><strong>Dettagli:</strong><ul style="margin-top: 5px;">';
+                    pathologyDetails[input].forEach(item => {
+                        details += `<li><strong>${item.code}:</strong> ${item.desc}</li>`;
+                    });
+                    details += '</ul></div>';
+                }
+                
+                resultElement.innerHTML = `
+                    <div style="margin-bottom: 10px;">
+                        <strong>Codice:</strong> ${found.code}
+                    </div>
+                    <div>
+                        <strong>Descrizione:</strong> ${found.desc}
+                    </div>
+                    ${details}
+                `;
+            } else {
+                resultElement.innerHTML = `<span style="color: #e53935;">Codice "${input}" non riconosciuto. Inserisci un codice a 2 cifre (es: "01")</span>`;
+            }
+        }
+
+        function searchInSection(contentId, noResultsId, query) {
+            const searchTerm = query.toLowerCase().trim();
+            const contentElement = document.getElementById(contentId);
+            const noResultsElement = document.getElementById(noResultsId);
+            const items = contentElement.querySelectorAll('.code-item');
+            
+            if (!searchTerm) {
+                items.forEach(item => item.style.display = 'block');
+                noResultsElement.style.display = 'none';
+                return;
+            }
+            
+            let hasResults = false;
+            
+            items.forEach(item => {
+                const code = item.querySelector('.code-number')?.textContent.toLowerCase() || '';
+                const description = item.querySelector('.code-description')?.textContent.toLowerCase() || '';
+                const searchText = code + ' ' + description;
+                
+                // Rimuovi evidenziazioni precedenti
+                item.innerHTML = item.innerHTML.replace(/<span class="highlight">(.*?)<\/span>/gi, '$1');
+                
+                if (searchText.includes(searchTerm)) {
+                    hasResults = true;
+                    item.style.display = 'block';
+                    
+                    // Evidenzia il termine trovato
+                    const descElement = item.querySelector('.code-description');
+                    if (descElement) {
+                        const text = descElement.textContent;
+                        const regex = new RegExp(`(${searchTerm})`, 'gi');
+                        const highlightedText = text.replace(regex, '<span class="highlight">$1</span>');
+                        descElement.innerHTML = highlightedText;
+                    }
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            noResultsElement.style.display = hasResults ? 'none' : 'block';
+        }
+    </script>
+</body>
+</html>
