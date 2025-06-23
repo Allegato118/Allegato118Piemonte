@@ -1,7 +1,6 @@
 # Allegato118Piemonte
 # Materiale Emergenze Allegati 118 CGA Feb2025
 
-<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
