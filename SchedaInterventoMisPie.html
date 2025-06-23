@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guida alla Compilazione Scheda Intervento - Misericordie Piemonte</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #0066cc;
+        }
+        h1 {
+            text-align: center;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 10px;
+        }
+        h2 {
+            border-left: 4px solid #0066cc;
+            padding-left: 10px;
+            margin-top: 30px;
+        }
+        h3 {
+            margin-top: 20px;
+        }
+        .note {
+            background-color: #ffffcc;
+            padding: 10px;
+            border-left: 4px solid #ffcc00;
+            margin: 10px 0;
+        }
+        .example {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-left: 4px solid #999;
+            font-family: monospace;
+            margin: 10px 0;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #0066cc;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Guida alla Compilazione della Nuova Scheda Intervento</h1>
+        <h2>Misericordie Piemonte</h2>
+        
+        <div class="section">
+            <h3>Struttura Generale della Scheda</h3>
+            <p>La nuova scheda è composta da diversi campi che devono essere compilati seguendo specifiche codifiche.</p>
+        </div>
+        
+        <div class="section">
+            <h3>1. Numero Scheda</h3>
+            <p>Codice alfanumerico generato automaticamente da SOL con la seguente struttura:</p>
+            <div class="example">
+                <strong>Formato:</strong> [2 numeri CO] [2 lettere] [4 cifre evento] / [2 cifre missione]<br>
+                <strong>Esempio:</strong> 01 AA 0010 / 01
+            </div>
+            <div class="note">
+                <strong>Nota:</strong> I primi due numeri identificano la Centrale Operativa territoriale.
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>2. Numero Paziente</h3>
+            <p>Identifica il/i paziente/i visti nell'ambito della missione:</p>
+            <div class="example">
+                <strong>Formato:</strong> 01 per il primo paziente, 02 per il secondo, ecc.
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>3. Cittadinanza e Codice TEAM</h3>
+            <p>Da compilare solo per pazienti non cittadini italiani ma appartenenti alla Comunità Economica Europea:</p>
+            <ul>
+                <li><strong>Cittadinanza:</strong> indicare la nazionalità</li>
+                <li><strong>Codice TEAM:</strong> numero della Tessera Europea Assistenza Malattia</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h3>4. Codice Evento</h3>
+            <p>Trasmesso dalla CO al MS, composto da:</p>
+            <table>
+                <tr>
+                    <th>Elemento</th>
+                    <th>Codice</th>
+                    <th>Descrizione</th>
+                </tr>
+                <tr>
+                    <td>Gravità</td>
+                    <td>B, V, G, R</td>
+                    <td>Bianco, Verde, Giallo, Rosso</td>
+                </tr>
+                <tr>
+                    <td>Patologia presunta</td>
+                    <td>2 cifre</td>
+                    <td>Riferimento a Tabella A (classe patologia PRESUNTA)</td>
+                </tr>
+                <tr>
+                    <td>Luogo</td>
+                    <td>1 lettera</td>
+                    <td>Codifica attuale</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h3>5. Codice Valutazione Arrivo</h3>
+            <p>Trasmesso alla CO dal MS, mantiene la stessa struttura del codice evento:</p>
+            <div class="example">
+                <strong>Formato:</strong> [gravità] [2 cifre patologia] [luogo]<br>
+                <strong>Esempio:</strong> G 12 A
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>6. Codice Valutazione Partenza</h3>
+            <p>Compilato al termine dell'intervento:</p>
+            <table>
+                <tr>
+                    <th>Elemento</th>
+                    <th>Descrizione</th>
+                </tr>
+                <tr>
+                    <td>Gravità</td>
+                    <td>Codice colore (B, V, G, R)</td>
+                </tr>
+                <tr>
+                    <td>Patologia riscontrata</td>
+                    <td>Codice numerico (riferimento a Tabella B)</td>
+                </tr>
+                <tr>
+                    <td>Luogo</td>
+                    <td>Codice invariato</td>
+                </tr>
+                <tr>
+                    <td>Patologia secondaria</td>
+                    <td>Da segnalare se presente (riferimento a Tabella B)</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h3>7. Codice di Rilascio</h3>
+            <p>Assegnato al momento della consegna al PS o termine missione:</p>
+            <div class="example">
+                <strong>Formato:</strong> [gravità] [patologia riscontrata] [luogo]
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>8. Dinamica Riscontrata</h3>
+            <p>Da compilare solo in caso di trauma (riferimento a Tabella C).</p>
+        </div>
+        
+        <div class="section">
+            <h3>9. Triage</h3>
+            <p>Numero progressivo assegnato dal PS al paziente se trasportato. Allineare a destra.</p>
+        </div>
+        
+        <div class="section">
+            <h3>10. Codice Protocollo</h3>
+            <p>Da segnalare in caso di patologie con protocolli specifici:</p>
+            <table>
+                <tr>
+                    <th>Codice</th>
+                    <th>Protocollo</th>
+                </tr>
+                <tr>
+                    <td>ST</td>
+                    <td>Stroke</td>
+                </tr>
+                <tr>
+                    <td>BLU</td>
+                    <td>Attivazione DAE</td>
+                </tr>
+                <tr>
+                    <td>A</td>
+                    <td>Allergia</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h3>11. Codice di Patologia Specifica</h3>
+            <p>Numero identificativo del paziente in database regionali di patologie specifiche. Allineare a destra.</p>
+        </div>
+        
+        <div class="section">
+            <h3>12. Prestazioni</h3>
+            <p>Da rilevare consultando la Tabella D (codici di prestazioni). Segnalare anche prestazioni secondarie.</p>
+        </div>
+        
+        <div class="section">
+            <h3>13. Valutazione</h3>
+            <ul>
+                <li>Segnalare in dettaglio solo le alterazioni dei parametri fisiologici</li>
+                <li>Per parametri normali, crocettare il relativo quadratino</li>
+                <li>Sezione SEDE: utilizzare i segmenti anatomici per apparato cutaneo, muscolare o scheletrico</li>
+                <li>Per pazienti ustionati: calcolare la percentuale di BSA (Burned Surface Area) usando lo schema corporeo</li>
+                <li>Sezione ECG: indicare ora di effettuazione, avvenuta trasmissione e presenza di dispositivi intracardiaci</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h3>14. Anamnesi</h3>
+            <p>Crocettare "No" se:</p>
+            <ul>
+                <li>Nessuna allergia</li>
+                <li>Nessuna assunzione di farmaci</li>
+                <li>Nessuna pregressa malattia</li>
+                <li>Digiuno superiore a 8 ore (adulti) o 6 ore (bambini sotto 6 anni)</li>
+            </ul>
+            <p>Segnalare nello spazio tratteggiato eventuali dati rilevanti.</p>
+        </div>
+        
+        <div class="section">
+            <h3>15. Scale di Valutazione del Dolore</h3>
+            <table>
+                <tr>
+                    <th>Scala</th>
+                    <th>Paziente</th>
+                    <th>Descrizione</th>
+                </tr>
+                <tr>
+                    <td>NRS</td>
+                    <td>Adulto</td>
+                    <td>Numerical Rating Scale (0-10)</td>
+                </tr>
+                <tr>
+                    <td>PRS</td>
+                    <td>Bambino</td>
+                    <td>Happy Face Pain Rating Scale</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h3>16. Supporto Psicologico</h3>
+            <p>Segnalare:</p>
+            <ul>
+                <li>Se non sono state necessarie manovre terapeutiche</li>
+                <li>Se è stato effettuato supporto psicologico</li>
+                <li>Eventuale richiesta di squadre di supporto psicologico (SP) o urgenza psichiatrica (SUP)</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h3>17. Trattamento</h3>
+            <p>Indicare:</p>
+            <ul>
+                <li>Trattamenti effettuati</li>
+                <li>In caso di utilizzo DAE: ora 1° shock, numero totale shock, ora recupero funzioni vitali</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h3>18. Diario Clinico</h3>
+            <p>Segnalare le modificazioni di alcuni parametri nel tempo.</p>
+        </div>
+        
+        <div class="section">
+            <h3>19. Consenso</h3>
+            <p>Indicare se il paziente ha esplicitato o meno il consenso al trattamento e al trasporto (D.lgs. 196/03).</p>
+        </div>
+        
+        <div class="section">
+            <h3>20. Segni Evidenti di Morte</h3>
+            <p>Segnalare le situazioni cliniche descritte nella scheda, da formalizzare con il medico di Centrale.</p>
+        </div>
+        
+        <div class="section">
+            <h3>21. Firma</h3>
+            <p>Apporre la firma e il numero identificativo del 118 che ha compilato la scheda MSB.</p>
+        </div>
+        
+        <div class="section">
+            <h3>22. Esito della Missione</h3>
+            <p>Indicare l'esito finale e il luogo di trasporto (scrivere per esteso):</p>
+            <table>
+                <tr>
+                    <th>Codice</th>
+                    <th>Descrizione</th>
+                </tr>
+                <tr>
+                    <td>C.A.P.</td>
+                    <td>Centro Assistenza Primaria (case della Salute)</td>
+                </tr>
+                <tr>
+                    <td>S.S. Privata</td>
+                    <td>Struttura privata (es. casa di riposo)</td>
+                </tr>
+                <tr>
+                    <td>R.V.</td>
+                    <td>Randez Vous</td>
+                </tr>
+                <tr>
+                    <td>C.A.</td>
+                    <td>Continuità Assistenziale (ADI)</td>
+                </tr>
+                <tr>
+                    <td>M.M.G.</td>
+                    <td>Medico di Medicina Generale</td>
+                </tr>
+            </table>
+            <p>Segnalare anche la presenza sul posto di altri Enti.</p>
+        </div>
+        
+        <div class="footer">
+            <h3>GRAZIE PER L'ATTENZIONE!</h3>
+            <p>Coordinamento Misericordie Piemonte</p>
+        </div>
+    </div>
+</body>
+</html>

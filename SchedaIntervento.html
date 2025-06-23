@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compilazione Scheda Servizio 118 - P.A. Croce Gialloazzurra</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 10px;
+        }
+        h1 {
+            color: #0066cc;
+        }
+        h2 {
+            color: #0066cc;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #333;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .code-box {
+            background-color: #f5f5f5;
+            border-left: 4px solid #0066cc;
+            padding: 10px 15px;
+            margin: 15px 0;
+        }
+        .note {
+            background-color: #fffde7;
+            padding: 10px 15px;
+            border-left: 4px solid #ffd600;
+            margin: 15px 0;
+        }
+        .warning {
+            background-color: #ffebee;
+            padding: 10px 15px;
+            border-left: 4px solid #f44336;
+            margin: 15px 0;
+        }
+        .page-break {
+            page-break-after: always;
+            border-top: 1px dashed #999;
+            margin: 30px 0;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>P.A. CROCE GIALLOAZZURRA</h1>
+            <h2>VOLONTARI DEL SOCCORSO - PROTEZIONE CIVILE</h2>
+            <h3>Compilazione Scheda Servizio 118</h3>
+        </header>
+
+        <section>
+            <h2>Sommario</h2>
+            <ul>
+                <li>Modulo accettazione Servizi 118 e alfabeto ICAO</li>
+                <li>Il Modulo Codici scheda 118</li>
+                <li>La Scheda 118 e la sua compilazione</li>
+            </ul>
+        </section>
+
+        <div class="page-break"></div>
+
+        <section>
+            <h2>Codice evento e alfabeto ICAO</h2>
+            <table>
+                <tr>
+                    <th>Codice fonetico ICAO</th>
+                </tr>
+                <tr>
+                    <td>A = ALFA</td>
+                    <td>N = NOVEMBER</td>
+                </tr>
+                <tr>
+                    <td>B = BRAVO</td>
+                    <td>O = OSCAR</td>
+                </tr>
+                <tr>
+                    <td>C = CHARLIE</td>
+                    <td>P = PAPA</td>
+                </tr>
+                <tr>
+                    <td>D = DELTA</td>
+                    <td>Q = QUEBEC</td>
+                </tr>
+                <tr>
+                    <td>E = ECHO</td>
+                    <td>R = ROMEO</td>
+                </tr>
+                <tr>
+                    <td>F = FOXTROT</td>
+                    <td>S = SIERRA</td>
+                </tr>
+                <tr>
+                    <td>G = GOLF</td>
+                    <td>T = TANGO</td>
+                </tr>
+                <tr>
+                    <td>H = HOTEL</td>
+                    <td>U = UNIFORM</td>
+                </tr>
+                <tr>
+                    <td>I = INDIA</td>
+                    <td>V = VICTOR</td>
+                </tr>
+                <tr>
+                    <td>J = JULIET</td>
+                    <td>W = WHISKEY</td>
+                </tr>
+                <tr>
+                    <td>K = KILO</td>
+                    <td>X = XRAY</td>
+                </tr>
+                <tr>
+                    <td>L = LIMA</td>
+                    <td>Y = YANKEE</td>
+                </tr>
+                <tr>
+                    <td>M = MIKE</td>
+                    <td>Z = ZULU</td>
+                </tr>
+            </table>
+        </section>
+
+        <section>
+            <h2>Codici di gravità evento</h2>
+            <div class="code-box" style="background-color: #e8f5e9;">
+                <h3>VERDE</h3>
+                <ul>
+                    <li>non emergenza</li>
+                    <li>situazione differibile ma prioritaria rispetto al codice bianco (lesioni che non compromettono le funzioni vitali)</li>
+                </ul>
+            </div>
+            
+            <div class="code-box" style="background-color: #fff8e1;">
+                <h3>GIALLO</h3>
+                <ul>
+                    <li>emergenza sanitaria</li>
+                    <li>situazione a rischio, intervento non differibile (funzioni vitali non direttamente compromesse, ma in stato di evoluzione)</li>
+                </ul>
+            </div>
+            
+            <div class="code-box" style="background-color: #ffebee;">
+                <h3>ROSSO</h3>
+                <ul>
+                    <li>emergenza assoluta</li>
+                    <li>intervento prioritario (una o più funzioni vitali assenti o direttamente compromesse)</li>
+                </ul>
+            </div>
+            
+            <div class="code-box" style="background-color: #f5f5f5;">
+                <h3>NERO</h3>
+                <ul>
+                    <li>paziente deceduto</li>
+                    <li>ovviamente non è mai un codice di invio ma un codice di rientro e solo dopo constatazione medica</li>
+                </ul>
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+
+        <section>
+            <h2>Modulo Codici (A - classe patologia presunta)</h2>
+            <p>CODIFICHE DELLA SCHEDA INTERVENTO</p>
+            <p><strong>A) Classe patologia PRESUNTA:</strong><br>
+            Inizia la classe di appartenenza della patologia. Si utilizza per CODICE EVENTO E CODICE VALUTAZIONE ARRIVO.</p>
+            
+            <table>
+                <tr>
+                    <td>Q1</td>
+                    <td>Traumatico</td>
+                </tr>
+                <tr>
+                    <td>Q2</td>
+                    <td>Cardiocircolatoria</td>
+                </tr>
+                <tr>
+                    <td>Q3</td>
+                    <td>Respiratoria</td>
+                </tr>
+                <tr>
+                    <td>Q4</td>
+                    <td>Neurologica</td>
+                </tr>
+                <tr>
+                    <td>Q5</td>
+                    <td>Psichiatrica</td>
+                </tr>
+                <tr>
+                    <td>Q6</td>
+                    <td>Neoplastica</td>
+                </tr>
+                <tr>
+                    <td>Q7</td>
+                    <td>Intossicazione</td>
+                </tr>
+                <tr>
+                    <td>Q8</td>
+                    <td>Metabolico</td>
+                </tr>
+                <tr>
+                    <td>Q9</td>
+                    <td>Gastroenterologica</td>
+                </tr>
+                <tr>
+                    <td>Q10</td>
+                    <td>Urologica</td>
+                </tr>
+                <tr>
+                    <td>Q11</td>
+                    <td>Oculistica</td>
+                </tr>
+                <tr>
+                    <td>Q12</td>
+                    <td>Otorinolaringoiatrica</td>
+                </tr>
+                <tr>
+                    <td>Q13</td>
+                    <td>Dermatologica</td>
+                </tr>
+                <tr>
+                    <td>Q14</td>
+                    <td>Ostetrico-ginecologica</td>
+                </tr>
+                <tr>
+                    <td>Q15</td>
+                    <td>Inferioro</td>
+                </tr>
+                <tr>
+                    <td>Q16</td>
+                    <td>Altre patologie</td>
+                </tr>
+                <tr>
+                    <td>Q17</td>
+                    <td>Patologie non identificate</td>
+                </tr>
+            </table>
+        </section>
+
+        <div class="page-break"></div>
+
+        <section>
+            <h2>Modulo Codici (C - dinamica riscontrata)</h2>
+            <p><strong>c) Dinamica riscontrata:</strong><br>
+            Indica la dinamica dell'evento riscontrata dalla missione: indicare al massimo 2 dinamiche.</p>
+            
+            <table>
+                <tr>
+                    <td>01</td>
+                    <td>aggressione</td>
+                </tr>
+                <tr>
+                    <td>02</td>
+                    <td>arma bianca</td>
+                </tr>
+                <tr>
+                    <td>03</td>
+                    <td>arma da fuoco</td>
+                </tr>
+                <tr>
+                    <td>04</td>
+                    <td>esplosione</td>
+                </tr>
+                <tr>
+                    <td>05</td>
+                    <td>incastrato</td>
+                </tr>
+                <tr>
+                    <td>06</td>
+                    <td>incidente auto</td>
+                </tr>
+                <tr>
+                    <td>07</td>
+                    <td>incidente bicicletta</td>
+                </tr>
+                <tr>
+                    <td>08</td>
+                    <td>incidente mezzo pesante</td>
+                </tr>
+                <tr>
+                    <td>09</td>
+                    <td>incidente moto</td>
+                </tr>
+                <tr>
+                    <td>10</td>
+                    <td>incidente pedone</td>
+                </tr>
+                <tr>
+                    <td>11</td>
+                    <td>incendio</td>
+                </tr>
+                <tr>
+                    <td>12</td>
+                    <td>morso di animale</td>
+                </tr>
+                <tr>
+                    <td>13</td>
+                    <td>precipitato <3 mt</td>
+                </tr>
+                <tr>
+                    <td>14</td>
+                    <td>precipitato >3 mt</td>
+                </tr>
+                <tr>
+                    <td>15</td>
+                    <td>proiettato</td>
+                </tr>
+                <tr>
+                    <td>16</td>
+                    <td>soccorso a persona</td>
+                </tr>
+                <tr>
+                    <td>17</td>
+                    <td>tuffo/immersione</td>
+                </tr>
+                <tr>
+                    <td>18</td>
+                    <td>violenza sessuale</td>
+                </tr>
+                <tr>
+                    <td>19</td>
+                    <td>altro dinamico</td>
+                </tr>
+                <tr>
+                    <td>20</td>
+                    <td>non definita</td>
+                </tr>
+            </table>
+        </section>
+
+        <div class="page-break"></div>
+
+        <section>
+            <h2>Modulo Codici (D – codici prestazioni)</h2>
+            <p><strong>D) Codici prestazioni per il sistema 118:</strong><br>
+            Indica la tipologia di prestazione effettuata dal personale 118: seleziona la principale e le eventuali secondarie.</p>
+            
+            <table>
+                <tr>
+                    <td>01</td>
+                    <td>Aspirazione secreta</td>
+                </tr>
+                <tr>
+                    <td>02</td>
+                    <td>Bendaggio arti</td>
+                </tr>
+                <tr>
+                    <td>03</td>
+                    <td>Campaggio e taglio cordone ombelicale dopo il parto</td>
+                </tr>
+                <tr>
+                    <td>04</td>
+                    <td>Controllo saturazione O2</td>
+                </tr>
+                <tr>
+                    <td>05</td>
+                    <td>Controllo emorragia esterna</td>
+                </tr>
+                <tr>
+                    <td>06</td>
+                    <td>Controllo pneumotorace (pna) aperto</td>
+                </tr>
+                <tr>
+                    <td>07</td>
+                    <td>Defibrillazione semiautomatica</td>
+                </tr>
+                <tr>
+                    <td>08</td>
+                    <td>Determinazione con ambientale</td>
+                </tr>
+                <tr>
+                    <td>09</td>
+                    <td>Disostruzione via aerea</td>
+                </tr>
+                <tr>
+                    <td>10</td>
+                    <td>Elettrocardiogramma</td>
+                </tr>
+                <tr>
+                    <td>11</td>
+                    <td>Estrazione di incastrati</td>
+                </tr>
+                <tr>
+                    <td>12</td>
+                    <td>Gestione paziente in agitazione psicomotoria</td>
+                </tr>
+                <tr>
+                    <td>13</td>
+                    <td>Gestione paziente in agitazione psicomotoria (in crisi)</td>
+                </tr>
+                <tr>
+                    <td>14</td>
+                    <td>Glicemia su sangue capillare</td>
+                </tr>
+                <tr>
+                    <td>15</td>
+                    <td>Immobilizzazione arti</td>
+                </tr>
+                <tr>
+                    <td>16</td>
+                    <td>Immobilizzazione colonna con collare cervicale</td>
+                </tr>
+                <tr>
+                    <td>17</td>
+                    <td>Immobilizzazione colonna con estricatore</td>
+                </tr>
+                <tr>
+                    <td>18</td>
+                    <td>Immobilizzazione colonna con tavola spinale</td>
+                </tr>
+                <tr>
+                    <td>19</td>
+                    <td>Massaggio cardiaco esterno a torace chiuso</td>
+                </tr>
+                <tr>
+                    <td>20</td>
+                    <td>Medicazioni varie</td>
+                </tr>
+                <tr>
+                    <td>21</td>
+                    <td>Monitoraggio della pressione arteriosa sistemica</td>
+                </tr>
+                <tr>
+                    <td>22</td>
+                    <td>Prevenzione ipotermia</td>
+                </tr>
+                <tr>
+                    <td>23</td>
+                    <td>Rianimazione cardiopolmonare di base</td>
+                </tr>
+                <tr>
+                    <td>24</td>
+                    <td>Somministrazione ossigeno</td>
+                </tr>
+                <tr>
+                    <td>25</td>
+                    <td>Supporto psicosociale al paziente</td>
+                </tr>
+                <tr>
+                    <td>26</td>
+                    <td>Ventilazione con pallone autoespandibile</td>
+                </tr>
+            </table>
+        </section>
+
+        <div class="page-break"></div>
+
+        <section>
+            <h2>La Scheda 118 per MSB (Mezzo di Soccorso di BASE)</h2>
+            
+            <div class="note">
+                <p><strong>Note importanti sulla compilazione:</strong></p>
+                <ul>
+                    <li>Viene compilata in duplice copia (perché la carta copiativa abbia effetto solitamente si frappone il modulo codici plastificato)</li>
+                    <li>Una copia (quella fotocopiata) si lascia al Pronto Soccorso (in caso il trasporto venga effettuato)</li>
+                    <li>NON è più previsto che l'infermiera del triage compili il campo 'codice triage'.</li>
+                    <li>Se il trasporto non viene effettuato (perché il paziente lo rifiuta) allora una copia si lascia al paziente.</li>
+                    <li>La scheda NON può essere modificata dopo la consegna della copia (al PS o al paziente) a meno del campo 'operativo' (questo orario, corrispondente al F3 della radio, verrà trascritto prendendolo dal Portale Regionale in fase di 'chiusura' del servizio)</li>
+                </ul>
+            </div>
+            
+            <h3>N° Scheda</h3>
+            <p>È trasmesso dalla CO (e quindi trascritto nel modulo di accettazione). È composto da un codice alfanumerico in cui:</p>
+            <ul>
+                <li>i primi 2 numeri identificano la CO territoriale (per Torino vale 01)</li>
+                <li>2 lettere e 4 cifre si riferiscono all'evento</li>
+                <li>Le cifre dopo la barra si riferiscono alla missione (coincide con il numero di ambulanze inviate sullo stesso servizio)</li>
+            </ul>
+            
+            <h3>Esempio:</h3>
+            <div class="code-box">
+                REGIONE PIEMONTE<br>
+                Soccorso di Base<br>
+                12 / 01 / 2 0 1 9<br>
+                01 AA | 32 15 / 01<br><br>
+                
+                04 0 5<br>
+                01
+            </div>
+            
+            <p>Dove:</p>
+            <ul>
+                <li><strong>N° paziente</strong>: progressivo sullo stesso servizio (solitamente vale 01)</li>
+                <li><strong>N° postazione</strong>: per la CGA vale 405</li>
+                <li><strong>Data del servizio</strong>: nel formato gg/mm/aaaa</li>
+            </ul>
+        </section>
+
+        <div class="page-break"></div>
+
+        <section>
+            <h2>Informazioni paziente</h2>
+            
+            <p>Solitamente si compilano solo:</p>
+            <ul>
+                <li>il sesso</li>
+                <li>la data di nascita</li>
+                <li>la cittadinanza</li>
+            </ul>
+            
+            <p><strong>Codice Patologia Specifica</strong>: si riferisce ad un eventuale codice di patologia rara riferito dalla CO o dal paziente (che solitamente ha un tesserino specifico che lo riporta). Compilare allineando a destra.</p>
+            
+            <h3>Dati anagrafici</h3>
+            <div class="code-box">
+                <p><strong>Sesso</strong>: [ ] M [ ] F</p>
+                <p><strong>Data di nascita</strong>: __ / __ / ____</p>
+                <p><strong>C.F.</strong>: _______________________</p>
+                <p><strong>Residenza</strong>: _______________________</p>
+                <p><strong>Comune</strong>: _______________________</p>
+                <p><strong>Stato estero di residenza</strong>: _______________________</p>
+                <p><strong>Cittadinanza</strong>: _______________________</p>
+                <p><strong>Codice Patologia Specifica</strong>: _______________________</p>
+            </div>
+            
+            <div class="note">
+                <p><strong>Codice TEAM</strong> (Tessera Europea Assistenza Malattia) - si usa raramente e si riferisce al codice presente dietro al tesserino del codice fiscale di alcuni pazienti stranieri comunitari.</p>
+                <p>NUMERO DI 20 CIFRE CHE SI TROVA SUL RETRO DELLE TESSERE SANITARIE</p>
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+
+        <section>
+            <h2>Sezione temporale della missione</h2>
+            
+            <h3>Orari da registrare:</h3>
+            <ul>
+                <li><strong>Orario allarme e codice evento di apertura</strong>: sono quelli segnati nel modulo di accettazione</li>
+                <li><strong>Orario partenza missione</strong>: corrisponde con l'ora dell'invio dello stato F1 via radio alla CO</li>
+                <li><strong>Orario di arrivo sul target</strong>: corrisponde con l'ora dell'invio dello stato F2 via radio alla CO e codice di valutazione all'arrivo (solitamente coincide con il codice evento in apertura)</li>
+                <li><strong>Orario di partenza dal target</strong>: successivo alle fasi di valutazione e al trattamento e codici di valutazione in partenza (patologia primaria ed, eventualmente, patologia secondaria) ricavati dalla tabella B del Modulo Codici (patologia riscontrata)</li>
+                <li><strong>Orario di arrivo in ospedale e codici di rilascio</strong>: (patologia primaria ed, eventualmente, patologia secondaria) che solitamente coincidono con quelli di partenza dal target</li>
+            </ul>
+            
+            <h3>Codice Protocollo</h3>
+            <p>Non si compila quasi mai e si riferisce al ricovero per patologie specifiche per le quali è previsto un protocollo specifico:</p>
+            <ul>
+                <li>ST = Stroke (ictus)</li>
+                <li>BLU = Attivazione DAE</li>
+                <li>A = Allergia</li>
+                <li>Altro = futuri protocolli</li>
+            </ul>
+        </section>
+
+        <div class="page-break"></div>
+
+        <section>
+            <h2>Altre sezioni della scheda</h2>
+            
+            <h3>Orario di operatività</h3>
+            <p>Corrisponde con l'ora dell'invio dello stato F3 via radio alla CO. Questo è l'unico campo da NON compilare in fase di servizio ma solo successivamente (in fase di chiusura del servizio su Portale Regionale).</p>
+            
+            <h3>Codici Prestazione</h3>
+            <p>Si deve esprimere obbligatoriamente almeno la prestazione principale (almeno la 66 = Supporto Psicologico al paziente) e fino a 4 prestazioni secondarie ricavate dalla tabella D del Modulo Codici (codici prestazioni).</p>
+            
+            <h3>Dinamica riscontrata</h3>
+            <p>Se ne possono indicare fino a 2 e sono ricavate dalla tabella C del Modulo Codici (dinamica riscontrata).</p>
+            
+            <h3>Codice Triage</h3>
+            <p>È un numero progressivo assegnato dal Pronto Soccorso che una volta veniva compilato a cura dell'infermiere di triage del PS mantenendo l'allineamento a destra. NON è più indispensabile.</p>
+            
+            <div class="note">
+                <h4>Esempio di compilazione:</h4>
+                <p>TRAUMA<br>
+                TRAUMA CRANICO<br>
+                PERDITA DI COSCIENZA<br>
+                SOCCORSO A PERSONA</p>
+                
+                <p>Prestazioni effettuate:<br>
+                66 = Supporto psicologico al paziente (principale)<br>
+                65 = somministrazione ossigeno<br>
+                47 = medicazioni varie<br>
+                09 = Controllo saturazione O2<br>
+                48 = monitoraggio della pressione arteriosa</p>
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+
+        <section>
+            <h2>Valutazione Primaria</h2>
+            
+            <p>Riguarda i parametri vitali (coscienza, ostruzione delle vie aeree, funzione respiratoria e funzione cardiaca). Se anche una sola di queste sezioni presenta 'alterazioni' il codice è GIALLO.</p>
+            
+            <div class="note">
+                <p>Nel 'percorso ICTUS' di valutazione, in caso di anisocoria la pupilla più piccola è solitamente quella considerata 'anomala'.</p>
+                <p>Il calcolo della percentuale del corpo ustionata (BSA%) si calcola con la figura presente nel 'Modulo codici'.</p>
+            </div>
+            
+            <h3>Parametri da registrare:</h3>
+            <ul>
+                <li><strong>AVPU</strong>: Valutazione dello stato di coscienza secondo la scala:
+                    <ul>
+                        <li>A = il paziente è vigile (Avviso) e risponde a domande semplici</li>
+                        <li>V = il paziente risponde agli stimoli verbali (Verba)</li>
+                        <li>P = il paziente risponde agli stimoli dolorosi (Pain)</li>
+                        <li>U = il paziente non risponde agli stimoli (Unresponsive)</li>
+                    </ul>
+                </li>
+                <li><strong>FC (minuto)</strong>: Valore della Frequenza Cardiaca al minuto (normale nel range 60-90). Si misura con il SATURIMETRO.</li>
+                <li><strong>FR (minuto)</strong>: Valore della Frequenza Respiratoria (normale nel range 12-20 att/minuto)</li>
+                <li><strong>SpO₂ (%)</strong>: Valore percentuale della Saturazione del O₂ nel sangue (normale > 92%). Si misura con il SATURIMETRO.</li>
+                <li><strong>PAO (mmHg)</strong>: Valore della Pressione Arteriosa (normale 120-80). Si misurano con lo SFINGOMANOMETRO.</li>
+                <li><strong>NRS/PRS (1-10)</strong>: Scale di valutazione del dolore per adulti e per bambini</li>
+                <li><strong>Temperatura (°C)</strong></li>
+                <li><strong>Glicemia (mg/dl)</strong>: Valore della Glicemia (normale nel range 120-80 a digiuno). Si riportano solo valori misurati dal paziente con il suo apparecchio.</li>
+            </ul>
+            
+            <div class="warning">
+                <p>ATTENZIONE: BARRANDO QUESTA CASELLA DICHIARATE CHE IL PAZIENTE DA VOI VALUTATO NON NECESSITA DI NESSUN TIPO DI TRATTAMENTO SANITARIO</p>
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+
+        <section>
+            <h2>Sezione trattamento</h2>
+            
+            <div class="warning">
+                <p>Il secondo foglio della scheda è IMPORTANTISSIMO perché dice 'cosa abbiamo fatto' al paziente per rispondere ai sintomi rilevati in fase di valutazione. Quello che scriviamo ha valore LEGALE per cui deve essere compilato con la massima attenzione!!</p>
+            </div>
+            
+            <p>I campi di questa sezione 'TRATTAMENTO' sono piuttosto auto-esplicativi (usiamoli in abbondanza!!).</p>
+            
+            <div class="note">
+                <p>In caso di manovre di RCP e DAE occorre segnare rispettivamente:</p>
+                <ul>
+                    <li>la durata dell'esecuzione della RCP</li>
+                    <li>l'ora della prima scarica (shock) del DAE</li>
+                    <li>il numero di scariche</li>
+                    <li>l'ora in cui riprendono le funzioni vitali</li>
+                </ul>
+            </div>
+            
+            <h3>Esempio di compilazione:</h3>
+            <div class="code-box">
+                <p>All'arrivo<br>
+                h 1:0 : 3:4<br>
+                OK<br>
+                65<br>
+                16<br>
+                98%<br>
+                120 - 85<br>
+                7<br>
+                36,5 °C</p>
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+
+        <section>
+            <h2>Note e osservazioni</h2>
+            
+            <div class="note">
+                <p>Nella compilazione di questa sezione occorre utilizzare parole semplici e dettagliate senza fare diagnosi (ricordiamoci che NON siamo medici!). Dobbiamo descrivere a parole come abbiamo trovato il paziente (seduto, senza casco, è uscito da solo dalla macchina, …) e il suo stato di coscienza (ad esempio con la sigla VCO solitamente si sintetizza la frase "Vigile Cosciente e Orientato").</p>
+                <p>Evitare di riportare come nostre le informazioni eventualmente ricevute dal paziente o dagli astanti, meglio introdurre frasi con "Il paziente RIFERISCE …"</p>
+            </div>
+            
+            <h3>Consenso</h3>
+            <p>Cognome, Nome e Firma (e possibilmente aggiungiamo anche i riferimenti di un documento di identità) di chi rilascia/rifiuta il consenso al trattamento dei dati personali e/o al trasporto.</p>
+            
+            <div class="warning">
+                <p>Se qualcuno non ci firma esplicitamente il rifiuto al trasporto noi DOBBIAMO assolutamente trasportarlo in ospedale (in casi particolari confrontarsi con la CO).</p>
+                <p>ATTENZIONE: in presenza di paziente minorenne in ambulanza DEVE essere accompagnato da un tutore maggiorenne (genitore, maestra, OSS, …)</p>
+            </div>
+            
+            <p>Eventuali effetti personali (quali ad esempio la collana tolta per mettere il collare) devono essere consegnati ai parenti.</p>
+        </section>
+
+        <div class="page-break"></div>
+
+        <section>
+            <h2>Dichiarazioni finali</h2>
+            
+            <p>Data (nel formato gg/mm/aa) e ora sono informazioni che hanno valore legale.</p>
+            
+            <div class="warning">
+                <p>Il decesso deve essere constatato da un medico che può essere la Guardia Medica (MMG) o altro medico.</p>
+            </div>
+            
+            <h3>Trasporto con altri mezzi</h3>
+            <p>Se il trasporto non viene effettuato da noi ma da un altro mezzo, quali ad esempio un'ambulanza avanzata con medico (MSA) o con medico e infermiere (MSAB) o dall'elisoccorso, è opportuno riportare nelle note il tipo e la sigla del mezzo a cui abbiamo 'affidato' il paziente.</p>
+            
+            <h3>Altri enti coinvolti</h3>
+            <p>Altri enti che hanno partecipato al soccorso:</p>
+            <ul>
+                <li>CC = Carabinieri</li>
+                <li>VVF = Vigili del fuoco</li>
+                <li>POL = Polizia</li>
+                <li>VVUU = Vigili Urbani</li>
+            </ul>
+            <p>Specificare sotto la loro SIGLA.</p>
+            
+            <p>Se il paziente viene trasportato bisogna specificare DOVE.</p>
+        </section>
+
+        <div class="page-break"></div>
+
+        <section>
+            <h2>Destinazione del paziente</h2>
+            
+            <table>
+                <tr>
+                    <td>Domicilio</td>
+                    <td>MSB</td>
+                    <td>Nonizzazione</td>
+                    <td>Annullato da C.O.</td>
+                    <td>CC</td>
+                </tr>
+                <tr>
+                    <td>C.A.P.</td>
+                    <td>MSA</td>
+                    <td>A varia mezzo</td>
+                    <td>VVF</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>S.S. privata</td>
+                    <td>MSAB</td>
+                    <td>MAC</td>
+                    <td>POL</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>T.R.V.</td>
+                    <td>ELI</td>
+                    <td>Paziente non trovato</td>
+                    <td>VVUU</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Ospedale</td>
+                    <td>URO</td>
+                    <td>NON completato</td>
+                    <td>Altro</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Ospedale</td>
+                    <td>ANTO</td>
+                    <td>NON completato</td>
+                    <td>CAERMA</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Altro</td>
+                    <td>Altro</td>
+                    <td>NON completato</td>
+                    <td>SAR DONATO 1</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>RIVOLI</td>
+                    <td>METRO PROPIO</td>
+                    <td>Deceduto</td>
+                    <td>Target non reperito</td>
+                    <td></td>
+                </tr>
+            </table>
+            
+            <h3>Equipaggio</h3>
+            <div class="code-box">
+                <p><strong>EQUIPAGGIO</strong></p>
+                <p>Codice/ Nominativo: _______________________</p>
+                <p>In alternativa al Nominativo del membro dell'equipaggio si può specificare il numero del suo BADGE associativo.</p>
+                <p>Firma: _______________________</p>
+                
+                <p>Codice/ Nominativo: _______________________</p>
+                <p>Firma: _______________________</p>
+                
+                <p>Codice/ Nominativo: _______________________</p>
+                <p>Firma: _______________________</p>
+            </div>
+            
+            <div class="note">
+                <p>Esempio:</p>
+                <p>Codice/ Nominativo: R O S S I</p>
+                <p>Mario Rossi</p>
+                <p>Firma: _______________________</p>
+                
+                <p>Codice/ Nominativo: B I A N C H I</p>
+                <p>Giovanni Bianchi</p>
+                <p>Firma: _______________________</p>
+                
+                <p>Codice/ Nominativo: V E R D I</p>
+                <p>Giuseppe Verdi</p>
+                <p>Firma: _______________________</p>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
