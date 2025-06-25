@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklist Ambulanza MSB DINO</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Variabili CSS per temi e scalabilità */
+        :root {
+            --primary: #2c3e50; /* Blu scuro */
+            --primary-light: #3498db; /* Blu chiaro */
+            --secondary: #e74c3c; /* Rosso */
+            --success: #27ae60; /* Verde */
+            --warning: #f39c12; /* Arancione */
+            --danger: #c0392b; /* Rosso scuro */
+            --light: #ecf0f1; /* Grigio chiaro */
+            --dark: #2c3e50; /* Stesso del primary per testi scuri */
+            --gray: #7f8c8d; /* Grigio medio */
+            /* Variabili per lo zoom, modificate via JavaScript */
+            --font-scale: 1;
+            --icon-scale: 1;
+            --button-scale: 1;
+        }
+
+        /* Reset CSS e font base */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { 
+            background-color: #f5f7fa; 
+            color: #333; 
+            line-height: 1.6; 
+            padding-bottom: 120px; /* Spazio per la summary bar di default */
+            font-size: calc(1rem * var(--font-scale)); 
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
+        
+        /* Stili dell'intestazione principale */
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white; padding: 1.5rem; text-align: center;
+            border-radius: 0 0 15px 15px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); margin-bottom: 2rem;
+        }
+        .header h1 { font-size: 1.8rem; margin-bottom: 0.5rem; font-weight: 600; }
+        .header-info { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; }
+        .info-item { background: rgba(255, 255, 255, 0.15); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; }
+        
+        /* Controlli Zoom Header e Summary Header (stili simili) */
+        .collapsible-header {
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .collapsible-header i {
+            transition: transform 0.3s; /* Animazione icona freccia */
+        }
+        
+        /* Contenitore generale per i contenuti collassabili (zoom, summary) */
+        .collapsible-content-container {
+            background: white;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            overflow: hidden;
+            max-height: 500px; /* Altezza massima per la transizione */
+            transition: max-height 0.3s ease, padding 0.3s ease, margin 0.3s ease;
+        }
+        
+        /* Stato compresso dei controlli */
+        .collapsible-content-container.collapsed {
+            max-height: 0;
+            padding: 0;
+            margin-bottom: 0; /* Rimuovi il margin-bottom quando collassato */
+        }
+        
+        .zoom-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .zoom-controls label {
+            font-weight: 600;
+        }
+        
+        /* Stili per il contenitore di upload file CSV */
+        .file-input-container {
+            background: var(--light); border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); text-align: center;
+        }
+        .file-input-container h3 { margin-bottom: 1rem; color: var(--primary); }
+        .file-input {
+            width: 100%; max-width: 400px; margin: 0 auto; padding: 1rem; border: 2px dashed #ccc;
+            border-radius: 8px; cursor: pointer; transition: all 0.3s; background: white;
+        }
+        .file-input:hover { border-color: var(--primary-light); background: rgba(52, 152, 219, 0.05); }
+        
+        /* Stili per i controlli (ricerca e filtri) */
+        .controls {
+            display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; background: white;
+            padding: 1rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); display: none; /* Inizialmente nascosto */
+        }
+        .search-box { flex: 1; min-width: 250px; position: relative; }
+        .search-box input {
+            width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; border: 1px solid #e0e0e0;
+            border-radius: 8px; font-size: 1rem;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") no-repeat 1rem center; /* Icona lente d'ingrandimento */
+        }
+        .filter-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .filter-btn {
+            padding: 0.6rem 1rem; border: 1px solid #e0e0e0; border-radius: 8px; background: white;
+            cursor: pointer; font-size: 0.9rem; transition: all 0.2s;
+        }
+        /* Stili per i bottoni di filtro in base allo stato */
+        .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .filter-btn.present { background: rgba(39, 174, 96, 0.1); color: var(--success); border-color: rgba(39, 174, 96, 0.3); }
+        .filter-btn.missing { background: rgba(231, 76, 60, 0.1); color: var(--secondary); border-color: rgba(231, 76, 60, 0.3); }
+        .filter-btn.needs-check { background: rgba(243, 156, 18, 0.1); color: var(--warning); border-color: rgba(243, 156, 18, 0.3); }
+        
+        /* Stili per le sezioni della checklist */
+        .section {
+            background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            margin-bottom: 1.5rem; overflow: hidden; transition: all 0.3s;
+        }
+        .section:hover { box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12); }
+        .section-title {
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+            color: white; padding: 1rem 1.5rem; font-size: 1.1rem; font-weight: 600;
+            display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+        }
+        .section-title i { transition: transform 0.3s; }
+        .section.collapsed .section-title i { transform: rotate(-90deg); } /* Icona ruotata quando la sezione è compressa */
+        .section.collapsed .items-grid { display: none; } /* Griglia nascosta quando la sezione è compressa */
+        .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; padding: 1.5rem; }
+        
+        /* Stili per i singoli elementi della checklist */
+        .item {
+            background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1.25rem;
+            display: flex; flex-direction: column; transition: all 0.3s; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .item.hidden { display: none; } /* Usato per i filtri di ricerca */
+        .item.priority { border-left: 4px solid var(--danger); background: linear-gradient(to right, rgba(192, 57, 43, 0.03), transparent); } /* Evidenzia elementi prioritari */
+        .item.functional-check::after { content: '🔧'; position: absolute; right: 15px; top: 15px; font-size: 1.5rem; } /* Icona per elementi con 'verifica' nelle note */
+        .item-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; min-height: 40px; }
+        .item-name-container { flex: 1; min-width: 0; padding-right: 40px; }
+        .item-name { font-weight: 600; color: var(--dark); word-break: break-word; }
+        .item-right { display: flex; align-items: flex-start; gap: 8px; }
+        .item-quantity {
+            background: var(--primary-light); color: white; padding: 0.25rem 0.75rem; border-radius: 15px;
+            font-size: 0.9rem; min-width: 40px; text-align: center; font-weight: 500;
+        }
+        .item-image-btn { background: none; border: none; color: var(--primary-light); cursor: pointer; font-size: 1.2rem; padding: 5px; }
+        .item-details {
+            font-size: 0.9rem; color: var(--gray); margin-bottom: 1rem; font-style: italic;
+            padding: 0.5rem 0; border-top: 1px dashed #e0e0e0; padding-top: 0.5rem;
+        }
+        .item-radio-group { display: flex; gap: 0.75rem; margin-top: auto; }
+        .item-radio { display: none; }
+
+        /* Stili per le label dei radio button (personalizzati) */
+        .item-radio-label {
+            flex: 1; 
+            padding: 0.6rem; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 0.7rem; 
+            min-height: 35px;     
+            text-align: center; 
+            transition: all 0.2s; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+        }
+
+        /* Colori per i radio button in base allo stato */
+        .item-radio-label.present { background-color: rgba(39, 174, 96, 0.1); color: var(--success); border: 1px solid rgba(39, 174, 96, 0.3); }
+        .item-radio-label.missing { background-color: rgba(231, 76, 60, 0.1); color: var(--secondary); border: 1px solid rgba(231, 76, 60, 0.3); }
+        .item-radio-label.needs-check { background-color: rgba(243, 156, 18, 0.1); color: var(--warning); border: 1px solid rgba(243, 156, 18, 0.3); }
+        /* Colori per i radio button selezionati */
+        .item-radio:checked + .item-radio-label.present { background-color: var(--success); color: white; border-color: var(--success); }
+        .item-radio:checked + .item-radio-label.missing { background-color: var(--secondary); color: white; border-color: var(--secondary); }
+        .item-radio:checked + .item-radio-label.needs-check { background-color: var(--warning); color: black; border-color: var(--warning); }
+        
+        /* Stili per il riepilogo generale (fisso in fondo) */
+        .summary-wrapper {
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            z-index: 100; 
+            background: #f5f7fa; /* Per evitare che il contenuto del body appaia sotto quando non c'è padding */
+        }
+
+        .summary-header {
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 10px 10px 0 0; /* Solo angoli superiori arrotondati */
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.1); /* Ombra sopra */
+        }
+        
+        .summary-header i {
+            transition: transform 0.3s;
+        }
+
+        .summary-content-container { /* Contenitore per il contenuto del summary */
+            background: white; 
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+            padding: 1rem; 
+            border-top: 1px solid #e0e0e0; 
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            overflow: hidden;
+            max-height: 500px; /* Max height per la transizione */
+        }
+        
+        .summary-content-container.collapsed {
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .progress-container { width: 100%; margin-bottom: 1rem; }
+        .progress-info { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 1rem; }
+        .progress-bar { width: 100%; height: 12px; background: #e9ecef; border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(to right, var(--success), #2ecc71); width: 0%; transition: width 0.5s ease; }
+        .summary-stats { display: flex; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem; }
+        .stat { flex: 1; min-width: 120px; text-align: center; padding: 0.75rem; border-radius: 8px; background: var(--light); }
+        .stat-number { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .stat-label { font-size: 0.85rem; color: var(--gray); font-weight: 500; }
+        .buttons { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+        .btn {
+            padding: 0.75rem 1.5rem; border: none; border-radius: 8px; font-size: calc(1em * var(--button-scale)); font-weight: 600;
+            cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 0.75rem;
+        }
+        /* Colori per i bottoni delle azioni */
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--dark); transform: translateY(-2px); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #a93226; transform: translateY(-2px); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #219653; transform: translateY(-2px); }
+        .btn-warning { background: var(--warning); color: black; }
+        .btn-warning:hover { background: #d35400; transform: translateY(-2px); color: white; }
+        
+        /* Stili per i modali (immagine e email) */
+        .modal {
+            display: none; /* Nascosto di default */
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); z-index: 1000; align-items: center; justify-content: center;
+        }
+        .modal-content { background: white; border-radius: 10px; max-width: 90%; max-height: 90%; overflow: auto; position: relative; }
+        .close { position: absolute; top: 20px; right: 25px; color: white; font-size: 40px; font-weight: bold; cursor: pointer; z-index: 1; }
+        .modal-image { max-width: 100%; display: block; margin: 0 auto; }
+        .email-modal-content { 
+            background: white; 
+            border-radius: 10px; 
+            width: 90%; 
+            max-width: 500px; 
+            padding: 1.5rem; 
+            position: relative; 
+            max-height: 90vh; /* Limita altezza per schermi piccoli */
+            overflow-y: auto; /* Abilita scroll se il contenuto è troppo grande */
+            display: flex; /* Flexbox per allineamento interno */
+            flex-direction: column; /* Organizza gli elementi in colonna */
+        }
+        .email-form { display: flex; flex-direction: column; gap: 1rem; }
+        .email-form input, .email-form textarea { padding: 0.9rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
+        .email-form textarea { min-height: 180px; resize: vertical; }
+        .form-buttons { display: flex; gap: 10px; justify-content: flex-end; margin-top: auto; /* Spinge i bottoni in fondo */ } 
+        
+        /* Stili per messaggi di caricamento/errore */
+        .loading, .error { text-align: center; padding: 2rem; background: white; border-radius: 10px; margin-bottom: 2rem; }
+        .loading i { font-size: 2rem; margin-bottom: 1rem; }
+        .error { background: #fff0f0; color: var(--danger); border-left: 4px solid var(--danger); }
+        
+        /* Bottone Reset Zoom */
+        #resetZoom {
+            margin-top: 10px;
+            padding: 8px 15px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        #resetZoom:hover {
+            background: #a93226;
+            transform: translateY(-2px);
+        }
+        
+        /* Scalatura delle icone basata su variabile CSS */
+        i, .fas, .far {
+            font-size: calc(1em * var(--icon-scale));
+        }
+
+        /* Nuova classe per gestire il padding del body quando il modale email è aperto */
+        body.email-modal-open {
+            padding-bottom: 550px; /* Aumenta il padding del body per dare spazio al modale */
+            /* Puoi regolare questo valore in base all'altezza tipica della tastiera + modale */
+        }
+        
+        /* Media Queries per la responsività */
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.5rem; }
+            .items-grid { grid-template-columns: 1fr; }
+            .stat { min-width: calc(50% - 0.75rem); }
+            .btn { padding: 0.75rem; font-size: 0.9rem; }
+            .item-header { flex-direction: column; gap: 0.5rem; }
+            .item-name-container { padding-right: 0; }
+            .item-right { align-self: flex-start; }
+            
+            /* Adatta il padding del body quando la summary è espansa/collassata su mobile */
+            body.summary-expanded {
+                padding-bottom: 350px; /* Spazio per riepilogo espanso */
+            }
+            body.summary-collapsed {
+                padding-bottom: 50px; /* Spazio solo per la barra toggle del riepilogo */
+            }
+
+            .summary-content-container {
+                 box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+                 border-radius: 0; /* Rimuovi border-radius per adattarsi meglio a bordo schermo */
+            }
+
+            /* Regolazione per il modale email su schermi piccoli */
+            body.email-modal-open {
+                padding-bottom: 600px; /* Assicurati che questo sia sufficiente per la tastiera su mobile */
+            }
+        }
+        @media (max-width: 480px) {
+            .header-info { flex-direction: column; align-items: center; gap: 0.5rem; }
+            .item-radio-group, .buttons, .controls { flex-direction: column; }
+            .btn { width: 100%; }
+            .summary-content-container { padding: 0.5rem; }
+            .progress-info { font-size: 0.9rem; }
+            body.summary-expanded {
+                padding-bottom: 380px;
+            }
+            body.email-modal-open {
+                padding-bottom: 650px; /* Potrebbe servire più spazio su schermi molto piccoli */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="collapsible-header" id="zoomToggle">
+            <span><i class="fas fa-search-plus"></i> Controlli Zoom</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+        
+        <div class="collapsible-content-container" id="zoomControlsContainer">
+            <div class="zoom-controls">
+                <label for="fontZoom">Zoom testo: <span id="fontZoomValue">100%</span></label>
+                <input type="range" id="fontZoom" min="50" max="100" value="80" step="5">
+                
+                <label for="iconZoom">Zoom icone: <span id="iconZoomValue">100%</span></label>
+                <input type="range" id="iconZoom" min="50" max="100" value="80" step="5">
+                
+                <label for="buttonZoom">Zoom pulsanti: <span id="buttonZoomValue">100%</span></label>
+                <input type="range" id="buttonZoom" min="50" max="100" value="80" step="5">
+                
+                <button id="resetZoom">
+                    <i class="fas fa-undo"></i> Reset Zoom
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-ambulance"></i> CHECKLIST AMBULANZA MSB DINO</h1>
+            <div class="header-info">
+                <div class="info-item"><i class="fas fa-box"></i> Mod. 05D Cap. 7.5.1</div>
+                <div class="info-item"><i class="far fa-calendar-alt"></i> Data Emiss.: 01.09.23</div>
+                <div class="info-item"><i class="fas fa-sync-alt"></i> Data Rev.: 01.03.24</div>
+            </div>
+        </div>
+
+        <div class="file-input-container">
+            <h3><i class="fas fa-file-upload"></i> Carica il file CSV della checklist</h3>
+            <input type="file" id="csvFile" accept=".csv" class="file-input">
+            <p style="margin-top: 1rem; color: var(--gray); font-size: 0.95rem;">
+                Seleziona il file "Checklist_Ambulanza_MSB_DINO.csv" per caricare automaticamente tutti gli elementi
+            </p>
+        </div>
+
+        <div class="controls" id="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Cerca elemento...">
+            </div>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">Tutti</button>
+                <button class="filter-btn present" data-filter="present">Presenti</button>
+                <button class="filter-btn missing" data-filter="missing">Assenti</button>
+                <button class="filter-btn needs-check" data-filter="needs-check">Da verificare</button>
+            </div>
+        </div>
+
+        <div class="content" id="content">
+            <div class="loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <h3>Carica il file CSV per visualizzare la checklist completa...</h3>
+                <p>Seleziona il file "Checklist_Ambulanza_MSB_DINO.csv"</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="summary-wrapper" id="summaryWrapper">
+        <div class="summary-header" id="summaryToggle">
+            <span><i class="fas fa-chart-bar"></i> Riepilogo Checklist</span>
+            <i class="fas fa-chevron-up"></i>
+        </div>
+        <div class="summary-content-container" id="summaryContent">
+            <div class="progress-container">
+                <div class="progress-info">
+                    <span>Completamento</span>
+                    <span id="progress-percentage">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+            
+            <div class="summary-stats">
+                <div class="stat">
+                    <div class="stat-number" id="totalItems">0</div>
+                    <div class="stat-label">Totale</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="presentItems">0</div>
+                    <div class="stat-label">Presenti</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="missingItems">0</div>
+                    <div class="stat-label">Assenti</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="needsCheckItems">0</div>
+                    <div class="stat-label">Da verificare</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="priorityItems">0</div>
+                    <div class="stat-label">Prioritari</div>
+                </div>
+            </div>
+            
+            <div class="buttons">
+                <button class="btn btn-warning" onclick="showEmailModal()">
+                    <i class="fas fa-envelope"></i> Invia Report
+                </button>
+                <button class="btn btn-danger" onclick="resetAll()">
+                    <i class="fas fa-trash-alt"></i> Reset
+                </button>
+                <button class="btn btn-primary" onclick="printChecklist()">
+                    <i class="fas fa-print"></i> Stampa
+                </button>
+                <button class="btn btn-success" onclick="exportData()">
+                    <i class="fas fa-file-export"></i> Esporta
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="imageModal" class="modal">
+        <span class="close">&times;</span>
+        <div class="modal-content">
+            <img class="modal-image" id="modalImage">
+        </div>
+    </div>
+
+    <div id="emailModal" class="modal">
+        <div class="email-modal-content">
+            <span class="close" onclick="closeEmailModal()" 
+                  style="position: absolute; top: 10px; right: 20px; font-size: 30px; 
+                         cursor: pointer; color: #aaa; font-weight: bold; padding: 0 5px;">
+                &times;
+            </span>
+            
+            <h2><i class="fas fa-envelope"></i> Invia Report via Email</h2>
+            <p style="margin-bottom: 1rem; color: #d35400; font-weight: bold;">
+                Il PDF del report è stato salvato automaticamente sul tuo dispositivo. 
+                Ricorda di allegarlo manualmente all'email prima di inviare.
+            </p>
+            <form class="email-form" id="emailForm" onsubmit="sendEmailReport(); return false;">
+                <input type="email" id="emailTo" placeholder="Indirizzo email destinatario" required>
+                <input type="text" id="emailSubject" placeholder="Oggetto" value="Report Checklist Ambulanza" required>
+                <textarea id="emailBody" placeholder="Corpo del messaggio" required></textarea>
+                <div class="form-buttons">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-paper-plane"></i> Invia Email
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeEmailModal()">
+                        <i class="fas fa-times"></i> Annulla
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Mappatura delle immagini per alcuni elementi (simulato con Unsplash)
+        const itemImages = {
+            "Saturimetro digitale con batterie ricaricabili": "https://images.unsplash.com/photo-1581595219319-5cb0b5ce7c38?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=300&w=400",
+            "Sfigmomanometro digitale": "https://images.unsplash.com/photo-1584302179602-e4ec5d7556d1?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=300&w=400",
+            "Termometro digitale": "https://images.unsplash.com/photo-1581595219319-5cb0b5ce7c38?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=300&w=400",
+            "Forbici taglia-abiti e multiuso (tipo Robin)": "https://images.unsplash.com/photo-1584302179602-e4ec5d7556d1?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=300&w=400",
+            "Laccio emostatico arterioso (piatto) + venoso": "https://images.unsplash.com/photo-1584302179602-e4ec5d7556d1?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=300&w=400",
+            "Coperte isotermiche (metalline)": "https://images.unsplash.com/photo-1581595219319-5cb0b5ce7c38?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=300&w=400",
+            "DAE (incluse piastre adulti e pediatriche + rasoio monouso)": "https://images.unsplash.com/photo-1584302179602-e4ec5d7556d1?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=300&w=400"
+        };
+
+        // Variabili globali per i dati della checklist e il conteggio totale degli elementi
+        let checklistData = [], totalItemsCount = 0;
+        
+        /**
+         * Inizializzazione: Esegue le funzioni di setup quando il DOM è completamente caricato.
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('csvFile').addEventListener('change', handleFileUpload);
+            setupModals();
+            setupSearch();
+            setupFilters();
+            setupZoomControls();
+            setupZoomToggle();
+            setupSummaryToggle(); // Nuova funzione per il toggle del riepilogo
+        });
+        
+        /**
+         * Gestisce il toggle (apertura/chiusura) dei controlli zoom.
+         * Salva lo stato (aperto/chiuso) nel localStorage.
+         */
+        function setupZoomToggle() {
+            const zoomToggle = document.getElementById('zoomToggle');
+            const zoomContainer = document.getElementById('zoomControlsContainer');
+            
+            // Carica lo stato iniziale da localStorage per mantenere la preferenza dell'utente
+            const isCollapsed = localStorage.getItem('zoomControlsCollapsed') === 'true';
+            if (isCollapsed) {
+                zoomContainer.classList.add('collapsed');
+                zoomToggle.querySelector('.fa-chevron-down').style.transform = 'rotate(-90deg)';
+            }
+            
+            zoomToggle.addEventListener('click', () => {
+                const isNowCollapsed = zoomContainer.classList.contains('collapsed'); // Invertito per logica successiva
+                zoomContainer.classList.toggle('collapsed');
+                // Ruota l'icona a seconda dello stato (aperto/chiuso)
+                zoomToggle.querySelector('.fa-chevron-down').style.transform = 
+                    isNowCollapsed ? 'rotate(0deg)' : 'rotate(-90deg)';
+                
+                // Salva lo stato corrente nel localStorage
+                localStorage.setItem('zoomControlsCollapsed', !isNowCollapsed);
+            });
+        }
+        
+        /**
+         * Configura i controlli dello zoom (slider e bottone di reset).
+         * Applica e salva i valori di zoom nel localStorage.
+         */
+        function setupZoomControls() {
+            const fontSlider = document.getElementById('fontZoom');
+            const iconSlider = document.getElementById('iconZoom');
+            const buttonSlider = document.getElementById('buttonZoom');
+            const fontValue = document.getElementById('fontZoomValue');
+            const iconValue = document.getElementById('iconZoomValue');
+            const buttonValue = document.getElementById('buttonZoomValue');
+            const resetButton = document.getElementById('resetZoom');
+
+            // Carica i valori salvati o imposta il default a 100
+            const savedFont = localStorage.getItem('fontZoom') || 100;
+            const savedIcon = localStorage.getItem('iconZoom') || 100;
+            const savedButton = localStorage.getItem('buttonZoom') || 100;
+
+            fontSlider.value = savedFont;
+            iconSlider.value = savedIcon;
+            buttonSlider.value = savedButton;
+            fontValue.textContent = `${savedFont}%`;
+            iconValue.textContent = `${savedIcon}%`;
+            buttonValue.textContent = `${savedButton}%`;
+
+            // Applica lo zoom iniziale
+            updateZoom(savedFont, savedIcon, savedButton);
+
+            // Listener per i cambiamenti degli slider
+            fontSlider.addEventListener('input', () => {
+                fontValue.textContent = `${fontSlider.value}%`;
+                updateZoom(fontSlider.value, iconSlider.value, buttonSlider.value);
+                localStorage.setItem('fontZoom', fontSlider.value);
+            });
+
+            iconSlider.addEventListener('input', () => {
+                iconValue.textContent = `${iconSlider.value}%`;
+                updateZoom(fontSlider.value, iconSlider.value, buttonSlider.value);
+                localStorage.setItem('iconZoom', iconSlider.value);
+            });
+
+            buttonSlider.addEventListener('input', () => {
+                buttonValue.textContent = `${buttonSlider.value}%`;
+                updateZoom(fontSlider.value, iconSlider.value, buttonSlider.value);
+                localStorage.setItem('buttonZoom', buttonSlider.value);
+            });
+
+            // Listener per il bottone di reset
+            resetButton.addEventListener('click', () => {
+                fontSlider.value = 100;
+                iconSlider.value = 100;
+                buttonSlider.value = 100;
+                fontValue.textContent = '100%';
+                iconValue.textContent = '100%';
+                buttonValue.textContent = '100%';
+                updateZoom(100, 100, 100);
+                // Aggiorna anche il localStorage con i valori di reset
+                localStorage.setItem('fontZoom', 100);
+                localStorage.setItem('iconZoom', 100);
+                localStorage.setItem('buttonZoom', 100);
+            });
+        }
+
+        /**
+         * Applica i fattori di zoom a livello di documento tramite variabili CSS.
+         * @param {number} fontPercent - Percentuale di zoom per il testo.
+         * @param {number} iconPercent - Percentuale di zoom per le icone.
+         * @param {number} buttonPercent - Percentuale di zoom per i bottoni.
+         */
+        function updateZoom(fontPercent, iconPercent, buttonPercent) {
+            document.documentElement.style.setProperty('--font-scale', fontPercent / 100);
+            document.documentElement.style.setProperty('--icon-scale', iconPercent / 100);
+            document.documentElement.style.setProperty('--button-scale', buttonPercent / 100);
+        }
+        
+        /**
+         * Gestisce il toggle (apertura/chiusura) del riepilogo in fondo alla pagina.
+         * Salva lo stato (aperto/chiuso) nel localStorage e aggiorna il padding del body.
+         */
+        function setupSummaryToggle() {
+            const summaryToggle = document.getElementById('summaryToggle');
+            const summaryContent = document.getElementById('summaryContent');
+            const body = document.body;
+
+            // Carica lo stato iniziale da localStorage
+            const isCollapsed = localStorage.getItem('summaryCollapsed') === 'true';
+            if (isCollapsed) {
+                summaryContent.classList.add('collapsed');
+                summaryToggle.querySelector('.fa-chevron-up').style.transform = 'rotate(180deg)';
+                body.classList.add('summary-collapsed');
+                body.classList.remove('summary-expanded');
+            } else {
+                body.classList.add('summary-expanded');
+                body.classList.remove('summary-collapsed');
+            }
+
+            summaryToggle.addEventListener('click', () => {
+                const isNowCollapsed = summaryContent.classList.contains('collapsed');
+                summaryContent.classList.toggle('collapsed');
+                
+                // Ruota l'icona a seconda dello stato
+                summaryToggle.querySelector('.fa-chevron-up').style.transform = 
+                    isNowCollapsed ? 'rotate(0deg)' : 'rotate(180deg)';
+                
+                // Aggiorna la classe del body per il padding
+                if (isNowCollapsed) {
+                    body.classList.remove('summary-collapsed');
+                    body.classList.add('summary-expanded');
+                } else {
+                    body.classList.add('summary-collapsed');
+                    body.classList.remove('summary-expanded');
+                }
+                
+                // Salva lo stato corrente nel localStorage
+                localStorage.setItem('summaryCollapsed', !isNowCollapsed);
+            });
+            
+            // Imposta lo stato iniziale del body padding
+            if (!isCollapsed) { // Se non è collassato all'inizio, assicurati che il body abbia il padding corretto
+                body.classList.add('summary-expanded');
+            }
+        }
+        
+        /**
+         * Configura la chiusura dei modali cliccando sul pulsante "X" o fuori dal contenuto.
+         */
+        function setupModals() {
+            // Chiude tutti i modali quando si clicca sul pulsante con classe 'close'
+            document.querySelectorAll('.close').forEach(btn => {
+                btn.onclick = () => document.querySelectorAll('.modal').forEach(m => m.style.display = "none");
+            });
+            // Chiude il modale quando si clicca all'esterno del suo contenuto
+            window.onclick = e => {
+                if (e.target.classList.contains('modal')) e.target.style.display = "none";
+            };
+            // Previene il comportamento di submit di default per il form email
+            document.getElementById('emailForm').onsubmit = e => { e.preventDefault(); sendEmailReport(); };
+        }
+        
+        /**
+         * Implementa la funzionalità di ricerca dinamica degli elementi della checklist.
+         */
+        function setupSearch() {
+            document.getElementById('searchInput').addEventListener('input', function() {
+                const term = this.value.toLowerCase(); // Termine di ricerca in minuscolo
+                document.querySelectorAll('.item').forEach(item => {
+                    // Nasconde l'elemento se il suo nome non include il termine di ricerca
+                    item.classList.toggle('hidden', 
+                        !item.querySelector('.item-name').textContent.toLowerCase().includes(term));
+                });
+            });
+        }
+        
+        /**
+         * Configura i bottoni di filtro per mostrare gli elementi in base al loro stato (Presente, Assente, Da verificare).
+         */
+        function setupFilters() {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Rimuove la classe 'active' da tutti i bottoni e la aggiunge a quello cliccato
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const filter = this.dataset.filter; // Ottiene il tipo di filtro dal data-attribute
+                    document.querySelectorAll('.item').forEach(item => {
+                        const radio = item.querySelector('input[type="radio"]:checked');
+                        // Logica per determinare se l'elemento deve essere mostrato o nascosto
+                        const shouldShow = filter === 'all' || 
+                            (filter === 'present' && radio?.value === 'present') ||
+                            (filter === 'missing' && radio?.value === 'missing') ||
+                            (filter === 'needs-check' && radio?.value === 'needs-check');
+                        item.classList.toggle('hidden', !shouldShow);
+                    });
+                });
+            });
+        }
+        
+        /**
+         * Parsa il contenuto del file CSV e popola l'array checklistData.
+         * Genera poi la struttura HTML della checklist.
+         * @param {string} csvText - Il contenuto testuale del file CSV.
+         */
+        function parseCSV(csvText) {
+            try {
+                // Divide il testo in righe, filtra le righe vuote e pulisce gli spazi
+                const lines = csvText.split(/\r?\n/).filter(l => l.trim()).map(l => l.trim());
+                // Estrae le intestazioni dalla prima riga
+                const headers = lines[0].split(';').map(h => h.trim()).filter(h => h);
+                
+                // Valida la presenza delle intestazioni essenziali
+                if (!headers.includes('Sezione') || !headers.includes('Voce')) 
+                    throw new Error('Formato CSV non valido: mancano intestazioni richieste (Sezione, Voce)');
+                
+                checklistData = [];
+                // Itera sulle righe rimanenti per popolare i dati della checklist
+                for (let i = 1; i < lines.length; i++) {
+                    const values = lines[i].split(';').map(v => v.trim());
+                    const row = {};
+                    headers.forEach((h, j) => row[h] = values[j] || '');
+                    if (row['Voce']?.trim()) checklistData.push(row); // Aggiunge solo voci valide
+                }
+                
+                if (!checklistData.length) throw new Error('Nessun dato valido trovato nel CSV');
+                generateChecklist(); // Genera l'HTML della checklist
+            } catch (error) {
+                console.error('Errore parsing CSV:', error);
+                document.getElementById('content').innerHTML = 
+                    `<div class="error">Errore caricamento CSV: ${error.message}</div>`;
+            }
+        }
+        
+        /**
+         * Gestisce l'upload del file CSV dall'input.
+         * Legge il contenuto del file come testo.
+         * @param {Event} e - L'evento di cambio dell'input file.
+         */
+        function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return; // Nessun file selezionato
+            
+            const reader = new FileReader();
+            reader.onload = e => parseCSV(e.target.result); // Chiama parseCSV al completamento della lettura
+            reader.onerror = () => showError('Errore durante la lettura del file');
+            reader.readAsText(file, 'UTF-8'); // Legge il file come testo UTF-8
+        }
+        
+        /**
+         * Genera l'intera struttura HTML della checklist basandosi su checklistData.
+         * Raggruppa gli elementi per sezione.
+         */
+        function generateChecklist() {
+            const content = document.getElementById('content');
+            content.innerHTML = ''; // Pulisce il contenuto esistente
+            document.getElementById('controls').style.display = 'flex'; // Mostra i controlli di ricerca/filtro
+            totalItemsCount = 0; // Reset del conteggio totale
+
+            // Raggruppa gli elementi per sezione
+            const sections = {};
+            checklistData.forEach(item => {
+                const section = item['Sezione'] || 'Generale'; // Sezione di default se non specificata
+                if (!sections[section]) sections[section] = [];
+                sections[section].push(item);
+            });
+            
+            // Crea e aggiunge ogni sezione al DOM
+            Object.entries(sections).forEach(([name, items]) => {
+                const section = document.createElement('div');
+                section.className = 'section';
+                
+                // Crea il titolo della sezione (cliccabile per comprimere/espandere)
+                const title = document.createElement('div');
+                title.className = 'section-title';
+                title.innerHTML = `${name} <i class="fas fa-chevron-down"></i>`;
+                title.addEventListener('click', () => section.classList.toggle('collapsed'));
+                section.appendChild(title);
+                
+                // Crea la griglia per gli elementi all'interno della sezione
+                const grid = document.createElement('div');
+                grid.className = 'items-grid';
+                
+                // Aggiunge ogni singolo elemento alla griglia
+                items.forEach((item, i) => {
+                    grid.appendChild(createItemElement(item, name, i));
+                    totalItemsCount++; // Incrementa il conteggio totale degli elementi
+                });
+                
+                section.appendChild(grid);
+                content.appendChild(section);
+            });
+            
+            // Imposta lo stato iniziale del riepilogo (aperto) e il padding del body
+            const summaryContent = document.getElementById('summaryContent');
+            const summaryToggleIcon = document.getElementById('summaryToggle').querySelector('.fa-chevron-up');
+            
+            // Carica lo stato salvato per il riepilogo
+            const isSummaryCollapsed = localStorage.getItem('summaryCollapsed') === 'true';
+            if (isSummaryCollapsed) {
+                summaryContent.classList.add('collapsed');
+                summaryToggleIcon.style.transform = 'rotate(180deg)';
+                document.body.classList.add('summary-collapsed');
+                document.body.classList.remove('summary-expanded');
+            } else {
+                summaryContent.classList.remove('collapsed');
+                summaryToggleIcon.style.transform = 'rotate(0deg)';
+                document.body.classList.add('summary-expanded');
+                document.body.classList.remove('summary-collapsed');
+            }
+
+            updateStats(); // Aggiorna le statistiche iniziali
+            loadSavedState(); // Carica lo stato precedentemente salvato
+        }
+        
+        /**
+         * Crea un singolo elemento della checklist (HTML).
+         * @param {Object} item - L'oggetto dati dell'elemento.
+         * @param {string} sectionName - Il nome della sezione a cui l'elemento appartiene.
+         * @param {number} index - L'indice dell'elemento all'interno della sua sezione.
+         * @returns {HTMLElement} L'elemento div HTML rappresentante l'item.
+         */
+        function createItemElement(item, sectionName, index) {
+            const el = document.createElement('div');
+            el.className = 'item';
+            
+            // Aggiunge classi speciali per elementi prioritari o con controllo funzionale
+            if (item['Importante']?.trim() === '*') el.classList.add('priority');
+            if (item['Note']?.toLowerCase().includes('verifica')) el.classList.add('functional-check');
+            
+            // Crea l'header dell'elemento
+            const header = document.createElement('div');
+            header.className = 'item-header';
+            
+            const nameContainer = document.createElement('div');
+            nameContainer.className = 'item-name-container';
+            
+            const nameEl = document.createElement('div');
+            nameEl.className = 'item-name';
+            nameEl.textContent = item['Voce'];
+            nameContainer.appendChild(nameEl);
+            header.appendChild(nameContainer);
+            
+            const right = document.createElement('div');
+            right.className = 'item-right';
+            
+            // Aggiunge la quantità se presente
+            if (item['Quantità']?.trim()) {
+                const qty = document.createElement('div');
+                qty.className = 'item-quantity';
+                qty.textContent = item['Quantità'];
+                right.appendChild(qty);
+            }
+            
+            // Aggiunge il bottone per l'immagine se disponibile
+            if (itemImages[item['Voce']]) {
+                const imgBtn = document.createElement('button');
+                imgBtn.className = 'item-image-btn';
+                imgBtn.innerHTML = '<i class="fas fa-image"></i>';
+                imgBtn.title = 'Mostra immagine';
+                imgBtn.addEventListener('click', () => {
+                    document.getElementById('imageModal').style.display = "flex";
+                    document.getElementById('modalImage').src = itemImages[item['Voce']];
+                });
+                right.appendChild(imgBtn);
+            }
+            
+            header.appendChild(right);
+            el.appendChild(header);
+            
+            // Aggiunge le note se presenti
+            if (item['Note']?.trim()) {
+                const details = document.createElement('div');
+                details.className = 'item-details';
+                // Pulisce eventuali virgolette extra importate dal CSV
+                details.textContent = item['Note'].replace(/""/g, '"').replace(/^"|"$/g, '');
+                el.appendChild(details);
+            }
+            
+            // Crea il gruppo di radio button per lo stato dell'elemento
+            const radioGroup = document.createElement('div');
+            radioGroup.className = 'item-radio-group';
+            
+            ['present', 'missing', 'needs-check'].forEach(state => {
+                const id = `radio-${sectionName}-${index}-${state}`;
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = `item-${sectionName}-${index}`; // Nome univoco per gruppo radio per item
+                radio.id = id;
+                radio.className = 'item-radio';
+                radio.value = state;
+                radio.addEventListener('change', updateStats); // Aggiorna le statistiche al cambio di stato
+                
+                const label = document.createElement('label');
+                label.htmlFor = id;
+                label.className = `item-radio-label ${state}`;
+                label.textContent = 
+                    state === 'present' ? 'Presente' : 
+                    state === 'missing' ? 'Assente' : 'Da verificare';
+                
+                radioGroup.appendChild(radio);
+                radioGroup.appendChild(label);
+            });
+            
+            el.appendChild(radioGroup);
+            return el;
+        }
+        
+        /**
+         * Aggiorna le statistiche nel riepilogo (elementi presenti, assenti, da verificare, totali, prioritari).
+         * Calcola anche la percentuale di completamento.
+         */
+        function updateStats() {
+            let present = 0, missing = 0, needsCheck = 0, priority = 0;
+            // Questi vengono aggiornati ma non mostrati nel summary HTML, solo per l'email/PDF
+            let missingPriority = 0; 
+            let needsCheckPriority = 0; 
+
+            document.querySelectorAll('.item').forEach(item => {
+                const radio = item.querySelector('input[type="radio"]:checked');
+                const isPriority = item.classList.contains('priority'); // Verifica se l'elemento è prioritario
+
+                if (radio) {
+                    if (radio.value === 'present') present++;
+                    else if (radio.value === 'missing') {
+                        missing++;
+                        if (isPriority) missingPriority++; // Incrementa se assente e prioritario
+                    }
+                    else if (radio.value === 'needs-check') {
+                        needsCheck++;
+                        if (isPriority) needsCheckPriority++; // Incrementa se da verificare e prioritario
+                    }
+                }
+                // Controlla se l'elemento è prioritario (indipendentemente dallo stato selezionato)
+                if (isPriority) priority++;
+            });
+            
+            const progress = (totalItemsCount > 0) ? (present / totalItemsCount) * 100 : 0;
+            document.getElementById('totalItems').textContent = totalItemsCount;
+            document.getElementById('presentItems').textContent = present;
+            document.getElementById('missingItems').textContent = missing;
+            document.getElementById('needsCheckItems').textContent = needsCheck;
+            document.getElementById('priorityItems').textContent = priority; // Questo è il totale dei prioritari, non solo selezionati
+            document.getElementById('progressFill').style.width = `${progress}%`;
+            document.getElementById('progress-percentage').textContent = `${Math.round(progress)}%`;
+            
+            saveState(); // Salva lo stato corrente dopo ogni aggiornamento
+        }
+        
+        /**
+         * Salva lo stato attuale della checklist (quali radio button sono selezionati) nel localStorage.
+         */
+        function saveState() {
+            const state = {};
+            document.querySelectorAll('.item').forEach((item, i) => {
+                const radio = item.querySelector('input[type="radio"]:checked');
+                if (radio) state[i] = radio.value; // Salva l'indice dell'item e il suo stato
+            });
+            localStorage.setItem('checklistState', JSON.stringify(state));
+        }
+        
+        /**
+         * Carica lo stato della checklist precedentemente salvato dal localStorage.
+         */
+        function loadSavedState() {
+            const saved = localStorage.getItem('checklistState');
+            if (saved) {
+                const state = JSON.parse(saved);
+                document.querySelectorAll('.item').forEach((item, i) => {
+                    if (state[i]) {
+                        // Seleziona il radio button corrispondente allo stato salvato
+                        const radio = item.querySelector(`input[value="${state[i]}"]`);
+                        if (radio) radio.checked = true;
+                    }
+                });
+                updateStats(); // Aggiorna le statistiche dopo aver caricato lo stato
+            }
+        }
+        
+        /**
+         * Resetta tutti gli elementi della checklist allo stato non selezionato.
+         */
+        function resetAll() {
+            if (confirm('Sei sicuro di voler resettare tutta la checklist? Questa azione non può essere annullata.')) {
+                document.querySelectorAll('.item input[type="radio"]').forEach(r => r.checked = false);
+                updateStats(); // Aggiorna le statistiche dopo il reset
+                localStorage.removeItem('checklistState'); // Rimuove lo stato salvato
+            }
+        }
+        
+        /**
+         * Attiva la funzionalità di stampa del browser per stampare la pagina corrente.
+         */
+        function printChecklist() { 
+            window.print(); 
+        }
+        
+        /**
+         * Esporta i dati della checklist corrente come un file JSON.
+         */
+        function exportData() {
+            const data = {
+                date: new Date().toISOString(),
+                totalItems: totalItemsCount,
+                present: document.getElementById('presentItems').textContent,
+                missing: document.getElementById('missingItems').textContent,
+                needsCheck: document.getElementById('needsCheckItems').textContent,
+                priority: document.getElementById('priorityItems').textContent,
+                items: []
+            };
+            
+            // Popola l'array degli item con i loro dettagli e stati
+            document.querySelectorAll('.item').forEach(item => {
+                data.items.push({
+                    section: item.closest('.section')?.querySelector('.section-title')?.textContent.trim() || 'Generale',
+                    name: item.querySelector('.item-name').textContent,
+                    quantity: item.querySelector('.item-quantity')?.textContent || '',
+                    state: item.querySelector('input[type="radio"]:checked')?.value || 'unchecked',
+                    notes: item.querySelector('.item-details')?.textContent || '',
+                    priority: item.classList.contains('priority')
+                });
+            });
+            
+            // Crea un Blob e un URL per il download del file JSON
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `checklist_ambulanza_report_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url); // Rilascia l'URL dell'oggetto
+        }
+        
+        /**
+         * Mostra il modale per l'invio dell'email.
+         * Genera un PDF del report e lo salva automaticamente.
+         * Prepara il corpo e l'oggetto dell'email con i dati del report.
+         */
+        function showEmailModal() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const now = new Date();
+            const formattedDateTime = formatDateTime(now);
+            
+            let presentCount = 0;
+            let missingCount = 0;
+            let needsCheckCount = 0;
+            let totalPriorityCount = 0;
+            let missingPriorityItems = []; 
+            let needsCheckPriorityItems = []; 
+
+            const allItems = document.querySelectorAll('.item');
+            
+            allItems.forEach(item => {
+                const radio = item.querySelector('input[type="radio"]:checked');
+                const isPriority = item.classList.contains('priority');
+                const itemName = item.querySelector('.item-name').textContent;
+                const sectionName = item.closest('.section')?.querySelector('.section-title')?.textContent.trim() || 'Generale';
+
+                if (radio) {
+                    if (radio.value === 'present') presentCount++;
+                    else if (radio.value === 'missing') {
+                        missingCount++;
+                        if (isPriority) {
+                            missingPriorityItems.push(`- [${sectionName}] ${itemName}`);
+                        }
+                    }
+                    else if (radio.value === 'needs-check') {
+                        needsCheckCount++;
+                        if (isPriority) {
+                            needsCheckPriorityItems.push(`- [${sectionName}] ${itemName}`);
+                        }
+                    }
+                }
+                if (isPriority) {
+                    totalPriorityCount++;
+                }
+            });
+
+            // Aggiungi i contenuti al PDF (QUESTA SEZIONE RESTA INVARIATA E DETTAGLIATA)
+            doc.setFontSize(16);
+            doc.text(`Report Checklist Ambulanza`, 10, 10);
+            doc.setFontSize(10);
+            doc.text(`Generato il: ${formattedDateTime}`, 10, 20);
+            doc.text(`Totale elementi: ${totalItemsCount}`, 10, 30);
+            doc.text(`Presenti: ${presentCount}`, 10, 35);
+            doc.text(`Assenti: ${missingCount}`, 10, 40);
+            doc.text(`Da verificare: ${needsCheckCount}`, 10, 45);
+            doc.text(`Prioritari Totali: ${totalPriorityCount}`, 10, 50); 
+            doc.text(`Prioritari Assenti: ${missingPriorityItems.length}`, 10, 55); 
+            doc.text(`Prioritari Da Verificare: ${needsCheckPriorityItems.length}`, 10, 60); 
+
+            let y = 70; 
+            
+            if (missingPriorityItems.length > 0) {
+                y += 10;
+                doc.text("⚠ ELEMENTI ASSENTI CON PRIORITÀ:", 10, y);
+                doc.setFontSize(9);
+                missingPriorityItems.forEach(itemText => {
+                    y += 5;
+                    doc.text(itemText, 15, y);
+                });
+            }
+
+            if (needsCheckPriorityItems.length > 0) {
+                y += 10;
+                doc.setFontSize(10);
+                doc.text("⚠ ELEMENTI DA VERIFICARE CON PRIORITÀ:", 10, y);
+                doc.setFontSize(9);
+                needsCheckPriorityItems.forEach(itemText => {
+                    y += 5;
+                    doc.text(itemText, 15, y);
+                });
+            }
+
+            const allMissingItems = Array.from(document.querySelectorAll('.item input[value="missing"]:checked')).map(el => {
+                const item = el.closest('.item');
+                const section = item.closest('.section')?.querySelector('.section-title')?.textContent.trim() || 'Generale';
+                const itemName = item.querySelector('.item-name').textContent;
+                return `- [${section}] ${itemName}`;
+            });
+
+            if (allMissingItems.length > 0) {
+                y += 10;
+                doc.setFontSize(10);
+                doc.text("ELEMENTI ASSENTI (Tutti):", 10, y);
+                doc.setFontSize(9);
+                allMissingItems.forEach(itemText => {
+                    y += 5;
+                    doc.text(itemText, 15, y);
+                });
+            }
+            
+            const allNeedsCheckItems = Array.from(document.querySelectorAll('.item input[value="needs-check"]:checked')).map(el => {
+                const item = el.closest('.item');
+                const section = item.closest('.section')?.querySelector('.section-title')?.textContent.trim() || 'Generale';
+                const itemName = item.querySelector('.item-name').textContent;
+                return `- [${section}] ${itemName}`;
+            });
+
+            if (allNeedsCheckItems.length > 0) {
+                y += 10;
+                doc.setFontSize(10);
+                doc.text("ELEMENTI DA VERIFICARE (Tutti):", 10, y);
+                doc.setFontSize(9);
+                allNeedsCheckItems.forEach(itemText => {
+                    y += 5;
+                    doc.text(itemText, 15, y);
+                });
+            }
+
+
+            const fileName = `Report_Checklist_Ambulanza_${formatDateTimeForFile(now)}.pdf`;
+            doc.save(fileName); // Salva AUTOMATICAMENTE il file PDF
+
+            // Poi, mostra la finestra modale per l'email e aggiunge la classe al body
+            const modal = document.getElementById('emailModal');
+            modal.style.display = 'flex';
+            document.body.classList.add('email-modal-open');
+            
+            // Prepara il corpo e l'oggetto dell'email con i dati del report (QUESTA SEZIONE E' STATA CORRETTA)
+            const emailBody = document.getElementById('emailBody');
+            const emailSubject = document.getElementById('emailSubject');
+            
+            // Formato numerico conciso per l'email, come richiesto
+            emailBody.value = `Si prega di trovare in allegato il report della checklist ambulanze.\n\n`;
+            emailBody.value += `Report generato il: ${formattedDateTime}\n`;
+            emailBody.value += `Totale elementi: ${totalItemsCount}\n`;
+            emailBody.value += `Presenti: ${presentCount}\n`;
+            emailBody.value += `Assenti: ${missingCount}\n`;
+            emailBody.value += `Da verificare: ${needsCheckCount}\n\n`;
+            emailBody.value += `Prioritari: ${totalPriorityCount}\n`; // "Prioritari" si riferisce al totale di elementi con priorità
+            emailBody.value += `Assenti Prioritari: ${missingPriorityItems.length}\n`; // Numerico
+            emailBody.value += `Da verificare Prioritari: ${needsCheckPriorityItems.length}\n\n`; // Numerico
+            emailBody.value += `Messaggio personalizzato:\n`;
+
+
+            emailSubject.value = `Report Checklist Ambulanza ${formattedDateTime}`;
+        }
+        
+        /**
+         * Chiude il modale dell'email e rimuove la classe dal body.
+         */
+        function closeEmailModal() {
+            document.getElementById('emailModal').style.display = 'none';
+            document.body.classList.remove('email-modal-open'); // Rimuovi la classe dal body
+        }
+
+        /**
+         * Gestisce l'invio del report via email.
+         * Nota: Questa funzione NON invia l'email direttamente. Prepara un link mailto:
+         * che tenterà di aprire il client di posta dell'utente con i campi precompilati.
+         */
+        function sendEmailReport() {
+            // NON genera e salva il PDF qui, è già stato fatto da showEmailModal()
+            
+            const emailTo = document.getElementById('emailTo').value;
+            const emailSubject = encodeURIComponent(document.getElementById('emailSubject').value);
+            const emailBody = encodeURIComponent(document.getElementById('emailBody').value);
+            
+            // Crea il link mailto:
+            const mailtoLink = `mailto:${emailTo}?subject=${emailSubject}&body=${emailBody}`;
+            
+            // Apre il client di posta predefinito dell'utente
+            window.location.href = mailtoLink;
+
+            // Opzionale: Chiudi il modale dopo aver tentato di inviare l'email
+            // Potrebbe non essere immediato se l'utente deve interagire con il client di posta
+            // ma lo facciamo per chiudere il modal nell'interfaccia web.
+            closeEmailModal();
+        }
+
+        /**
+         * Formatta una data in una stringa leggibile per la visualizzazione.
+         * @param {Date} date - L'oggetto Date da formattare.
+         * @returns {string} La data e ora formattate localmente.
+         */
+        function formatDateTime(date) {
+            return date.toLocaleDateString('it-IT') + ' ' + date.toLocaleTimeString('it-IT');
+        }
+
+        /**
+         * Formatta una data in una stringa adatta per i nomi di file.
+         * @param {Date} date - L'oggetto Date da formattare.
+         * @returns {string} La data e ora formattate per un nome di file.
+         */
+        function formatDateTimeForFile(date) {
+            const pad = num => num.toString().padStart(2, '0');
+            return `${date.getFullYear()}${pad(date.getMonth()+1)}${pad(date.getDate())}_` +
+                   `${pad(date.getHours())}${pad(date.getMinutes())}${pad(date.getSeconds())}`;
+        }
+
+        /**
+         * Mostra un messaggio di errore nel contenitore principale.
+         * @param {string} msg - Il messaggio di errore da visualizzare.
+         */
+        function showError(msg) {
+            document.getElementById('content').innerHTML = `<div class="error">${msg}</div>`;
+        }
+    </script>
+</body>
+</html>
