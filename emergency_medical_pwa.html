@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procedure di Soccorso Medico</title>
+    <meta name="description" content="Guida alle procedure di soccorso medico di emergenza">
+    <link rel="manifest" href="data:application/json,{%22name%22:%22Procedure%20di%20Soccorso%20Medico%22,%22short_name%22:%22Soccorso%22,%22start_url%22:%22/%22,%22display%22:%22standalone%22,%22background_color%22:%22%23dc2626%22,%22theme_color%22:%22%23dc2626%22,%22icons%22:[{%22src%22:%22data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9IiNkYzI2MjYiLz4KPHBhdGggZD0iTTk2IDQ4VjE0NCIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIxNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CjxwYXRoIGQ9Ik00OCA5NkgxNDQiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMTYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4K%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22}]}">
+    <meta name="theme-color" content="#dc2626">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+        }
+
+        .header h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ef4444, #f97316);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-container {
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            border: 2px solid #475569;
+            border-radius: 12px;
+            background: rgba(30, 41, 59, 0.8);
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            opacity: 0.7;
+        }
+
+        .procedures-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .procedure-card {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .procedure-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ef4444, #f97316);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .procedure-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: #ef4444;
+        }
+
+        .procedure-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .procedure-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            color: #f1f5f9;
+            font-weight: 600;
+        }
+
+        .procedure-card p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+        }
+
+        .procedure-card .badge {
+            display: inline-block;
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .procedure-detail {
+            display: none;
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 20px;
+            border: 1px solid #334155;
+        }
+
+        .procedure-detail.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .procedure-detail h2 {
+            color: #ef4444;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            border-bottom: 2px solid #374151;
+            padding-bottom: 10px;
+        }
+
+        .procedure-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .procedure-content h3 {
+            color: #f97316;
+            margin: 25px 0 15px 0;
+            font-size: 1.3rem;
+        }
+
+        .procedure-content ul, .procedure-content ol {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        .procedure-content li {
+            margin: 8px 0;
+            color: #e2e8f0;
+        }
+
+        .procedure-content strong {
+            color: #fbbf24;
+        }
+
+        .back-button {
+            background: linear-gradient(45deg, #ef4444, #f97316);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .offline-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #059669;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            z-index: 1000;
+            display: none;
+        }
+
+        .offline-indicator.offline {
+            background: #dc2626;
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .procedures-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .procedure-card {
+                padding: 20px;
+            }
+        }
+
+        .emergency-banner {
+            background: linear-gradient(45deg, #dc2626, #b91c1c);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #334155;
+            border-top: 2px solid #ef4444;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-indicator" id="offlineIndicator">
+        📱 Modalità Offline Attiva
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🚑 Procedure di Soccorso</h1>
+            <p>Guida rapida alle procedure mediche di emergenza - Sempre disponibile offline</p>
+        </div>
+
+        <div class="emergency-banner">
+            ⚠️ ATTENZIONE: Questa guida è per personale formato. In caso di emergenza chiamare sempre 118/112
+        </div>
+
+        <div id="mainView">
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="Cerca una procedura..." autocomplete="off">
+                <svg class="search-icon" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+                </svg>
+            </div>
+
+            <div class="procedures-grid" id="proceduresGrid">
+                <div class="loading">Caricamento procedure in corso...</div>
+            </div>
+        </div>
+
+        <div id="procedureView" class="procedure-detail">
+            <button class="back-button" onclick="showMainView()">← Torna alle Procedure</button>
+            <div id="procedureContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Dati delle procedure (basati sulle informazioni fornite)
+        const procedures = [
+            {
+                id: 'rcp-adulto',
+                title: 'RCP ad 1 soccorritore AED Adulto',
+                category: 'Rianimazione',
+                description: 'Procedura completa per la rianimazione cardiopolmonare su paziente adulto con defibrillatore',
+                content: `
+                    <h2>RCP ad 1 soccorritore AED Adulto</h2>
+                    <h3>Valutazione della scena</h3>
+                    <ul>
+                        <li>Verificare la sicurezza dell'ambiente</li>
+                        <li>Utilizzare dispositivi di protezione individuale</li>
+                        <li>Valutare lo stato di coscienza del paziente</li>
+                    </ul>
+                    
+                    <h3>Sequenza RCP</h3>
+                    <ol>
+                        <li><strong>Posizionamento:</strong> Paziente supino su superficie rigida</li>
+                        <li><strong>Compressioni:</strong> 
+                            <ul>
+                                <li>Centro del torace, tra i capezzoli</li>
+                                <li>Profondità: 5-6 cm</li>
+                                <li>Frequenza: 100-120/min</li>
+                                <li>Permettere completo rilasciamento</li>
+                            </ul>
+                        </li>
+                        <li><strong>Ventilazioni:</strong>
+                            <ul>
+                                <li>Iperestensione del capo</li>
+                                <li>2 ventilazioni efficaci</li>
+                                <li>Durata 1 secondo ciascuna</li>
+                            </ul>
+                        </li>
+                        <li><strong>Rapporto:</strong> 30 compressioni : 2 ventilazioni</li>
+                    </ol>
+
+                    <h3>Utilizzo AED</h3>
+                    <ol>
+                        <li>Accendere il defibrillatore</li>
+                        <li>Posizionare le piastre come da schema</li>
+                        <li>Seguire le istruzioni vocali</li>
+                        <li>Assicurarsi che nessuno tocchi il paziente durante l'analisi</li>
+                        <li>Se consigliato, erogare la scarica</li>
+                        <li>Riprendere immediatamente la RCP</li>
+                    </ol>
+
+                    <h3>Criteri di interruzione</h3>
+                    <ul>
+                        <li>Arrivo del personale medico avanzato</li>
+                        <li>Ripresa della circolazione spontanea</li>
+                        <li>Esaurimento fisico del soccorritore</li>
+                    </ul>
+                `
+            },
+            {
+                id: 'rimozione-casco',
+                title: 'Rimozione del casco',
+                category: 'Trauma',
+                description: 'Procedura per la rimozione sicura del casco in caso di trauma',
+                content: `
+                    <h2>Rimozione del casco</h2>
+                    <h3>Indicazioni</h3>
+                    <ul>
+                        <li>Paziente incosciente</li>
+                        <li>Compromissione delle vie aeree</li>
+                        <li>Necessità di ventilazione assistita</li>
+                        <li>Casco danneggiato</li>
+                    </ul>
+
+                    <h3>Tecnica a 2 operatori</h3>
+                    <ol>
+                        <li><strong>Operatore 1 (alla testa):</strong>
+                            <ul>
+                                <li>Stabilizzare il capo e il collo</li>
+                                <li>Sganciare o tagliare il sottogola</li>
+                                <li>Posizionare le mani ai lati del casco</li>
+                            </ul>
+                        </li>
+                        <li><strong>Operatore 2:</strong>
+                            <ul>
+                                <li>Mantenere l'immobilizzazione cervicale</li>
+                                <li>Una mano sulla mandibola, l'altra sull'occipite</li>
+                            </ul>
+                        </li>
+                        <li><strong>Rimozione:</strong>
+                            <ul>
+                                <li>Espandere delicatamente il casco</li>
+                                <li>Movimento di rotazione verso l'alto</li>
+                                <li>Prestare attenzione al naso e alle orecchie</li>
+                            </ul>
+                        </li>
+                        <li><strong>Completamento:</strong>
+                            <ul>
+                                <li>Applicare collare cervicale</li>
+                                <li>Mantenere allineamento testa-collo-tronco</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <h3>Attenzioni particolari</h3>
+                    <ul>
+                        <li>Non rimuovere se il casco è stabile e non compromette le funzioni vitali</li>
+                        <li>Prestare attenzione a caschi integrali</li>
+                        <li>Monitorare costantemente le vie aeree</li>
+                    </ul>
+                `
+            },
+            {
+                id: 'log-roll',
+                title: 'Log roll',
+                category: 'Immobilizzazione',
+                description: 'Tecnica per il rotolamento del paziente mantenendo l\'allineamento spinale',
+                content: `
+                    <h2>Log roll</h2>
+                    <h3>Indicazioni</h3>
+                    <ul>
+                        <li>Sospetto di lesione spinale</li>
+                        <li>Necessità di posizionamento su spinale</li>
+                        <li>Valutazione del dorso</li>
+                        <li>Liberazione delle vie aeree</li>
+                    </ul>
+
+                    <h3>Tecnica a 4 operatori</h3>
+                    <ol>
+                        <li><strong>Operatore 1 (capo-squadra):</strong>
+                            <ul>
+                                <li>Posizione alla testa</li>
+                                <li>Immobilizzazione cervicale manuale</li>
+                                <li>Controllo di tutto il movimento</li>
+                                <li>Comandi verbali</li>
+                            </ul>
+                        </li>
+                        <li><strong>Operatore 2:</strong>
+                            <ul>
+                                <li>Spalla e braccio</li>
+                                <li>Parte superiore del torace</li>
+                            </ul>
+                        </li>
+                        <li><strong>Operatore 3:</strong>
+                            <ul>
+                                <li>Bacino e parte inferiore del torace</li>
+                                <li>Mantenere allineamento</li>
+                            </ul>
+                        </li>
+                        <li><strong>Operatore 4:</strong>
+                            <ul>
+                                <li>Gambe e piedi</li>
+                                <li>Posizionamento della spinale</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <h3>Sequenza operativa</h3>
+                    <ol>
+                        <li>Posizionamento coordinato degli operatori</li>
+                        <li>Comando: "Pronti... VIA"</li>
+                        <li>Rotolamento lento e controllato</li>
+                        <li>Mantenimento dell'allineamento testa-collo-tronco</li>
+                        <li>Rotazione di 90° o completa secondo necessità</li>
+                        <li>Posizionamento della spinale</li>
+                        <li>Rotolamento di ritorno</li>
+                    </ol>
+                `
+            },
+            {
+                id: 'immobilizzazione-spinale',
+                title: 'Immobilizzazione su spinale',
+                category: 'Immobilizzazione',
+                description: 'Procedura completa per l\'immobilizzazione del paziente su tavola spinale',
+                content: `
+                    <h2>Immobilizzazione su spinale</h2>
+                    <h3>Indicazioni</h3>
+                    <ul>
+                        <li>Trauma con meccanismo significativo</li>
+                        <li>Sospetto di lesione spinale</li>
+                        <li>Paziente incosciente post-trauma</li>
+                        <li>Deficit neurologici</li>
+                    </ul>
+
+                    <h3>Materiali necessari</h3>
+                    <ul>
+                        <li>Tavola spinale</li>
+                        <li>Collare cervicale</li>
+                        <li>Immobilizzatore laterale del capo</li>
+                        <li>Cinghie di fissaggio</li>
+                        <li>Materiali di imbottitura</li>
+                    </ul>
+
+                    <h3>Sequenza operativa</h3>
+                    <ol>
+                        <li><strong>Preparazione:</strong>
+                            <ul>
+                                <li>Posizionare la spinale accanto al paziente</li>
+                                <li>Preparare tutto il materiale</li>
+                                <li>Coordinare il team</li>
+                            </ul>
+                        </li>
+                        <li><strong>Posizionamento:</strong>
+                            <ul>
+                                <li>Log roll con posizionamento della spinale</li>
+                                <li>Centrare il paziente sulla tavola</li>
+                                <li>Allineamento testa-collo-tronco</li>
+                            </ul>
+                        </li>
+                        <li><strong>Fissaggio:</strong>
+                            <ul>
+                                <li>Cinghie sul torace (sotto le ascelle)</li>
+                                <li>Cinghie sul bacino</li>
+                                <li>Cinghie sulle gambe</li>
+                                <li>Immobilizzatore laterale del capo</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <h3>Controlli finali</h3>
+                    <ul>
+                        <li>Verifica della stabilità dell'immobilizzazione</li>
+                        <li>Controllo della circolazione periferica</li>
+                        <li>Accessibilità delle vie aeree</li>
+                        <li>Comfort del paziente</li>
+                    </ul>
+                `
+            },
+            {
+                id: 'trauma-estricatore-ked',
+                title: 'Trauma estricatore (KED)',
+                category: 'Estricazione',
+                description: 'Utilizzo del dispositivo KED per l\'estricazione da veicoli',
+                content: `
+                    <h2>Trauma estricatore (KED)</h2>
+                    <h3>Indicazioni</h3>
+                    <ul>
+                        <li>Paziente seduto in veicolo</li>
+                        <li>Sospetto di lesione spinale</li>
+                        <li>Necessità di estricazione controllata</li>
+                        <li>Spazio limitato per manovre</li>
+                    </ul>
+
+                    <h3>Componenti del KED</h3>
+                    <ul>
+                        <li>Schienale rigido</li>
+                        <li>Cinghie di fissaggio</li>
+                        <li>Immobilizzatore laterale del capo</li>
+                        <li>Cinghie per gli arti inferiori</li>
+                    </ul>
+
+                    <h3>Tecnica di applicazione</h3>
+                    <ol>
+                        <li><strong>Preparazione:</strong>
+                            <ul>
+                                <li>Immobilizzazione cervicale manuale</li>
+                                <li>Valutazione dell'accesso</li>
+                                <li>Preparazione del KED</li>
+                            </ul>
+                        </li>
+                        <li><strong>Posizionamento:</strong>
+                            <ul>
+                                <li>Inserire il KED dietro il paziente</li>
+                                <li>Centrare rispetto al tronco</li>
+                                <li>Mantenere l'immobilizzazione cervicale</li>
+                            </ul>
+                        </li>
+                        <li><strong>Fissaggio:</strong>
+                            <ul>
+                                <li>Cinghie del torace (prima quella inferiore)</li>
+                                <li>Cinghie inguinali</li>
+                                <li>Immobilizzatore del capo</li>
+                                <li>Cinghie della fronte e del mento</li>
+                            </ul>
+                        </li>
+                        <li><strong>Estricazione:</strong>
+                            <ul>
+                                <li>Rotazione del paziente</li>
+                                <li>Movimento controllato</li>
+                                <li>Trasferimento su spinale</li>
+                            </ul>
+                        </li>
+                    </ol>
+                `
+            },
+            {
+                id: 'barella-cucchiaio',
+                title: 'Caricamento su barella a cucchiaio',
+                category: 'Trasporto',
+                description: 'Tecnica per il caricamento del paziente su barella a cucchiaio',
+                content: `
+                    <h2>Caricamento su barella a cucchiaio</h2>
+                    <h3>Vantaggi della barella a cucchiaio</h3>
+                    <ul>
+                        <li>Minimo movimento del paziente</li>
+                        <li>Ideale per traumi spinali</li>
+                        <li>Accesso facilitato in spazi ristretti</li>
+                        <li>Riduzione del rischio per gli operatori</li>
+                    </ul>
+
+                    <h3>Preparazione</h3>
+                    <ol>
+                        <li><strong>Regolazione:</strong>
+                            <ul>
+                                <li>Estendere la barella alla lunghezza del paziente</li>
+                                <li>Verificare il corretto funzionamento delle chiusure</li>
+                                <li>Controllare l'integrità della struttura</li>
+                            </ul>
+                        </li>
+                        <li><strong>Posizionamento:</strong>
+                            <ul>
+                                <li>Immobilizzazione cervicale manuale</li>
+                                <li>Separare le due metà della barella</li>
+                                <li>Posizionare ai lati del paziente</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <h3>Tecnica di caricamento</h3>
+                    <ol>
+                        <li><strong>Inserimento:</strong>
+                            <ul>
+                                <li>Inserire delicatamente le pale sotto il paziente</li>
+                                <li>Minimizzare il movimento laterale</li>
+                                <li>Progressione graduale</li>
+                            </ul>
+                        </li>
+                        <li><strong>Chiusura:</strong>
+                            <ul>
+                                <li>Ricongiungere le due metà</li>
+                                <li>Verificare l'aggancio sicuro</li>
+                                <li>Controllo della stabilità</li>
+                            </ul>
+                        </li>
+                        <li><strong>Fissaggio:</strong>
+                            <ul>
+                                <li>Applicare le cinghie di sicurezza</li>
+                                <li>Verificare il comfort del paziente</li>
+                                <li>Preparare per il trasporto</li>
+                            </ul>
+                        </li>
+                    </ol>
+                `
+            },
+            {
+                id: 'abbattimento-spinale',
+                title: 'Tecnica abbattimento su spinale',
+                category: 'Immobilizzazione',
+                description: 'Procedura per l\'abbattimento del paziente in piedi su tavola spinale',
+                content: `
+                    <h2>Tecnica abbattimento su spinale</h2>
+                    <h3>Indicazioni</h3>
+                    <ul>
+                        <li>Paziente in piedi con sospetto trauma spinale</li>
+                        <li>Paziente cosciente e collaborante</li>
+                        <li>Impossibilità di far sedere il paziente</li>
+                        <li>Necessità di immobilizzazione rapida</li>
+                    </ul>
+
+                    <h3>Tecnica a 3 operatori</h3>
+                    <ol>
+                        <li><strong>Operatore 1 (capo-squadra):</strong>
+                            <ul>
+                                <li>Immobilizzazione cervicale da dietro</li>
+                                <li>Controllo dell'operazione</li>
+                                <li>Comandi verbali</li>
+                            </ul>
+                        </li>
+                        <li><strong>Operatore 2:</strong>
+                            <ul>
+                                <li>Posizionamento della spinale dietro il paziente</li>
+                                <li>Supporto laterale durante l'abbattimento</li>
+                            </ul>
+                        </li>
+                        <li><strong>Operatore 3:</strong>
+                            <ul>
+                                <li>Controllo degli arti inferiori</li>
+                                <li>Assistenza nell'abbattimento</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <h3>Sequenza operativa</h3>
+                    <ol>
+                        <li>Applicazione del collare cervicale</li>
+                        <li>Posizionamento della spinale</li>
+                        <li>Immobilizzazione cervicale manuale</li>
+                        <li>Abbattimento controllato e graduale</li>
+                        <li>Mantenimento dell'allineamento</li>
+                        <li>Fissaggio con cinghie</li>
+                    </ol>
+                `
+            },
+            {
+                id: 'collare-monopezzo',
+                title: 'Collare cervicale monopezzo',
+                category: 'Immobilizzazione',
+                description: 'Applicazione del collare cervicale monopezzo',
+                content: `
+                    <h2>Collare cervicale monopezzo</h2>
+                    <h3>Indicazioni</h3>
+                    <ul>
+                        <li>Sospetto di lesione cervicale</li>
+                        <li>Trauma con meccanismo significativo</li>
+                        <li>Dolore cervicale post-trauma</li>
+                        <li>Deficit neurologici</li>
+                    </ul>
+
+                    <h3>Misurazione</h3>
+                    <ol>
+                        <li>Misurare la distanza tra trapezio e mandibola</li>
+                        <li>Confrontare con le misure del collare</li>
+                        <li>Scegliere la taglia appropriata</li>
+                        <li>Verificare che il mento poggi correttamente</li>
+                    </ol>
+
+                    <h3>Tecnica di applicazione</h3>
+                    <ol>
+                        <li><strong>Preparazione:</strong>
+                            <ul>
+                                <li>Mantenere immobilizzazione cervicale manuale</li>
+                                <li>Preparare il collare della taglia corretta</li>
+                                <li>Posizionarsi lateralmente al paziente</li>
+                            </ul>
+                        </li>
+                        <li><strong>Posizionamento:</strong>
+                            <ul>
+                                <li>Inserire la parte posteriore sotto il collo</li>
+                                <li>Avvolgere la parte anteriore</li>
+                                <li>Centrare rispetto al collo</li>
+                            </ul>
+                        </li>
+                        <li><strong>Fissaggio:</strong>
+                            <ul>
+                                <li>Chiudere il velcro saldamente</li>
+                                <li>Verificare che non sia troppo stretto</li>
+                                <li>Controllare il polso carotideo</li>
+                            </ul>
+                        </li>
+                    </ol>
+                `
+            },
+            {
+                id: 'collare-due-pezzi',
+                title: 'Collare cervicale a due pezzi',
+                category: 'Immobilizzazione',
+                description: 'Applicazione del collare cervicale a due pezzi',
+                content: `
+                    <h2>Collare cervicale a due pezzi</h2>
+                    <h3>Vantaggi</h3>
+                    <ul>
+                        <li>Maggiore stabilità</li>
+                        <li>Migliore distribuzione della pressione</li>
+                        <li>Adattabilità a diverse anatomie</li>
+                        <li>Facilità di applicazione</li>
+                    </ul>
+
+                    <h3>Tecnica a 2 operatori</h3>
+                    <ol>
+                        <li><strong>Operatore 1:</strong>
+                            <ul>
+                                <li>Immobilizzazione cervicale manuale</li>
+                                <li>Mantenimento della posizione neutra</li>
+                                <li>Controllo durante l'applicazione</li>
+                            </ul>
+                        </li>
+                        <li><strong>Operatore 2:</strong>
+                            <ul>
+                                <li>Misurazione e preparazione del collare</li>
+                                <li>Applicazione del pezzo posteriore</li>
+                                <li>Posizionamento del pezzo anteriore</li>
+                                <li>Fissaggio finale</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <h3>Sequenza di applicazione</h3>
+                    <ol>
+                        <li>Posizionare il pezzo posteriore sotto il collo</li>
+                        <li>Centrare rispetto alla colonna cervicale</li>
+                        <li>Applicare il pezzo anteriore</li>
+                        <li>Verificare l'allineamento</li>
+                        <li>Fissare con i sistemi di chiusura</li>
+                        <li>Controllo finale della stabilità</li>
+                    </ol>
+                `
+            },
+            {
+                id: 'posizione-laterale-sicurezza',
+                title: 'Posizione laterale di sicurezza',
+                category: 'Gestione vie aeree',
+                description: 'Posizionamento in posizione laterale di sicurezza',
+                content: `
+                    <h2>Posizione laterale di sicurezza</h2>
+                    <h3>Indicazioni</h3>
+                    <ul>
+                        <li>Paziente incosciente che respira</li>
+                        <li>Rischio di aspirazione</li>
+                        <li>Vomito o secrezioni abbondanti</li>
+                        <li>Perdita dei riflessi protettivi</li>
+                    </ul>
+
+                    <h3>Controindicazioni</h3>
+                    <ul>
+                        <li>Sospetto di trauma spinale</li>
+                        <li>Trauma toracico grave</li>
+                        <li>Fratture evidenti degli arti</li>
+                        <li>Paziente in arresto cardiaco</li>
+                    </ul>
+
+                    <h3>Tecnica di posizionamento</h3>
+                    <ol>
+                        <li><strong>Preparazione:</strong>
+                            <ul>
+                                <li>Paziente supino su superficie piana</li>
+                                <li>Raddrizzare le gambe</li>
+                                <li>Posizionare le braccia lungo i fianchi</li>
+                            </ul>
+                        </li>
+                        <li><strong>Posizionamento braccia:</strong>
+                            <ul>
+                                <li>Braccio vicino a 90° rispetto al corpo</li>
+                                <li>Palmo verso l'alto</li>
+                                <li>Braccio lontano sul petto</li>
+                            </ul>
+                        </li>
+                        <li><strong>Rotazione:</strong>
+                            <ul>
+                                <li>Afferrare la gamba lontana</li>
+                                <li>Tirare verso di sé</li>
+                                <li>Controllare la testa durante la rotazione</li>
+                            </ul>
+                        </li>
+                        <li><strong>Posizione finale:</strong>
+                            <ul>
+                                <li>Testa inclinata all'indietro</li>
+                                <li>Bocca rivolta verso il basso</li>
+                                <li>Gamba superiore flessa a 90°</li>
+                                <li>Controllo continuo della respirazione</li>
+                            </ul>
+                        </li>
+                    </ol>
+                `
+            },
+            {
+                id: 'ponte-olandese',
+                title: 'Ponte olandese',
+                category: 'Trasporto',
+                description: 'Tecnica di sollevamento e trasporto del paziente',
+                content: `
+                    <h2>Ponte olandese</h2>
+                    <h3>Indicazioni</h3>
+                    <ul>
+                        <li>Trasporto di paziente senza sospetto trauma spinale</li>
+                        <li>Spostamento da letto a barella</li>
+                        <li>Spazi ristretti senza possibilità di ausili</li>
+                        <li>Paziente collaborante o incosciente stabile</li>
+                    </ul>
+
+                    <h3>Tecnica a 4 operatori</h3>
+                    <ol>
+                        <li><strong>Operatore 1 (testa):</strong>
+                            <ul>
+                                <li>Supporto di testa e collo</li>
+                                <li>Controllo delle vie aeree</li>
+                                <li>Coordinamento dell'operazione</li>
+                            </ul>
+                        </li>
+                        <li><strong>Operatore 2 (torace):</strong>
+                            <ul>
+                                <li>Supporto di torace e spalle</li>
+                                <li>Una mano sotto le spalle</li>
+                                <li>Una mano sotto la parte superiore del dorso</li>
+                            </ul>
+                        </li>
+                        <li><strong>Operatore 3 (bacino):</strong>
+                            <ul>
+                                <li>Supporto di bacino e parte inferiore del dorso</li>
+                                <li>Mantenimento dell'allineamento</li>
+                            </ul>
+                        </li>
+                        <li><strong>Operatore 4 (gambe):</strong>
+                            <ul>
+                                <li>Supporto di gambe e piedi</li>
+                                <li>Controllo degli arti inferiori</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <h3>Sequenza operativa</h3>
+                    <ol>
+                        <li>Posizionamento coordinato degli operatori</li>
+                        <li>Inserimento delle mani sotto il paziente</li>
+                        <li>Comando "Pronti... sollevare"</li>
+                        <li>Sollevamento sincrono e controllato</li>
+                        <li>Spostamento laterale</li>
+                        <li>Deposizione delicata</li>
+                    </ol>
+
+                    <h3>Precauzioni</h3>
+                    <ul>
+                        <li>Non utilizzare in caso di sospetto trauma spinale</li>
+                        <li>Attenzione ai tubi e ai cavi</li>
+                        <li>Comunicazione costante tra operatori</li>
+                        <li>Valutazione del peso del paziente</li>
+                    </ul>
+                `
+            }
+        ];
+
+        let currentView = 'main';
+        let filteredProcedures = procedures;
+
+        // Service Worker registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:application/javascript;base64,' + btoa(`
+                const CACHE_NAME = 'emergency-procedures-v1';
+                const urlsToCache = ['/'];
+                
+                self.addEventListener('install', event => {
+                    event.waitUntil(
+                        caches.open(CACHE_NAME)
+                            .then(cache => cache.addAll(urlsToCache))
+                    );
+                });
+                
+                self.addEventListener('fetch', event => {
+                    event.respondWith(
+                        caches.match(event.request)
+                            .then(response => response || fetch(event.request))
+                    );
+                });
+            `))
+            .then(() => console.log('Service Worker registrato'))
+            .catch(err => console.log('Service Worker registration failed'));
+        }
+
+        // Offline detection
+        function updateOnlineStatus() {
+            const indicator = document.getElementById('offlineIndicator');
+            if (!navigator.onLine) {
+                indicator.classList.add('offline');
+                indicator.textContent = '📱 Modalità Offline Attiva';
+            } else {
+                indicator.classList.remove('offline');
+            }
+        }
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+        updateOnlineStatus();
+
+        // Initialize app
+        function initializeApp() {
+            renderProcedures();
+            setupSearch();
+            console.log('PWA Procedure di Soccorso inizializzata');
+        }
+
+        // Render procedures grid
+        function renderProcedures() {
+            const grid = document.getElementById('proceduresGrid');
+            
+            if (filteredProcedures.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #94a3b8;">
+                        <h3>Nessuna procedura trovata</h3>
+                        <p>Prova a modificare i termini di ricerca</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filteredProcedures.map(procedure => `
+                <div class="procedure-card" onclick="showProcedure('${procedure.id}')">
+                    <div class="badge">${procedure.category}</div>
+                    <h3>${procedure.title}</h3>
+                    <p>${procedure.description}</p>
+                </div>
+            `).join('');
+        }
+
+        // Search functionality
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                
+                filteredProcedures = procedures.filter(procedure => 
+                    procedure.title.toLowerCase().includes(searchTerm) ||
+                    procedure.description.toLowerCase().includes(searchTerm) ||
+                    procedure.category.toLowerCase().includes(searchTerm)
+                );
+                
+                renderProcedures();
+            });
+
+            // Clear search on escape
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    e.target.value = '';
+                    filteredProcedures = procedures;
+                    renderProcedures();
+                }
+            });
+        }
+
+        // Show specific procedure
+        function showProcedure(procedureId) {
+            const procedure = procedures.find(p => p.id === procedureId);
+            if (!procedure) return;
+
+            const content = document.getElementById('procedureContent');
+            content.innerHTML = procedure.content;
+
+            document.getElementById('mainView').style.display = 'none';
+            document.getElementById('procedureView').style.display = 'block';
+            
+            currentView = 'procedure';
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Show main view
+        function showMainView() {
+            document.getElementById('mainView').style.display = 'block';
+            document.getElementById('procedureView').style.display = 'none';
+            currentView = 'main';
+            
+            // Clear search
+            document.getElementById('searchInput').value = '';
+            filteredProcedures = procedures;
+            renderProcedures();
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && currentView === 'procedure') {
+                showMainView();
+            }
+        });
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+        // Global functions for HTML onclick
+        window.showProcedure = showProcedure;
+        window.showMainView = showMainView;
+    </script>
+</body>
+</html>
