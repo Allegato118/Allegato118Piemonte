@@ -7,3 +7,13 @@
 - <a href="https://allegato118.github.io/Allegato118Piemonte/SLIDESCGA202502" target="_blank">Slide CGA 202502</a>
 - <a href="https://allegato118.github.io/Allegato118Piemonte/Index_V5_ProblemaEDGE_iOS_V3.html" target="_blank">Check List Dino - 406</a>
 - <a href="https://allegato118.github.io/Allegato118Piemonte/emergency_medical_pwa.html" target="_blank">Procedure NON UFFICIALI - Utilizzare solo come promemoria</a>
+
+
+# ALTRO Materiale per "Aspiranti Allegati 118 Piemonte"
+
+- <a href="https://www.youtube.com/watch?v=pAIEK-jAA-8" target="_blank">Primo soccorso - RAUTEK</a>
+- <a href="https://www.youtube.com/watch?v=GRlGolQG9lM" target="_blank">Primo soccorso - RIMOZIONE CASCO</a>
+- <a href="https://www.youtube.com/watch?v=qr9eHvVuhRg" target="_blank">Primo soccorso - PRONOSUPINAZIONE SU SPINALE</a>
+- <a href="https://www.youtube.com/watch?v=-e1fZq2Scuo&ab_channel=GIOVANNIDALAIDI" target="_blank">Primo soccorso - ABBATTIMENTO SU SPINALE</a>
+- <a href="https://www.youtube.com/watch?v=9r6ZbkZpGWg&ab_channel=anpaspiemonte" target="_blank">ANPAS - Primo soccorso - Uso del Ked</a>
+- <a href="https://www.youtube.com/watch?v=kHY97vQ7mk4&ab_channel=TizianoServizieFormazione" target="_blank">ANPAS - Primo soccorso - LOG ROLL ED ESTRAZIONE DEL CASCO</a>
