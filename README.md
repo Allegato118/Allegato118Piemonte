@@ -14,7 +14,7 @@
 - <a href="https://www.youtube.com/watch?v=e75JA3sviVo&t=7s&ab_channel=S.O.SSona" target="_blank">ANPAS - Primo soccorso - ABCDE - Versione didattica</a>
 - <a href="https://www.youtube.com/watch?v=xegmdf7DVN8&ab_channel=INFERMIERIOnline" target="_blank">COME VALUTARE UN PAZIENTE? LA VALUTAZIONE ABCDE su paziente non traumatizzato | INFERMIERI Online</a>
 - <a href="https://www.youtube.com/watch?v=g3Hg8TkDSTs&t=424s&ab_channel=CLANHIKE2ME-ToscanacciinCammino" target="_blank">BLSD Basic Life Support Defibrillation | La procedura che può salvare una vita</a>
-- <a href="[https://www.youtube.com/watch?v=xegmdf7DVN8&ab_channel=INFERMIERIOnline](https://www.youtube.com/watch?v=XQlbSb-HgkE&ab_channel=CSEFormazione)" target="_blank">Da ABC a CAB</a>
+- <a href="https://www.youtube.com/watch?v=xegmdf7DVN8&ab_channel=INFERMIERIOnline](https://www.youtube.com/watch?v=XQlbSb-HgkE&ab_channel=CSEFormazione)" target="_blank">Da ABC a CAB</a>
 
 # ALTRO Materiale - Estricazione"
 - <a href="https://www.youtube.com/watch?v=pAIEK-jAA-8" target="_blank">Primo soccorso - Manovra di RAUTEK</a>
