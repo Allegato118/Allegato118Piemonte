@@ -10,7 +10,7 @@
 
 
 # ALTRO Materiale VIDEO
-# NON CERTFICATO -  NON UFFICIALE -  NON CERTFICATO
+# NON CERTIFICATO -  NON UFFICIALE -  NON CERTIFICATO
 # VIDEO - ABCDE"
 - <a href="https://www.youtube.com/watch?v=e75JA3sviVo&t=7s&ab_channel=S.O.SSona" target="_blank">ANPAS - Primo soccorso - ABCDE - Versione didattica</a>
 - <a href="https://www.youtube.com/watch?v=xegmdf7DVN8&ab_channel=INFERMIERIOnline" target="_blank">COME VALUTARE UN PAZIENTE? LA VALUTAZIONE ABCDE su paziente non traumatizzato | INFERMIERI Online</a>
