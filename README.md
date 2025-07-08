@@ -3,7 +3,8 @@
 # • Corso Aspiranti Allegati 118 Piemonte - CGA Feb2025
 
 - <a href="https://allegato118.github.io/Allegato118Piemonte/Codici.jpeg" target="_blank">Codici Intervento</a>
-- <a href="https://allegato118.github.io/Allegato118Piemonte/main2" target="_blank">Main (pagina principale)</a>  
+- <a href="https://allegato118.github.io/Allegato118Piemonte/main2" target="_blank">Main (pagina principale)</a>
+- <a href="https://allegato118.github.io/Allegato118Piemonte/ValutazioneStatoCoscienza.jpg" target="_blank">Valutazione Stato Coscienza</a>  
 - <a href="https://allegato118.github.io/Allegato118Piemonte/BIGNAMISANTO" target="_blank">Bignami Santo</a>  
 - <a href="https://allegato118.github.io/Allegato118Piemonte/SLIDESCGA202502" target="_blank">Slide CGA 202502</a>
 - <a href="https://allegato118.github.io/Allegato118Piemonte/Index_V5_ProblemaEDGE_iOS_V3.html" target="_blank">Check List Dino - 406</a>
