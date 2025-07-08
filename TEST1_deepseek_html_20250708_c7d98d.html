@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulazione Esame Primo Soccorso</title>
+    <meta name="description" content="Simulatore di esame teorico per volontari del soccorso">
+    <meta name="theme-color" content="#317EFB"/>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 4px solid #3498db;
+        }
+        .options {
+            margin: 10px 0;
+        }
+        .option {
+            margin: 8px 0;
+            padding: 8px;
+            background: #eee;
+            border-radius: 4px;
+        }
+        .option input {
+            margin-right: 10px;
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+        .progress {
+            margin: 20px 0;
+            height: 10px;
+            background: #ecf0f1;
+            border-radius: 5px;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #2ecc71;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+        .result-item {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+        .correct {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        .incorrect {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+        .score {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .pass {
+            color: #28a745;
+        }
+        .fail {
+            color: #dc3545;
+        }
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e7f5fe;
+            border-left: 4px solid #17a2b8;
+        }
+        .install-btn {
+            background: #2ecc71;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            .question {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button id="installBtn" class="install-btn" style="display: none;">Installa App</button>
+        <h1>Simulazione Prova Teorica Esame</h1>
+        <p>Rispondi a tutte le domande selezionando una sola risposta per ciascuna.</p>
+        
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <div id="quizContainer">
+            <!-- Questions will be inserted here by JavaScript -->
+        </div>
+        
+        <div class="navigation">
+            <button id="prevBtn" disabled>Precedente</button>
+            <button id="nextBtn">Prossima</button>
+            <button id="submitBtn" style="display: none;">Consegna</button>
+        </div>
+        
+        <div id="results" class="results">
+            <h2>Risultati del Test</h2>
+            <div class="score" id="scoreDisplay"></div>
+            <div class="feedback" id="generalFeedback"></div>
+            <div id="detailedResults"></div>
+        </div>
+    </div>
+
+    <script>
+        // Quiz data from the PDF - all 40 questions
+        const quizData = [
+            {
+                question: "1) I capillari sono:",
+                options: [
+                    "A) grossi vasi sanguigni che portano sangue dal cuore verso la periferia",
+                    "B) le diramazioni terminali delle vene o delle arterie",
+                    "C) piccoli vasi sanguigni che si trovano solamente nella cute",
+                    "D) piccoli vasi sanguigni che portano sangue dalla periferia verso il cuore"
+                ],
+                correctAnswer: 1,
+                explanation: "I capillari sono le diramazioni terminali delle vene o delle arterie, dove avviene lo scambio di sostanze tra sangue e tessuti."
+            },
+            {
+                question: "2) Fare l'AVPU vuol dire valutare:",
+                options: [
+                    "A) A = vie aeree, V = ventilazione, P = risposta al dolore (pain), U = non risponde (unresponsive)",
+                    "B) A = vie aeree, V = valutare la coscienza, P = parlare al paziente, U = dare uno stimolo",
+                    "C) A = coscienza e vigilanza, V = reazione agli stimoli verbali, P = reazione al dolore, U = nessuna risposta",
+                    "D) A = attento, B = vocalizza, P = parla, U = non risponde"
+                ],
+                correctAnswer: 2,
+                explanation: "AVPU è un metodo per valutare il livello di coscienza: A = Alert (vigile), V = Verbal (risposta a stimoli verbali), P = Pain (risposta a stimoli dolorosi), U = Unresponsive (nessuna risposta)."
+            },
+            {
+                question: "3) Quale dei seguenti è un segno di trauma cranico con danno cerebrale:",
+                options: [
+                    "A) alterazione dello stato mentale",
+                    "B) vomito violento ed improvviso",
+                    "C) differenza tra i diametri pupillari (anisocoria)",
+                    "D) tutti i precedenti"
+                ],
+                correctAnswer: 3,
+                explanation: "Tutti i sintomi elencati (alterazione dello stato mentale, vomito improvviso, anisocoria) possono indicare un trauma cranico con danno cerebrale."
+            },
+            {
+                question: "4) La 'regola del nove' è un metodo per:",
+                options: [
+                    "A) valutare la presenza di bolle d'aria nel sangue",
+                    "B) valutare se immobilizzare la colonna cervicale con collare in caso di sospetto trauma",
+                    "C) determinare in percentuale l'estensione di un'ustione",
+                    "D) controllare lo stato di reazione di un soggetto all'ambiente esterno"
+                ],
+                correctAnswer: 2,
+                explanation: "La regola del nove serve a stimare l'estensione delle ustioni dividendo il corpo in aree che rappresentano il 9% o multipli del 9% della superficie corporea totale."
+            },
+            {
+                question: "5) Il codice d'intervento alfanumerico fornisce informazioni in sequenza relative a:",
+                options: [
+                    "A) criticità dell'evento, età del soggetto infortunato, località",
+                    "B) grado di priorità del servizio, patologia riscontrata, luogo dell'evento",
+                    "C) criticità del paziente o dell'evento, patologia presunta, luogo dell'evento",
+                    "D) numero di persone coinvolte, patologia presunta, località"
+                ],
+                correctAnswer: 2,
+                explanation: "Il codice alfanumerico fornisce informazioni su: criticità del paziente/evento, patologia presunta e luogo dell'evento."
+            },
+            {
+                question: "6) Nella 'catena della sopravvivenza':",
+                options: [
+                    "A) il Volontario Soccorritore non interviene in nessun anello",
+                    "B) vi sono 'anelli' più importanti ed altri più deboli",
+                    "C) il 4° 'anello' è il più importante perché comprende le manovre di rianimazione avanzate",
+                    "D) tutti gli 'anelli' hanno uguale importanza per il raggiungimento del risultato"
+                ],
+                correctAnswer: 3,
+                explanation: "Nella catena della sopravvivenza tutti gli anelli sono ugualmente importanti perché la rottura di uno solo compromette l'intera catena."
+            },
+            {
+                question: "7) Per lussazione si intende:",
+                options: [
+                    "A) quando il capo articolare, uscito dall'articolazione, rientra spontaneamente nella sua sede naturale",
+                    "B) la frattura di un osso in cui i monconi ossei rispettano l'asse anatomico",
+                    "C) la frattura di un osso in cui i monconi sono a contatto con l'ambiente",
+                    "D) quando il capo articolare, uscito dall'articolazione, non rientra spontaneamente nella sua sede naturale"
+                ],
+                correctAnswer: 3,
+                explanation: "La lussazione è lo spostamento permanente dei capi articolari che perdono i loro normali rapporti, senza ritorno spontaneo alla posizione naturale."
+            },
+            {
+                question: "8) Che cosa deve saper fare un Volontario Soccorritore 118?",
+                options: [
+                    "A) Gestire l'organizzazione di un soccorso sicuro sul target e durante il trasferimento",
+                    "B) Effettuare sicure valutazioni e diagnosi",
+                    "C) Intrattenere una conversazione con i soggetti da soccorrere",
+                    "D) Prestare l'assistenza di primo soccorso senza mantenere una posizione di empatia"
+                ],
+                correctAnswer: 0,
+                explanation: "Il Volontario Soccorritore deve saper gestire l'organizzazione di un soccorso sicuro, mentre diagnosi e terapie sono compiti del personale medico."
+            },
+            {
+                question: "9) Cosa si intende per ematemesi?",
+                options: [
+                    "A) Fuoriuscita di sangue dalla bocca misto a schiuma",
+                    "B) Fuoriuscita di sangue dal naso proveniente dalle vie aeree",
+                    "C) Fuoriuscita di sangue dalla bocca di colore rosso o nerastro",
+                    "D) Fuoriuscita di sangue con le urine"
+                ],
+                correctAnswer: 2,
+                explanation: "L'ematemesi è l'emissione di sangue con il vomito, di colore rosso vivo o nerastro (se parzialmente digerito)."
+            },
+            {
+                question: "10) Quali sono i principali bisogni psicologici di una persona infortunata?",
+                options: [
+                    "A) Empatia",
+                    "B) Dialogo",
+                    "C) Rispetto",
+                    "D) Le precedenti tre risposte sono tutte corrette"
+                ],
+                correctAnswer: 3,
+                explanation: "Tutti e tre (empatia, dialogo e rispetto) sono bisogni psicologici fondamentali di una persona infortunata."
+            },
+            {
+                question: "11) La valutazione secondaria viene fatta:",
+                options: [
+                    "A) dalla testa ai piedi",
+                    "B) dai piedi alla testa",
+                    "C) partendo dal torace",
+                    "D) partendo dagli arti inferiori"
+                ],
+                correctAnswer: 0,
+                explanation: "La valutazione secondaria segue un approccio sistematico testa-piedi per non tralasciare alcuna area."
+            },
+            {
+                question: "12) Nell'alfabeto fonetico ICAO lo spelling delle lettere U V Q J F R W X Y è:",
+                options: [
+                    "A) unresponsive, vision, quantity, juliet, final, roller, wood, xeno, year",
+                    "B) unit, victor, queen, juice, foxtrot, rock, word, xray, yellow",
+                    "C) uniform, victor, quebec, juliet, foxtrot, romeo, whiskey, xray, yankee",
+                    "D) ultra, vocal, quebec, jump, fire, round, work, xeno, yesterday"
+                ],
+                correctAnswer: 2,
+                explanation: "L'alfabeto fonetico ICAO prevede: Uniform, Victor, Quebec, Juliet, Foxtrot, Romeo, Whiskey, X-ray, Yankee."
+            },
+            {
+                question: "13) Siete l'equipaggio dell'ambulanza 165. Dovendo iniziare una comunicazione radio con la C.O. 118 di Grugliasco (Torino) quale delle seguenti frasi utilizzate?",
+                options: [
+                    "A) Centrale 118 da unoseicinque",
+                    "B) Unoseicinque a Tango Zero",
+                    "C) Tango Zero per la centosessantacinque",
+                    "D) Tango Zero da unoseicinque"
+                ],
+                correctAnswer: 3,
+                explanation: "La forma corretta è 'Tango Zero da unoseicinque', dove Tango Zero è il nominativo della centrale e unoseicinque quello dell'ambulanza."
+            },
+            {
+                question: "14) Tra i segni di emorragia interna possiamo trovare:",
+                options: [
+                    "A) polso lento e mucose cianotiche",
+                    "B) polso frequente e mucose pallide e fredde",
+                    "C) ferita aperta con fuoriuscita di sangue",
+                    "D) alcuni vasi lacerati da cui fuoriesce sangue in modo lento e continuo"
+                ],
+                correctAnswer: 1,
+                explanation: "I segni di emorragia interna includono polso frequente (tachicardia) e mucose pallide, fredde e sudate."
+            },
+            {
+                question: "15) In caso di ferita con corpo estraneo conficcato, cosa non si deve fare?",
+                options: [
+                    "A) Pulire la ferita",
+                    "B) Immobilizzare il corpo estraneo",
+                    "C) Estrarre il corpo estraneo",
+                    "D) Fare una medicazione adatta"
+                ],
+                correctAnswer: 2,
+                explanation: "Il corpo estraneo conficcato non va mai rimosso perché potrebbe tamponare un'emorragia o causare ulteriori danni."
+            },
+            {
+                question: "16) Cosa s'intende per bradicardia?",
+                options: [
+                    "A) Frequenza cardiaca alta",
+                    "B) Frequenza respiratoria bassa",
+                    "C) Frequenza cardiaca bassa",
+                    "D) Frequenza respiratoria alta"
+                ],
+                correctAnswer: 2,
+                explanation: "Bradicardia significa frequenza cardiaca inferiore alla norma (solitamente <60 bpm nell'adulto)."
+            },
+            {
+                question: "17) In caso di emorragia si può sollevare l'arto:",
+                options: [
+                    "A) sempre",
+                    "B) solo in assenza di possibili fratture e lussazioni",
+                    "C) mai per gli arti inferiori",
+                    "D) solo in caso di emorragia lieve"
+                ],
+                correctAnswer: 1,
+                explanation: "L'arto può essere sollevato solo dopo aver escluso fratture o lussazioni, per non aggravare eventuali lesioni."
+            },
+            {
+                question: "18) L'angina pectoris è:",
+                options: [
+                    "A) un accumulo di liquidi nel polmone sinistro dovuto a scompenso cardiaco destro",
+                    "B) una malattia dermatologica che predilige il torace ma può estendersi a tutto il corpo",
+                    "C) la necrosi (morte) del tessuto cardiaco in seguito a mancanza di ossigeno per un certo tempo",
+                    "D) un dolore toracico che si verifica per mancanza di ossigeno temporanea e parziale con conseguente sofferenza del tessuto cardiaco"
+                ],
+                correctAnswer: 3,
+                explanation: "L'angina pectoris è un dolore toracico da ischemia miocardica transitoria, senza necrosi cellulare (a differenza dell'infarto)."
+            },
+            {
+                question: "19) In caso di problemi respiratori, l'infortunato (non traumatizzato) lo si deve posizionare:",
+                options: [
+                    "A) semiseduto",
+                    "B) supino",
+                    "C) prono",
+                    "D) in piedi"
+                ],
+                correctAnswer: 0,
+                explanation: "La posizione semiseduta (o posizione di Fowler) facilita la respirazione riducendo la pressione addominale sul diaframma."
+            },
+            {
+                question: "20) Siete di turno in sede e decidete di usare l'ambulanza di servizio per andare a fare la spesa. Se ripresi e sanzionati siete passibili di:",
+                options: [
+                    "A) Interruzione di pubblico servizio Art. 331 cod penale",
+                    "B) Lesioni personali colpose Art. 590 cod penale",
+                    "C) Abuso di ufficio Art.323 Cod Penale",
+                    "D) Rifiuto di atti di ufficio Art.328 Cod Penale"
+                ],
+                correctAnswer: 0,
+                explanation: "L'uso improprio di un mezzo di soccorso configura il reato di interruzione di pubblico servizio (Art. 331 CP)."
+            },
+            {
+                question: "21) Un soggetto viene considerato in pericolo di vita nel caso in cui:",
+                options: [
+                    "A) una funzione vitale sia insufficiente o assente",
+                    "B) il soggetto gridi disperatamente",
+                    "C) la dinamica dell'evento possa far presumere una lesione alla colonna vertebrale",
+                    "D) la dinamica dell'evento possa far pensare ad un probabile rischio evolutivo"
+                ],
+                correctAnswer: 0,
+                explanation: "Il pericolo di vita si ha quando una o più funzioni vitali (coscienza, respiro, circolo) sono compromesse."
+            },
+            {
+                question: "22) Il modo corretto di coprire la maggior parte delle ustioni nella fase di primo soccorso è di usare:",
+                options: [
+                    "A) telini bagnati",
+                    "B) gel idrosolubili",
+                    "C) una pomata contenente idrossido di alluminio",
+                    "D) telini sterili"
+                ],
+                correctAnswer: 3,
+                explanation: "Le ustioni vanno coperte con telini sterili asciutti, senza applicare creme o sostanze che potrebbero interferire con le cure successive."
+            },
+            {
+                question: "23) Cosa si intende per epistassi?",
+                options: [
+                    "A) Fuoriuscita dei visceri",
+                    "B) Fuoriuscita di sangue dal naso",
+                    "C) Fuoriuscita di 'liquor'",
+                    "D) Frattura al piede"
+                ],
+                correctAnswer: 1,
+                explanation: "L'epistassi è l'emorragia nasale, comunemente chiamata 'sangue dal naso'."
+            },
+            {
+                question: "24) Quando è consentita l'applicazione del LEA (laccio emostatico arterioso)?",
+                options: [
+                    "A) In caso di crisi ipoglicemica",
+                    "B) Prima di disincastrare un arto sottoposto a schiacciamento da più di 6/8 ore",
+                    "C) In caso di trauma toracico con pneumotorace iperteso",
+                    "D) Mai"
+                ],
+                correctAnswer: 1,
+                explanation: "Il LEA si applica solo in casi estremi come lo schiacciamento prolungato, per prevenire la sindrome da crush."
+            },
+            {
+                question: "25) In caso di incidente automobilistico con scontro frontale le lesioni più probabili saranno:",
+                options: [
+                    "A) infarto miocardico",
+                    "B) non si possono prevedere in nessun modo",
+                    "C) agli arti inferiori, al torace ed alla colonna cervicale",
+                    "D) sempre e comunque più gravi di un capottamento"
+                ],
+                correctAnswer: 2,
+                explanation: "Negli scontri frontali sono tipiche le lesioni da decelerazione: arti inferiori (pedali), torace (volante) e colonna cervicale (colpo di frusta)."
+            },
+            {
+                question: "26) Quali sono i valori considerati 'normali' per la pressione arteriosa?",
+                options: [
+                    "A) 80/120",
+                    "B) 60/110",
+                    "C) 95/160",
+                    "D) 90/60/90"
+                ],
+                correctAnswer: 0,
+                explanation: "I valori normali di pressione arteriosa sono circa 120 mmHg per la sistolica e 80 mmHg per la diastolica (120/80)."
+            },
+            {
+                question: "27) Il mezzo più efficace per controllare un'emorragia esterna è:",
+                options: [
+                    "A) sollevare la parte interessata",
+                    "B) applicare il laccio emostatico",
+                    "C) applicare una compressione diretta",
+                    "D) comprimere l'arteria a monte"
+                ],
+                correctAnswer: 2,
+                explanation: "La compressione diretta sulla ferita è il metodo più efficace e meno rischioso per fermare un'emorragia esterna."
+            },
+            {
+                question: "28) Cosa avviene nei polmoni durante la respirazione?",
+                options: [
+                    "A) L'ossigenazione del sangue",
+                    "B) L'espansione del diaframma",
+                    "C) Il pompaggio del sangue",
+                    "D) Il battito cardiaco"
+                ],
+                correctAnswer: 0,
+                explanation: "Nei polmoni avviene lo scambio gassoso: l'ossigeno passa negli alveoli e l'anidride carbonica viene eliminata."
+            },
+            {
+                question: "29) Cosa s'intende per tachicardia?",
+                options: [
+                    "A) Frequenza cardiaca alta",
+                    "B) Frequenza respiratoria bassa",
+                    "C) Frequenza cardiaca bassa",
+                    "D) Frequenza respiratoria alta"
+                ],
+                correctAnswer: 0,
+                explanation: "Tachicardia significa frequenza cardiaca superiore alla norma (solitamente >100 bpm nell'adulto)."
+            },
+            {
+                question: "30) Le emorragie possono essere causate da:",
+                options: [
+                    "A) traumi",
+                    "B) patologie",
+                    "C) traumi e patologie",
+                    "D) nessuna delle precedenti"
+                ],
+                correctAnswer: 2,
+                explanation: "Le emorragie possono derivare sia da cause traumatiche che patologiche (es. ulcere, coagulopatie)."
+            },
+            {
+                question: "31) In presenza di una crisi epilettica il soccorritore dovrà:",
+                options: [
+                    "A) far respirare l'epilettico in un sacchetto di plastica",
+                    "B) spruzzare sul viso acqua fredda",
+                    "C) evitare traumi conseguenti alla crisi, senza limitarne il suo normale corso",
+                    "D) immobilizzare il soggetto in modo che non si procuri dei traumi"
+                ],
+                correctAnswer: 2,
+                explanation: "Durante una crisi epilettica bisogna proteggere il paziente da traumi senza opporsi alle convulsioni o inserire oggetti in bocca."
+            },
+            {
+                question: "32) La sigla M.S.A.B. è l'acronimo di:",
+                options: [
+                    "A) Medico Soccorritore Avanzato di Base",
+                    "B) Mezzo Speciale della croce Bianca",
+                    "C) Mezzo di Soccorso Avanzato di Base",
+                    "D) Mezzo Avanzato Senza operatori di Base"
+                ],
+                correctAnswer: 2,
+                explanation: "MSAB significa Mezzo di Soccorso Avanzato di Base, un'ambulanza con equipaggio addestrato a tecniche avanzate di soccorso."
+            },
+            {
+                question: "33) La valutazione in seguito ad un trauma indica di applicare la regola delle tre 'S', ovvero:",
+                options: [
+                    "A) Sicurezza, Stress, Situazione",
+                    "B) Sicurezza, Scenario, Situazione",
+                    "C) Situazione, Sensazione personale, Stress",
+                    "D) Saturazione, Scenario, Sicurezza"
+                ],
+                correctAnswer: 1,
+                explanation: "Le tre S stanno per Sicurezza (del soccorritore), Scenario (valutazione ambientale) e Situazione (valutazione del paziente)."
+            },
+            {
+                question: "34) In senso generale, per shock s'intende:",
+                options: [
+                    "A) difetto nella perfusione degli organi da parte del sangue ossigenato",
+                    "B) ipotensione secondaria ad emorragia",
+                    "C) disidratazione dovuta ad esposizione ad alte temperature o ad ustioni",
+                    "D) infezione generalizzata"
+                ],
+                correctAnswer: 0,
+                explanation: "Lo shock è una condizione di ipoperfusione tissutale con insufficiente apporto di ossigeno agli organi."
+            },
+            {
+                question: "35) Durante la compressione diretta, a contatto con la ferita si dovrà porre:",
+                options: [
+                    "A) uno strato di garze sterili",
+                    "B) un tampone di garze non sterili",
+                    "C) un tampone di cotone idrofilo",
+                    "D) indifferentemente una delle precedenti"
+                ],
+                correctAnswer: 0,
+                explanation: "Sulla ferita va posto materiale sterile (garze) per ridurre il rischio di infezione."
+            },
+            {
+                question: "36) Lo shock può essere:",
+                options: [
+                    "A) ipovolemico, neurogeno, cardiogeno, settico",
+                    "B) ipovolemico, neurogeno, cardiologico, asettico",
+                    "C) ipotassico, neurogeno, cardiogeno, asettico",
+                    "D) solo secondario ad un trauma"
+                ],
+                correctAnswer: 0,
+                explanation: "Le principali forme di shock sono: ipovolemico (perdita liquidi), cardiogeno (insufficienza cardiaca), neurogeno (danno neurologico) e settico (infezione)."
+            },
+            {
+                question: "37) Raggiunto il 'Target' cosa deve fare per prima cosa il soccorritore?",
+                options: [
+                    "A) Valutare la scena e poi autoproteggersi",
+                    "B) Precipitarsi verso l'infortunato",
+                    "C) Premere la selettiva F2 della radio",
+                    "D) Effettuare il triage"
+                ],
+                correctAnswer: 0,
+                explanation: "La prima azione è sempre valutare la sicurezza della scena e autoproteggersi, prima di avvicinarsi al paziente."
+            },
+            {
+                question: "38) Il collare cervicale deve essere posizionato:",
+                options: [
+                    "A) Da due soccorritori",
+                    "B) Da un solo soccorritore",
+                    "C) Solo in caso di incidente stradale",
+                    "D) Solo quando il capo del soggetto è posizionato in ipertensione"
+                ],
+                correctAnswer: 0,
+                explanation: "Il collare cervicale va applicato da due soccorritori: uno mantiene l'allineamento del capo mentre l'altro applica il collare."
+            },
+            {
+                question: "39) Le ustioni di secondo grado sono caratterizzate da:",
+                options: [
+                    "A) assenza di dolore",
+                    "B) difetto di riempimento capillare",
+                    "C) danno limitato all'epidermide",
+                    "D) cute arrossata con bolle"
+                ],
+                correctAnswer: 3,
+                explanation: "Le ustioni di II grado presentano flittene (bolle) per interessamento del derma, con intenso dolore."
+            },
+            {
+                question: "40) La valutazione primaria:",
+                options: [
+                    "A) consente di riconoscere i problemi di salute meno gravi",
+                    "B) si divide in cinque fasi",
+                    "C) segue il metodo 'testa-piedi'",
+                    "D) vi permette di valutare, tra le altre cose, il diametro delle pupille, le lesioni agli arti e il diametro delle pupille"
+                ],
+                correctAnswer: 1,
+                explanation: "La valutazione primaria si articola in 5 fasi: coscienza, vie aeree, respiro, circolo, esposizione/ambiente."
+            }
+        ];
+
+        // Current question index
+        let currentQuestion = 0;
+        const totalQuestions = quizData.length;
+        const userAnswers = new Array(totalQuestions).fill(null);
+        
+        // DOM elements
+        const quizContainer = document.getElementById('quizContainer');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const progressBar = document.getElementById('progressBar');
+        const resultsDiv = document.getElementById('results');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const generalFeedback = document.getElementById('generalFeedback');
+        const detailedResults = document.getElementById('detailedResults');
+        const installBtn = document.getElementById('installBtn');
+        
+        // Initialize the quiz
+        function showQuestion() {
+            if (currentQuestion >= totalQuestions) return;
+            
+            const question = quizData[currentQuestion];
+            let html = `<div class="question"><h3>${question.question}</h3><div class="options">`;
+            
+            question.options.forEach((option, index) => {
+                const isChecked = userAnswers[currentQuestion] === index ? 'checked' : '';
+                html += `
+                    <div class="option">
+                        <input type="radio" id="option${index}" name="answer" value="${index}" ${isChecked}>
+                        <label for="option${index}">${option}</label>
+                    </div>
+                `;
+            });
+            
+            html += `</div></div>`;
+            quizContainer.innerHTML = html;
+            
+            // Update progress bar
+            progressBar.style.width = `${((currentQuestion + 1) / totalQuestions) * 100}%`;
+            
+            // Update navigation buttons
+            prevBtn.disabled = currentQuestion === 0;
+            nextBtn.style.display = currentQuestion === totalQuestions - 1 ? 'none' : 'block';
+            submitBtn.style.display = currentQuestion === totalQuestions - 1 ? 'block' : 'none';
+            
+            // Add event listeners to radio buttons
+            document.querySelectorAll('input[name="answer"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    userAnswers[currentQuestion] = parseInt(e.target.value);
+                });
+            });
+        }
+        
+        // Navigation functions
+        function goToNextQuestion() {
+            if (currentQuestion < totalQuestions - 1) {
+                currentQuestion++;
+                showQuestion();
+            }
+        }
+        
+        function goToPrevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion();
+            }
+        }
+        
+        // Submit the quiz
+        function submitQuiz() {
+            // Calculate score
+            let score = 0;
+            let resultsHTML = '';
+            
+            quizData.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.correctAnswer;
+                
+                if (isCorrect) {
+                    score++;
+                }
+                
+                resultsHTML += `
+                    <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
+                        <p><strong>Domanda ${index + 1}:</strong> ${question.question}</p>
+                        <p>La tua risposta: ${userAnswer !== null ? question.options[userAnswer] : 'Nessuna risposta'}</p>
+                        <p>Risposta corretta: ${question.options[question.correctAnswer]}</p>
+                        ${!isCorrect ? `<p class="explanation">Spiegazione: ${question.explanation}</p>` : ''}
+                    </div>
+                `;
+            });
+            
+            // Calculate percentage
+            const percentage = Math.round((score / totalQuestions) * 100);
+            const passed = percentage >= 60;
+            
+            // Display results
+            scoreDisplay.innerHTML = `Punteggio: ${score}/${totalQuestions} (${percentage}%) - <span class="${passed ? 'pass' : 'fail'}">${passed ? 'SUPERATO' : 'NON SUPERATO'}</span>`;
+            
+            if (passed) {
+                generalFeedback.innerHTML = `
+                    <h3>Complimenti! Hai superato il test.</h3>
+                    <p>Hai dimostrato una buona conoscenza dei concetti fondamentali del primo soccorso.</p>
+                    ${percentage < 80 ? '<p>Puoi comunque migliorare approfondendo alcuni argomenti.</p>' : '<p>Ottimo risultato!</p>'}
+                `;
+            } else {
+                const needed = Math.ceil(totalQuestions * 0.6) - score;
+                generalFeedback.innerHTML = `
+                    <h3>Attenzione: non hai raggiunto il punteggio minimo.</h3>
+                    <p>Ti mancano ${needed} risposte corrette per superare il test. Ti consigliamo di rivedere:</p>
+                    <ul>
+                        <li>La valutazione primaria e secondaria</li>
+                        <li>La gestione delle emergenze traumatiche</li>
+                        <li>Le tecniche di primo soccorso</li>
+                        <li>Le procedure di comunicazione</li>
+                    </ul>
+                    <p>Consulta le spiegazioni per ogni risposta errata per capire dove migliorare.</p>
+                `;
+            }
+            
+            detailedResults.innerHTML = resultsHTML;
+            quizContainer.style.display = 'none';
+            resultsDiv.style.display = 'block';
+            
+            // Scroll to results
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Event listeners
+        prevBtn.addEventListener('click', goToPrevQuestion);
+        nextBtn.addEventListener('click', goToNextQuestion);
+        submitBtn.addEventListener('click', submitQuiz);
+        
+        // Start the quiz
+        showQuestion();
+        
+        // PWA Installation
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            installBtn.style.display = 'block';
+            
+            installBtn.addEventListener('click', () => {
+                e.prompt();
+                installBtn.style.display = 'none';
+            });
+        });
+        
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swUrl = URL.createObjectURL(new Blob([
+                    `const CACHE_NAME = 'first-aid-quiz-v1';
+                    const urlsToCache = [
+                        '/',
+                        '/index.html',
+                        '/styles.css',
+                        '/script.js'
+                    ];
+                    
+                    self.addEventListener('install', event => {
+                        event.waitUntil(
+                            caches.open(CACHE_NAME)
+                                .then(cache => {
+                                    return cache.addAll(urlsToCache);
+                                })
+                        );
+                    });
+                    
+                    self.addEventListener('fetch', event => {
+                        event.respondWith(
+                            caches.match(event.request)
+                                .then(response => {
+                                    return response || fetch(event.request);
+                                })
+                        );
+                    });`
+                ], { type: 'application/javascript' }));
+                
+                navigator.serviceWorker.register(swUrl)
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

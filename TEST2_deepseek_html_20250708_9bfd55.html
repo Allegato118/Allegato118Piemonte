@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulazione Esame Primo Soccorso - Test 02</title>
+    <meta name="description" content="Secondo simulatore di esame teorico per volontari del soccorso">
+    <meta name="theme-color" content="#317EFB"/>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 4px solid #3498db;
+        }
+        .options {
+            margin: 10px 0;
+        }
+        .option {
+            margin: 8px 0;
+            padding: 8px;
+            background: #eee;
+            border-radius: 4px;
+        }
+        .option input {
+            margin-right: 10px;
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+        .progress {
+            margin: 20px 0;
+            height: 10px;
+            background: #ecf0f1;
+            border-radius: 5px;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #2ecc71;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+        .result-item {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+        .correct {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        .incorrect {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+        .score {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .pass {
+            color: #28a745;
+        }
+        .fail {
+            color: #dc3545;
+        }
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e7f5fe;
+            border-left: 4px solid #17a2b8;
+        }
+        .install-btn {
+            background: #2ecc71;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            .question {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button id="installBtn" class="install-btn" style="display: none;">Installa App</button>
+        <h1>Simulazione Prova Teorica Esame - Test 02</h1>
+        <p>Rispondi a tutte le domande selezionando una sola risposta per ciascuna.</p>
+        
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <div id="quizContainer">
+            <!-- Questions will be inserted here by JavaScript -->
+        </div>
+        
+        <div class="navigation">
+            <button id="prevBtn" disabled>Precedente</button>
+            <button id="nextBtn">Prossima</button>
+            <button id="submitBtn" style="display: none;">Consegna</button>
+        </div>
+        
+        <div id="results" class="results">
+            <h2>Risultati del Test</h2>
+            <div class="score" id="scoreDisplay"></div>
+            <div class="feedback" id="generalFeedback"></div>
+            <div id="detailedResults"></div>
+        </div>
+    </div>
+
+    <script>
+        // Quiz data from the PDF - all 20 questions
+        const quizData = [
+            {
+                question: "1) Al fine della valutazione della funzione cardiaca in un lattante quale polso si deve ricercare?",
+                options: [
+                    "A) Carotideo",
+                    "B) Brachiale",
+                    "C) Radiale",
+                    "D) Tibiale"
+                ],
+                correctAnswer: 1,
+                explanation: "Nei lattanti il polso brachiale è più facile da palpare rispetto al carotideo a causa delle dimensioni ridotte del collo."
+            },
+            {
+                question: "2) Durante la ventilazione con pallone di Ambu la cosa più importante è:",
+                options: [
+                    "A) fare insufflazioni rapide e brusche",
+                    "B) osservare il sollevamento dell'addome della persona",
+                    "C) mantenere pervie le vie aeree",
+                    "D) impugnare la maschera con il pollice e l'indice configurati ad 'E' attorno al raccordo"
+                ],
+                correctAnswer: 2,
+                explanation: "Mantenere le vie aeree pervie è fondamentale per garantire che l'aria raggiunga effettivamente i polmoni durante la ventilazione."
+            },
+            {
+                question: "3) Il Basic Life Support (BLS):",
+                options: [
+                    "A) è effettuato solo da medici",
+                    "B) serve per sostenere le funzioni vitali",
+                    "C) si effettua somministrando farmaci",
+                    "D) è la continuazione logica di manovre semplici denominate ALS"
+                ],
+                correctAnswer: 1,
+                explanation: "Il BLS (Basic Life Support) comprende le manovre di rianimazione cardiopolmonare di base per sostenere le funzioni vitali in attesa di soccorsi avanzati."
+            },
+            {
+                question: "4) In un'intossicazione acuta per ingestione da sostanza caustica bisogna evitare di:",
+                options: [
+                    "A) somministrare ossigeno",
+                    "B) avvertire la C.O. 118",
+                    "C) provocare il vomito",
+                    "D) tutte le precedenti"
+                ],
+                correctAnswer: 2,
+                explanation: "In caso di ingestione di caustici non bisogna mai provocare il vomito per evitare un secondo passaggio della sostanza dannosa attraverso l'esofago."
+            },
+            {
+                question: "5) Il casco deve essere rimosso:",
+                options: [
+                    "A) sempre, da due soccorritori",
+                    "B) mai, si potrebbero peggiorare le condizioni",
+                    "C) solo se di tipo integrale",
+                    "D) solo in caso di arresto respiratorio"
+                ],
+                correctAnswer: 0,
+                explanation: "Il casco va rimosso sempre con particolare cautela e preferibilmente da due soccorritori per mantenere l'allineamento del capo e della colonna."
+            },
+            {
+                question: "6) Una delle manovre di primo soccorso nel trattamento delle emergenze legate al calore è:",
+                options: [
+                    "A) somministrare liquidi freddi per via endovenosa",
+                    "B) rimuovere gli abiti",
+                    "C) non spostare il paziente dall'ambiente in cui si trova",
+                    "D) applicare coperte asciutte"
+                ],
+                correctAnswer: 1,
+                explanation: "Rimuovere gli abiti in eccesso aiuta a favorire la dispersione del calore in caso di colpo di calore."
+            },
+            {
+                question: "7) Dovendo posizionare una donna incinta in P.L.S. su quale lato la ruoto?",
+                options: [
+                    "A) Sul lato destro",
+                    "B) Sul lato sinistro",
+                    "C) La lascio supina per evitare di comprimere l'addome",
+                    "D) Su una donna incinta non si applica P.L.S., la si mette in posizione anti-shock"
+                ],
+                correctAnswer: 1,
+                explanation: "La donna incinta va posizionata sul lato sinistro per evitare che l'utero comprima la vena cava inferiore e comprometta il ritorno venoso al cuore."
+            },
+            {
+                question: "8) I bambini sono considerati tali dall'età di:",
+                options: [
+                    "A) 5 mesi",
+                    "B) 5 anni",
+                    "C) 8 anni",
+                    "D) 1 anno"
+                ],
+                correctAnswer: 3,
+                explanation: "In ambito di primo soccorso, si considera bambino un soggetto da 1 anno di età fino alla pubertà (circa 8-12 anni)."
+            },
+            {
+                question: "9) La cannula orofaringea deve essere applicata ad un lattante:",
+                options: [
+                    "A) se non respira",
+                    "B) solo se cosciente",
+                    "C) mai perché le cartilagini sono fragili",
+                    "D) ogni volta che lo si soccorre, indipendentemente dal problema di salute"
+                ],
+                correctAnswer: 0,
+                explanation: "La cannula orofaringea si applica solo a pazienti incoscienti per mantenere pervie le vie aeree, compresi i lattanti quando necessario."
+            },
+            {
+                question: "10) Che cos'è la manovra di Heimlich?",
+                options: [
+                    "A) Una manovra utile per svuotare i polmoni dall'acqua in caso di annegamento",
+                    "B) Una manovra utile per la rimozione di corpi estranei dalle vie respiratorie",
+                    "C) Una manovra utile da utilizzare in caso di emorragie",
+                    "D) Una manovra utile in caso di asfissia da gas"
+                ],
+                correctAnswer: 1,
+                explanation: "La manovra di Heimlich (o compressioni addominali) serve a disostruire le vie aeree da corpi estranei in caso di ostruzione completa."
+            },
+            {
+                question: "11) In caso di persona traumatizzata è possibile utilizzare il telo portaferiti:",
+                options: [
+                    "A) sì, sempre",
+                    "B) solo in caso di lievi cadute",
+                    "C) solo in presenza di funzioni vitali",
+                    "D) mai"
+                ],
+                correctAnswer: 3,
+                explanation: "Il telo portaferiti non va mai usato per persone traumatizzate perché potrebbe aggravare eventuali lesioni spinali."
+            },
+            {
+                question: "12) Nel massaggio cardiaco esterno (MCE) in un paziente adulto le compressioni toraciche devono:",
+                options: [
+                    "A) essere profonde circa 10 cm",
+                    "B) essere decise ed uguali nelle due fasi di compressione e rilasciamento",
+                    "C) avere una frequenza di circa 30 al minuto",
+                    "D) essere sincrone con la ventilazione e il pallone ambu"
+                ],
+                correctAnswer: 1,
+                explanation: "Le compressioni devono essere regolari, con uguale intensità nella fase di compressione e rilasciamento, a una frequenza di 100-120 al minuto."
+            },
+            {
+                question: "13) I presidi di primo soccorso per il sostegno delle funzioni vitali sono tutti:",
+                options: [
+                    "A) delle stesse dimensioni per adulti e bambini",
+                    "B) delle stesse dimensioni per lattanti e bambini",
+                    "C) di dimensioni diverse per lattanti e bambini",
+                    "D) delle stesse dimensioni per adulti e lattanti"
+                ],
+                correctAnswer: 2,
+                explanation: "I presidi per il sostegno vitale (maschere, cannule, palloni) hanno dimensioni diverse per lattanti, bambini e adulti."
+            },
+            {
+                question: "14) In quale caso utilizzi il KED?",
+                options: [
+                    "A) Quando devi estricare una persona da un'auto incidentata con funzioni vitali a rischio",
+                    "B) Per immobilizzare un infortunato dopo una caduta",
+                    "C) Quando devi estricare una persona da un'auto incidentata in assenza di rischi evolutivi",
+                    "D) In caso di infarto"
+                ],
+                correctAnswer: 2,
+                explanation: "Il KED (Kendrick Extrication Device) si usa per estricare pazienti da veicoli incidentati quando non ci sono emergenze vitali immediate."
+            },
+            {
+                question: "15) Per gasping si intende?",
+                options: [
+                    "A) attività respiratoria presente ma scarsa",
+                    "B) attività respiratoria che precede l'arresto cardiaco",
+                    "C) attività respiratoria che compare alla ripresa del circolo spontaneo",
+                    "D) attività respiratoria lenta, occasionale, inefficace"
+                ],
+                correctAnswer: 3,
+                explanation: "Il gasping è un respiro agonico, inefficace, che può presentarsi in caso di arresto cardiaco e non deve essere confuso con una respirazione normale."
+            },
+            {
+                question: "16) Per prevenire la dispersione di calore, la coperta isotermica ('metallina') va utilizzata:",
+                options: [
+                    "A) con la parte dorata rivolta verso il paziente",
+                    "B) con la parte argentata rivolta verso il paziente",
+                    "C) solo in condizioni climatiche estreme",
+                    "D) nessuna delle precedenti"
+                ],
+                correctAnswer: 1,
+                explanation: "La parte argentata va rivolta verso il paziente per riflettere il calore corporeo verso l'interno (effetto termoriflettente)."
+            },
+            {
+                question: "17) In caso di ventilazione mediante pallone di Ambu e maschera facciale, un'eventuale protesi dentale:",
+                options: [
+                    "A) va in ogni caso rimossa, conservando così il contorno anatomico orale utile per rendere efficace l'adesione volto/maschera",
+                    "B) non va mai rimossa",
+                    "C) va lasciata in sede solo se il paziente è incanulato, altrimenti sempre rimossa",
+                    "D) nessuna delle risposte è corretta"
+                ],
+                correctAnswer: 3,
+                explanation: "Le protesi dentali vanno generalmente lasciate in sede se ben fissate, perché aiutano a mantenere l'anatomia del cavo orale per una migliore aderenza della maschera."
+            },
+            {
+                question: "18) Quale tecnica deve essere utilizzata per eseguire il massaggio cardiaco esterno in un bambino?",
+                options: [
+                    "A) Porre il palmo della mano sulla metà inferiore dello sterno sollevando le dita",
+                    "B) Porre due dita sul torace sopra la linea che congiunge i capezzoli",
+                    "C) Porre due dita sulla metà inferiore dello sterno",
+                    "D) Porre il pollice sulla linea traversa che congiunge i capezzoli"
+                ],
+                correctAnswer: 0,
+                explanation: "Nei bambini si usa il palmo di una mano (o due mani per bambini più grandi) posizionato sulla metà inferiore dello sterno, con le dita sollevate per evitare pressioni sui margini costali."
+            },
+            {
+                question: "19) Che cosa vuol dire TRIAGE:",
+                options: [
+                    "A) selezionare gli infortunati in base alla priorità di trattamento",
+                    "B) la necessità di soccorrere in tre persone",
+                    "C) essere in grado di usare i codici",
+                    "D) riconoscere tra più persone infortunate quelle che necessitano di una valutazione secondaria"
+                ],
+                correctAnswer: 0,
+                explanation: "Il triage è il processo di selezione e prioritizzazione dei pazienti in base alla gravità delle loro condizioni e all'urgenza di trattamento."
+            },
+            {
+                question: "20) Avete a disposizione una bombola di ossigeno portatile da 2 litri, con una pressione di 120 atmosfere. Dovete erogare ossigeno a 12 litri/minuto, dopo quanto vi predisponete a sostituire la bombola?",
+                options: [
+                    "A) dopo 10-12 minuti circa",
+                    "B) dopo 18-20 minuti circa",
+                    "C) dopo 22-24 minuti circa",
+                    "D) dopo 28-30 minuti circa"
+                ],
+                correctAnswer: 1,
+                explanation: "Calcolo: (2 litri × 120 atm) / 12 litri/minuto = 20 minuti. Si considera di sostituire la bombola qualche minuto prima dell'esaurimento."
+            }
+        ];
+
+        // Current question index
+        let currentQuestion = 0;
+        const totalQuestions = quizData.length;
+        const userAnswers = new Array(totalQuestions).fill(null);
+        
+        // DOM elements
+        const quizContainer = document.getElementById('quizContainer');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const progressBar = document.getElementById('progressBar');
+        const resultsDiv = document.getElementById('results');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const generalFeedback = document.getElementById('generalFeedback');
+        const detailedResults = document.getElementById('detailedResults');
+        const installBtn = document.getElementById('installBtn');
+        
+        // Initialize the quiz
+        function showQuestion() {
+            if (currentQuestion >= totalQuestions) return;
+            
+            const question = quizData[currentQuestion];
+            let html = `<div class="question"><h3>${question.question}</h3><div class="options">`;
+            
+            question.options.forEach((option, index) => {
+                const isChecked = userAnswers[currentQuestion] === index ? 'checked' : '';
+                html += `
+                    <div class="option">
+                        <input type="radio" id="option${index}" name="answer" value="${index}" ${isChecked}>
+                        <label for="option${index}">${option}</label>
+                    </div>
+                `;
+            });
+            
+            html += `</div></div>`;
+            quizContainer.innerHTML = html;
+            
+            // Update progress bar
+            progressBar.style.width = `${((currentQuestion + 1) / totalQuestions) * 100}%`;
+            
+            // Update navigation buttons
+            prevBtn.disabled = currentQuestion === 0;
+            nextBtn.style.display = currentQuestion === totalQuestions - 1 ? 'none' : 'block';
+            submitBtn.style.display = currentQuestion === totalQuestions - 1 ? 'block' : 'none';
+            
+            // Add event listeners to radio buttons
+            document.querySelectorAll('input[name="answer"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    userAnswers[currentQuestion] = parseInt(e.target.value);
+                });
+            });
+        }
+        
+        // Navigation functions
+        function goToNextQuestion() {
+            if (currentQuestion < totalQuestions - 1) {
+                currentQuestion++;
+                showQuestion();
+            }
+        }
+        
+        function goToPrevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion();
+            }
+        }
+        
+        // Submit the quiz
+        function submitQuiz() {
+            // Calculate score
+            let score = 0;
+            let resultsHTML = '';
+            
+            quizData.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.correctAnswer;
+                
+                if (isCorrect) {
+                    score++;
+                }
+                
+                resultsHTML += `
+                    <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
+                        <p><strong>Domanda ${index + 1}:</strong> ${question.question}</p>
+                        <p>La tua risposta: ${userAnswer !== null ? question.options[userAnswer] : 'Nessuna risposta'}</p>
+                        <p>Risposta corretta: ${question.options[question.correctAnswer]}</p>
+                        ${!isCorrect ? `<p class="explanation">Spiegazione: ${question.explanation}</p>` : ''}
+                    </div>
+                `;
+            });
+            
+            // Calculate percentage
+            const percentage = Math.round((score / totalQuestions) * 100);
+            const passed = percentage >= 60;
+            
+            // Display results
+            scoreDisplay.innerHTML = `Punteggio: ${score}/${totalQuestions} (${percentage}%) - <span class="${passed ? 'pass' : 'fail'}">${passed ? 'SUPERATO' : 'NON SUPERATO'}</span>`;
+            
+            if (passed) {
+                generalFeedback.innerHTML = `
+                    <h3>Complimenti! Hai superato il test.</h3>
+                    <p>Hai dimostrato una buona conoscenza dei concetti fondamentali del primo soccorso pediatrico e delle tecniche avanzate.</p>
+                    ${percentage < 80 ? '<p>Puoi comunque migliorare approfondendo alcuni argomenti.</p>' : '<p>Ottimo risultato!</p>'}
+                `;
+            } else {
+                const needed = Math.ceil(totalQuestions * 0.6) - score;
+                generalFeedback.innerHTML = `
+                    <h3>Attenzione: non hai raggiunto il punteggio minimo.</h3>
+                    <p>Ti mancano ${needed} risposte corrette per superare il test. Ti consigliamo di rivedere:</p>
+                    <ul>
+                        <li>Le tecniche di rianimazione pediatrica</li>
+                        <li>L'uso dei presidi di soccorso</li>
+                        <li>Le manovre di primo intervento</li>
+                        <li>Le procedure di immobilizzazione</li>
+                    </ul>
+                    <p>Consulta le spiegazioni per ogni risposta errata per capire dove migliorare.</p>
+                `;
+            }
+            
+            detailedResults.innerHTML = resultsHTML;
+            quizContainer.style.display = 'none';
+            resultsDiv.style.display = 'block';
+            
+            // Scroll to results
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Event listeners
+        prevBtn.addEventListener('click', goToPrevQuestion);
+        nextBtn.addEventListener('click', goToNextQuestion);
+        submitBtn.addEventListener('click', submitQuiz);
+        
+        // Start the quiz
+        showQuestion();
+        
+        // PWA Installation
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            installBtn.style.display = 'block';
+            
+            installBtn.addEventListener('click', () => {
+                e.prompt();
+                installBtn.style.display = 'none';
+            });
+        });
+        
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swUrl = URL.createObjectURL(new Blob([
+                    `const CACHE_NAME = 'first-aid-quiz-v2';
+                    const urlsToCache = [
+                        '/',
+                        '/index.html',
+                        '/styles.css',
+                        '/script.js'
+                    ];
+                    
+                    self.addEventListener('install', event => {
+                        event.waitUntil(
+                            caches.open(CACHE_NAME)
+                                .then(cache => {
+                                    return cache.addAll(urlsToCache);
+                                })
+                        );
+                    });
+                    
+                    self.addEventListener('fetch', event => {
+                        event.respondWith(
+                            caches.match(event.request)
+                                .then(response => {
+                                    return response || fetch(event.request);
+                                })
+                        );
+                    });`
+                ], { type: 'application/javascript' }));
+                
+                navigator.serviceWorker.register(swUrl)
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

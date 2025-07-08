@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulazione Esame Primo Soccorso - Test 03</title>
+    <meta name="description" content="Terzo simulatore di esame teorico per volontari del soccorso">
+    <meta name="theme-color" content="#317EFB"/>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 4px solid #3498db;
+        }
+        .options {
+            margin: 10px 0;
+        }
+        .option {
+            margin: 8px 0;
+            padding: 8px;
+            background: #eee;
+            border-radius: 4px;
+        }
+        .option input {
+            margin-right: 10px;
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+        .progress {
+            margin: 20px 0;
+            height: 10px;
+            background: #ecf0f1;
+            border-radius: 5px;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #2ecc71;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+        .result-item {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+        .correct {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        .incorrect {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+        .score {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .pass {
+            color: #28a745;
+        }
+        .fail {
+            color: #dc3545;
+        }
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e7f5fe;
+            border-left: 4px solid #17a2b8;
+        }
+        .install-btn {
+            background: #2ecc71;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            .question {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button id="installBtn" class="install-btn" style="display: none;">Installa App</button>
+        <h1>Simulazione Prova Teorica Esame - Test 03</h1>
+        <p>Rispondi a tutte le domande selezionando una sola risposta per ciascuna.</p>
+        
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <div id="quizContainer">
+            <!-- Questions will be inserted here by JavaScript -->
+        </div>
+        
+        <div class="navigation">
+            <button id="prevBtn" disabled>Precedente</button>
+            <button id="nextBtn">Prossima</button>
+            <button id="submitBtn" style="display: none;">Consegna</button>
+        </div>
+        
+        <div id="results" class="results">
+            <h2>Risultati del Test</h2>
+            <div class="score" id="scoreDisplay"></div>
+            <div class="feedback" id="generalFeedback"></div>
+            <div id="detailedResults"></div>
+        </div>
+    </div>
+
+    <script>
+        // Quiz data from the PDF - all 40 questions
+        const quizData = [
+            {
+                question: "1) Le tre 'S' si indicano",
+                options: [
+                    "A) sicurezza, stress, situazione",
+                    "B) sicurezza, scenario, situazione",
+                    "C) situazione, sensazione personale, stress",
+                    "D) sicurezza, scenario, salvaguardia"
+                ],
+                correctAnswer: 1,
+                explanation: "Le tre 'S' rappresentano: Sicurezza (del soccorritore), Scenario (valutazione ambientale) e Situazione (valutazione del paziente)."
+            },
+            {
+                question: "2) Davanti ad una persona inanimata, la prima cosa da fare è",
+                options: [
+                    "A) valutare il polso carotideo",
+                    "B) effettuare la manovra del G.A.S",
+                    "C) chiamarlo e scuoterlo",
+                    "D) posizionarlo in Posizione Laterale di Sicurezza"
+                ],
+                correctAnswer: 2,
+                explanation: "La prima azione è verificare lo stato di coscienza chiamando la persona e dandole lievi scossoni alle spalle (stimolo verbale e doloroso)."
+            },
+            {
+                question: "3) Chi decide la tipologia di mezzo da inviare",
+                options: [
+                    "A) la persona con il problema di salute",
+                    "B) il nucleo di gestione della centrale",
+                    "C) l'associazione o l'ente allertato per il soccorso",
+                    "D) il medico di centrale"
+                ],
+                correctAnswer: 1,
+                explanation: "La centrale operativa 118, attraverso il nucleo di gestione, decide il tipo di mezzo più appropriato da inviare in base alla situazione."
+            },
+            {
+                question: "4) La prima cosa da stabilire davanti ad una persona aggressiva è",
+                options: [
+                    "A) il miglior modo per bloccarlo a terra",
+                    "B) quale farmaco occorre somministrare",
+                    "C) quanto ossigeno somministrare",
+                    "D) se sia potenzialmente violenta contro di se o gli altri"
+                ],
+                correctAnswer: 3,
+                explanation: "La priorità è valutare il potenziale rischio per sé stessi, per il paziente e per gli altri prima di qualsiasi intervento."
+            },
+            {
+                question: "5) Il codice di intervento fornisce informazioni in sequenza relative a",
+                options: [
+                    "A) criticità dell'evento, età della persona, località",
+                    "B) criticità dell'evento, patologia presunta, tipologia di mezzo di soccorso",
+                    "C) criticità dell'evento, patologia presunta, località",
+                    "D) numero di persone coinvolte, patologia presunta, località"
+                ],
+                correctAnswer: 2,
+                explanation: "Il codice alfanumerico fornisce informazioni su: criticità del paziente/evento, patologia presunta e luogo dell'evento."
+            },
+            {
+                question: "6) Quale delle seguenti è una componente del sistema 118",
+                options: [
+                    "A) sistema di allarme telefonico",
+                    "B) mezzi di soccorso",
+                    "C) dipartimento di emergenza e accettazione",
+                    "D) tutte le precedenti"
+                ],
+                correctAnswer: 3,
+                explanation: "Tutti gli elementi elencati fanno parte integrante del sistema di emergenza sanitaria 118."
+            },
+            {
+                question: "7) Il polso carotideo",
+                options: [
+                    "A) si trova nella parte posteriore e laterale del collo",
+                    "B) deve essere valutato per circa 30 secondi",
+                    "C) deve essere palpato contemporaneamente da entrambi i lati",
+                    "D) è più affidabile e accessibile del polso radiale"
+                ],
+                correctAnswer: 3,
+                explanation: "Il polso carotideo è più affidabile in situazioni di emergenza perché più facile da palpare anche quando la pressione è bassa."
+            },
+            {
+                question: "8) Il soccorso psicologico",
+                options: [
+                    "A) si attua per far passare il tempo più velocemente al paziente, qualora il soccorso richiedesse un tempo di intervento molto lungo",
+                    "B) deve essere sempre messo in atto",
+                    "C) si attua quando il paziente lo richiede",
+                    "D) soltanto se il soccorritore ha possibilità e non è impegnato nel soccorso"
+                ],
+                correctAnswer: 1,
+                explanation: "Il soccorso psicologico è parte integrante dell'assistenza e va sempre fornito, compatibilmente con le condizioni cliniche del paziente."
+            },
+            {
+                question: "9) Avete a disposizione una bombola di ossigeno portatile da 2 litri, con una pressione di 120 atmosfere. Dovete erogare ossigeno a 10 litri/minuto, dopo quanto tempo vi predisponete a sostituire la bombola?",
+                options: [
+                    "A) dopo 10-12 minuti circa",
+                    "B) dopo 18-20 minuti circa",
+                    "C) dopo 24-26 minuti circa",
+                    "D) dopo 30 minuti circa"
+                ],
+                correctAnswer: 1,
+                explanation: "Calcolo: (2 litri × 120 atm) / 10 litri/minuto = 24 minuti. Si considera di sostituire la bombola qualche minuto prima dell'esaurimento."
+            },
+            {
+                question: "10) Per iniziare una comunicazione radio si pronuncia",
+                options: [
+                    "A) prima la sigla del terminale chiamato e dopo il proprio identificativo",
+                    "B) lo spelling della sede di provenienza e dopo quello del chiamante",
+                    "C) prima il proprio identificativo e dopo la sigla del terminale chiamato",
+                    "D) lo spelling del chiamante e dopo quello della sede di provenienza"
+                ],
+                correctAnswer: 0,
+                explanation: "La procedura corretta è: nominativo del chiamato (es. 'Tango Zero') seguito dal proprio nominativo (es. 'da quattrozerocinque')."
+            },
+            {
+                question: "11) Dovendo scendere delle scale trasportando una persona con la sedia cardiologica",
+                options: [
+                    "A) il paziente dovrà essere sempre rivolto verso il senso di marcia",
+                    "B) il paziente dovrà essere sempre rivolto in direzione opposta al senso di marcia",
+                    "C) il paziente può essere rivolto in una direzione a scelta dell'equipaggio",
+                    "D) non si usa mai la sedia cardiologica durante i servizi di emergenza"
+                ],
+                correctAnswer: 0,
+                explanation: "Il paziente deve sempre guardare verso la direzione di marcia per ridurre l'ansia e permettergli di anticipare i movimenti."
+            },
+            {
+                question: "12) L'ossigeno",
+                options: [
+                    "A) non presenta pericoli per l'utilizzo",
+                    "B) non deve mai essere somministrato ai bambini",
+                    "C) favorisce la combustione di materiali infiammabili",
+                    "D) impedisce la combustione di materiali infiammabili"
+                ],
+                correctAnswer: 2,
+                explanation: "L'ossigeno è un comburente che accelera la combustione, quindi va maneggiato con cautela lontano da fiamme o fonti di calore."
+            },
+            {
+                question: "13) Quali tra i seguenti muscoli divide la cavità toracica da quella addominale",
+                options: [
+                    "A) epiglottiche",
+                    "B) diaframma",
+                    "C) stomaco",
+                    "D) polmoni"
+                ],
+                correctAnswer: 1,
+                explanation: "Il diaframma è il muscolo a forma di cupola che separa la cavità toracica da quella addominale e ha un ruolo fondamentale nella respirazione."
+            },
+            {
+                question: "14) Nell'alfabeto fonetico ICAO lo spelling delle lettere A D I M P T V è",
+                options: [
+                    "A) alfa, delta, india, mike, papa, tango, victor",
+                    "B) alfa, dover, indù, mirko, para, tigon, victor",
+                    "C) algor, delta, indor, mimie, patos, thema, victor",
+                    "D) alga, deltor, india, mirto, pala, tango, virgo"
+                ],
+                correctAnswer: 0,
+                explanation: "L'alfabeto fonetico ICAO prevede: Alfa, Delta, India, Mike, Papa, Tango, Victor."
+            },
+            {
+                question: "15) Chi è il leader",
+                options: [
+                    "A) uno che vuole mettersi in mostra e primeggiare",
+                    "B) la guida più idonea alla contingenza",
+                    "C) sempre il più anziano di servizio",
+                    "D) uno che prende le decisioni per il gruppo"
+                ],
+                correctAnswer: 1,
+                explanation: "Il leader è la persona più competente per gestire una specifica situazione, non necessariamente la più anziana o quella che decide autonomamente."
+            },
+            {
+                question: "16) Le arterie sono vasi che",
+                options: [
+                    "A) contengono sempre sangue ossigenato",
+                    "B) portano sangue in uscita dal cuore verso la periferia",
+                    "C) portano sangue di ritorno dalla periferia verso il cuore",
+                    "D) consentono lo scambio gassoso ossigeno / anidride carbonica"
+                ],
+                correctAnswer: 1,
+                explanation: "Le arterie trasportano sangue dal cuore alla periferia (in genere ossigenato, tranne l'arteria polmonare che porta sangue venoso ai polmoni)."
+            },
+            {
+                question: "17) Qual è la differenza principale che distingue un M.S.A da un M.S.A.B",
+                options: [
+                    "A) l'età del veicolo e la cilindrata",
+                    "B) la trazione 4X4",
+                    "C) la presenza di un medico e di un infermiere",
+                    "D) la presenza di un medico, di un infermiere e di uno psichiatra"
+                ],
+                correctAnswer: 2,
+                explanation: "MSA (Mezzo di Soccorso Avanzato) ha medico e infermiere a bordo, mentre MSA.B (Mezzo di Soccorso Avanzato di Base) ha personale non medico addestrato a tecniche avanzate."
+            },
+            {
+                question: "18) In caso di epistassi si dovrà",
+                options: [
+                    "A) applicare il ghiaccio istantaneo sulla fronte (radice del naso)",
+                    "B) applicare il ghiaccio istantaneo sulla nuca",
+                    "C) applicare il ghiaccio istantaneo indifferentemente sulla nuca o sulla fronte",
+                    "D) nessuna delle precedenti risposte è corretta"
+                ],
+                correctAnswer: 0,
+                explanation: "In caso di epistassi (sangue dal naso) si applica ghiaccio sulla radice del naso per favorire la vasocostrizione."
+            },
+            {
+                question: "19) Che cosa deve saper fare un V.S. 118",
+                options: [
+                    "A) saper gestire un soccorso in qualsiasi situazione, conoscere gli elementi base del soccorso",
+                    "B) effettuare sicure valutazioni e diagnosi",
+                    "C) constatare un decesso, quando necessario",
+                    "D) tutte le precedenti"
+                ],
+                correctAnswer: 0,
+                explanation: "Il Volontario Soccorritore 118 deve saper gestire il soccorso nelle diverse situazioni, ma non effettua diagnosi né constata decessi (compiti medici)."
+            },
+            {
+                question: "20) In caso di soggetta frattura della colonna vertebrale",
+                options: [
+                    "A) trasporto il soggetto il più celermente possibile poiché è in pericolo di vita",
+                    "B) applico i presidi di immobilizzazione necessari e trasporto il soggetto con la massima cura",
+                    "C) posiziono un collare prima di far sedere il soggetto per effettuare la valutazione secondaria",
+                    "D) posiziono una steccobenda"
+                ],
+                correctAnswer: 1,
+                explanation: "In caso di sospetta frattura vertebrale è fondamentale immobilizzare correttamente il paziente prima del trasporto per evitare danni al midollo spinale."
+            },
+            {
+                question: "21) Quale di queste comunicazioni NON deve essere effettuata per radio",
+                options: [
+                    "A) nome del soggetto infortunato",
+                    "B) codice altanumerico",
+                    "C) allertamento VVF",
+                    "D) dinamica dell'evento"
+                ],
+                correctAnswer: 0,
+                explanation: "I dati personali (come il nome) non vanno mai comunicati via radio per rispetto della privacy, ma solo attraverso canali sicuri."
+            },
+            {
+                question: "22) La posizione laterale di sicurezza su un paziente non traumatizzato",
+                options: [
+                    "A) si effettua se è cosciente",
+                    "B) non si effettua mai",
+                    "C) si effettua se è incosciente ma respira",
+                    "D) si effettua solo se è incosciente e non respira"
+                ],
+                correctAnswer: 2,
+                explanation: "La PLS si applica a pazienti incoscienti ma con respiro spontaneo, per mantenere libere le vie aeree e prevenire l'inalazione di vomito."
+            },
+            {
+                question: "23) La manovra di posizionamento del collare cervicale va effettuata",
+                options: [
+                    "A) sempre da due soccorritori",
+                    "B) da uno o due soccorritori, a scelta",
+                    "C) solo in caso di incidente stradale",
+                    "D) solo quando il capo del soggetto è in ipertensione"
+                ],
+                correctAnswer: 0,
+                explanation: "Il collare cervicale va applicato da due soccorritori: uno mantiene l'allineamento del capo mentre l'altro applica il collare."
+            },
+            {
+                question: "24) Un oggetto conficcato",
+                options: [
+                    "A) deve essere sempre rimosso",
+                    "B) non deve mai essere rimosso",
+                    "C) va spostato per poter lavorare più comodamente",
+                    "D) deve essere rimosso solo se il paziente ve lo richiedesse"
+                ],
+                correctAnswer: 1,
+                explanation: "Gli oggetti conficcati non vanno mai rimossi perché potrebbero tamponare un'emorragia o causare ulteriori danni se spostati."
+            },
+            {
+                question: "25) La priorità iniziale, non appena vi avvicinate alla scena di un incidente, dovrebbe essere",
+                options: [
+                    "A) identificare il paziente che ha bisogno immediato di cure",
+                    "B) quantificare il numero totale di vittime coinvolte",
+                    "C) garantire la sicurezza vostra e del vostro equipaggio",
+                    "D) identificare la dinamica dell'incidente"
+                ],
+                correctAnswer: 2,
+                explanation: "La sicurezza personale e dell'equipaggio è sempre la priorità assoluta in qualsiasi intervento di soccorso."
+            },
+            {
+                question: "26) Qual è spesso il primo segno di trauma cranico",
+                options: [
+                    "A) fratture agli arti",
+                    "B) un alterato livello di coscienza",
+                    "C) dolore al torace",
+                    "D) dolore addominale"
+                ],
+                correctAnswer: 1,
+                explanation: "L'alterazione dello stato di coscienza è spesso il primo segno di un trauma cranico, anche in assenza di segni esterni evidenti."
+            },
+            {
+                question: "27) Il Basic Life Support",
+                options: [
+                    "A) è effettuato solamente da soccorritori professionisti",
+                    "B) serve per sostenere le funzioni vitali",
+                    "C) si effettua somministrando farmaci",
+                    "D) è la continuazione logica di manovre semplici denominate A.L.S"
+                ],
+                correctAnswer: 1,
+                explanation: "Il BLS (Basic Life Support) comprende le manovre di rianimazione cardiopolmonare di base per sostenere le funzioni vitali in attesa di soccorsi avanzati."
+            },
+            {
+                question: "28) La contusione è caratterizzata dalla",
+                options: [
+                    "A) presenza di una lacerazione della pelle",
+                    "B) fuoriuscita di sangue",
+                    "C) presenza di una frattura",
+                    "D) presenza di un livido"
+                ],
+                correctAnswer: 3,
+                explanation: "La contusione è un trauma chiuso che provoca ecchimosi (livido) per rottura di capillari senza soluzione di continuo della cute."
+            },
+            {
+                question: "29) Le metodiche di immobilizzazione della colonna vertebrale servono per",
+                options: [
+                    "A) posizionare il soggetto su una superficie rigida nel caso dovessero interrompere le manovre di rianimazione",
+                    "B) evitare la comparsa di una lesione del midollo spinale",
+                    "C) trasportare il soggetto più velocemente",
+                    "D) evitare la comparsa di emorragia interna"
+                ],
+                correctAnswer: 1,
+                explanation: "L'immobilizzazione vertebrale previene danni al midollo spinale in caso di fratture vertebrali non ancora diagnosticate."
+            },
+            {
+                question: "30) Cosa si intende per anisocoria",
+                options: [
+                    "A) occhi le cui pupille sono di piccole dimensioni rispetto alla norma",
+                    "B) occhi le cui pupille sono dilatate rispetto alla norma",
+                    "C) occhi le cui pupille hanno diametro diverso l'una dall'altra",
+                    "D) occhi velati al rosso a causa di un'emorragia sottocomgiuntivale"
+                ],
+                correctAnswer: 2,
+                explanation: "L'anisocoria è la differenza di dimensione tra le pupille, possibile segno di trauma cranico o problemi neurologici."
+            },
+            {
+                question: "31) Il laccio emostatico va posto",
+                options: [
+                    "A) sulla ferita",
+                    "B) a monte dell'arto ferito (tra la ferita e il cuore)",
+                    "C) tra la ferita l'estremità periferica dell'arto",
+                    "D) non va mai messo"
+                ],
+                correctAnswer: 1,
+                explanation: "Il laccio emostatico va posizionato a monte della ferita (tra la ferita e il cuore) per interrompere il flusso arterioso."
+            },
+            {
+                question: "32) Per scegliere la misura giusta di una cannula orofaringea, essa deve andare",
+                options: [
+                    "A) dal centro della bocca al pomo d'Adamo",
+                    "B) dall'angolo della bocca all'angolo dell'occhio",
+                    "C) dall'angolo della bocca al lobo dell'orecchio",
+                    "D) dall'arcata mandibolare al pomo d'Adamo"
+                ],
+                correctAnswer: 2,
+                explanation: "La misura corretta della cannula orofaringea va dall'angolo della bocca al lobo dell'orecchio (o dall'incisivo all'angolo mandibolare)."
+            },
+            {
+                question: "33) Le ferite vanno",
+                options: [
+                    "A) medicate con pomate",
+                    "B) non medicate",
+                    "C) pulite con soluzione fisiologica",
+                    "D) lavate con alcool denaturato"
+                ],
+                correctAnswer: 2,
+                explanation: "Le ferite vanno pulite con soluzione fisiologica sterile e coperte con garze sterili, senza applicare pomate o sostanze irritanti."
+            },
+            {
+                question: "34) Come tratto una sospetta frattura scomposta chiusa",
+                options: [
+                    "A) verifico il polso periferico, applico una stecco-benda avendo l'accortezza di stringerla bene ed effettuo il trasporto",
+                    "B) verifico il polso periferico, posiziono adeguatamente uno stecco-benda, ri-verifico il polso periferico ed effettuo il trasporto",
+                    "C) applico una stecco-benda avendo l'accortezza di stringerla bene, verifico il polso periferico, ed effettuo il trasporto",
+                    "D) tento di riallineare l'arto, posiziono adeguatamente una stecco-benda, verifico il polso periferico ed effettuo il trasporto"
+                ],
+                correctAnswer: 1,
+                explanation: "In caso di frattura scomposta chiusa è fondamentale: 1) verificare il polso prima, 2) immobilizzare senza ridurre, 3) verificare di nuovo il polso dopo l'immobilizzazione."
+            },
+            {
+                question: "35) Per conservare correttamente una parte amputata",
+                options: [
+                    "A) deve essere riposta a diretto contatto con il ghiaccio",
+                    "B) deve essere innanzitutto posta in una busta sterile, poi in contenitore con ghiaccio",
+                    "C) posta in una busta sterile, poi posta in un recipiente con acqua ossigenata",
+                    "D) immersa nell'alcool denaturato"
+                ],
+                correctAnswer: 1,
+                explanation: "La parte amputata va avvolta in garza sterile, inserita in un sacchetto di plastica e poi posta in un contenitore con ghiaccio (senza contatto diretto per evitare congelamento)."
+            },
+            {
+                question: "36) Ordinare in modo corretto i passaggi che un Volontario Soccorritore dovrebbe seguire al fine di arrestare un'emorragia ad un arto",
+                options: [
+                    "A) applicazione sulla ferita di un primo strato di garze sterili",
+                    "B) sollevamento dell'arto (se compatibile con il trauma e se non fratturato)",
+                    "C) applicazione del laccio emostatico arterioso",
+                    "D) rimozione delle garze impregnate di sangue precedentemente applicate",
+                    "E) rimozione del laccio emostatico dopo 10 minuti dalla sua applicazione",
+                    "F) aggiunta di un nuovo strato di garze e bendaggio complessivo"
+                ],
+                correctAnswer: [0, 1, 5, 2],
+                explanation: "La sequenza corretta è: 1) compressione diretta con garze sterili, 2) sollevamento dell'arto (se possibile), 3) bendaggio compressivo, 4) laccio emostatico solo se necessario. Non si rimuovono mai le garze già applicate."
+            },
+            {
+                question: "37) La valutazione primaria",
+                options: [
+                    "A) identifica le lesioni pericolose per la vita",
+                    "B) va effettuata sempre in ambulanza",
+                    "C) è una valutazione testa-piedi",
+                    "D) può farla solo un medico"
+                ],
+                correctAnswer: 0,
+                explanation: "La valutazione primaria serve a identificare e trattare immediatamente le condizioni che minacciano la vita (ABC: vie aeree, respiro, circolo)."
+            },
+            {
+                question: "38) Un paziente cianotico è un soggetto che presenta",
+                options: [
+                    "A) colorazione rosata di mucose, unghie, dovuta ad una buona ossigenazione",
+                    "B) colorazione bianca di mucose, unghie, dovuta ad una ridotta circolazione",
+                    "C) colorazione blu di mucose, unghie, dovuta a ridotta concentrazione di ossigeno nel sangue",
+                    "D) colorazione rossa di mucose, unghie, dovuta ad eccessiva temperatura interna"
+                ],
+                correctAnswer: 2,
+                explanation: "La cianosi è il colorito bluastro di cute e mucose causato da ipossiemia (ridotta ossigenazione del sangue)."
+            },
+            {
+                question: "39) Siete l'equipaggio dell'ambulanza 405, dovete iniziare una comunicazione con la Centrale Operativa 118 (TANGO O), quale delle sotto elencate frasi utilizzate",
+                options: [
+                    "A) tango zero da quattrocentocinque",
+                    "B) quattro zero cinque a tango zero",
+                    "C) quattro zero cinque a centrale 118",
+                    "D) tango zero da quattro zero cinque"
+                ],
+                correctAnswer: 3,
+                explanation: "La forma corretta è 'Tango Zero da quattro zero cinque', dove Tango Zero è il nominativo della centrale e quattro zero cinque quello dell'ambulanza."
+            },
+            {
+                question: "40) In caso di paziente con sospetto trauma cranico, incosciente ma con presenza di respiro e circolo, la posizione corretta è",
+                options: [
+                    "A) posizione laterale di sicurezza",
+                    "B) posizione anti-shock, con le gambe sollevate di circa 30°",
+                    "C) posizione supina",
+                    "D) posizione semi-seduta, per facilitare la respirazione autonoma"
+                ],
+                correctAnswer: 2,
+                explanation: "In caso di trauma cranico con incoscienza ma funzioni vitali presenti, si mantiene il paziente supino con collare cervicale e immobilizzazione spinale."
+            }
+        ];
+
+        // Current question index
+        let currentQuestion = 0;
+        const totalQuestions = quizData.length;
+        const userAnswers = new Array(totalQuestions).fill(null);
+        
+        // DOM elements
+        const quizContainer = document.getElementById('quizContainer');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const progressBar = document.getElementById('progressBar');
+        const resultsDiv = document.getElementById('results');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const generalFeedback = document.getElementById('generalFeedback');
+        const detailedResults = document.getElementById('detailedResults');
+        const installBtn = document.getElementById('installBtn');
+        
+        // Initialize the quiz
+        function showQuestion() {
+            if (currentQuestion >= totalQuestions) return;
+            
+            const question = quizData[currentQuestion];
+            let html = `<div class="question"><h3>${question.question}</h3><div class="options">`;
+            
+            question.options.forEach((option, index) => {
+                const isChecked = userAnswers[currentQuestion] === index ? 'checked' : '';
+                html += `
+                    <div class="option">
+                        <input type="radio" id="option${index}" name="answer" value="${index}" ${isChecked}>
+                        <label for="option${index}">${option}</label>
+                    </div>
+                `;
+            });
+            
+            html += `</div></div>`;
+            quizContainer.innerHTML = html;
+            
+            // Update progress bar
+            progressBar.style.width = `${((currentQuestion + 1) / totalQuestions) * 100}%`;
+            
+            // Update navigation buttons
+            prevBtn.disabled = currentQuestion === 0;
+            nextBtn.style.display = currentQuestion === totalQuestions - 1 ? 'none' : 'block';
+            submitBtn.style.display = currentQuestion === totalQuestions - 1 ? 'block' : 'none';
+            
+            // Add event listeners to radio buttons
+            document.querySelectorAll('input[name="answer"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    userAnswers[currentQuestion] = parseInt(e.target.value);
+                });
+            });
+        }
+        
+        // Navigation functions
+        function goToNextQuestion() {
+            if (currentQuestion < totalQuestions - 1) {
+                currentQuestion++;
+                showQuestion();
+            }
+        }
+        
+        function goToPrevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion();
+            }
+        }
+        
+        // Submit the quiz
+        function submitQuiz() {
+            // Calculate score
+            let score = 0;
+            let resultsHTML = '';
+            
+            quizData.forEach((question, index) => {
+                let isCorrect;
+                
+                // Special handling for question 36 (ordering question)
+                if (index === 35) {
+                    const correctOrder = question.correctAnswer;
+                    const userOrder = userAnswers[index] || [];
+                    isCorrect = JSON.stringify(correctOrder) === JSON.stringify(userOrder);
+                } else {
+                    isCorrect = userAnswers[index] === question.correctAnswer;
+                }
+                
+                if (isCorrect) {
+                    score++;
+                }
+                
+                resultsHTML += `
+                    <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
+                        <p><strong>Domanda ${index + 1}:</strong> ${question.question}</p>
+                        <p>La tua risposta: ${userAnswers[index] !== null ? 
+                            (index === 35 ? 
+                                (userAnswers[index] ? userAnswers[index].map(i => String.fromCharCode(97 + i).join(', ') : 'Nessuna risposta') : 
+                                question.options[userAnswers[index]]) : 
+                            'Nessuna risposta'}</p>
+                        <p>Risposta corretta: ${index === 35 ? 
+                            question.correctAnswer.map(i => String.fromCharCode(97 + i)).join(', ') : 
+                            question.options[question.correctAnswer]}</p>
+                        ${!isCorrect ? `<p class="explanation">Spiegazione: ${question.explanation}</p>` : ''}
+                    </div>
+                `;
+            });
+            
+            // Calculate percentage
+            const percentage = Math.round((score / totalQuestions) * 100);
+            const passed = percentage >= 60;
+            
+            // Display results
+            scoreDisplay.innerHTML = `Punteggio: ${score}/${totalQuestions} (${percentage}%) - <span class="${passed ? 'pass' : 'fail'}">${passed ? 'SUPERATO' : 'NON SUPERATO'}</span>`;
+            
+            if (passed) {
+                generalFeedback.innerHTML = `
+                    <h3>Complimenti! Hai superato il test.</h3>
+                    <p>Hai dimostrato una buona conoscenza dei concetti fondamentali del primo soccorso.</p>
+                    ${percentage < 80 ? '<p>Puoi comunque migliorare approfondendo alcuni argomenti.</p>' : '<p>Ottimo risultato!</p>'}
+                `;
+            } else {
+                const needed = Math.ceil(totalQuestions * 0.6) - score;
+                generalFeedback.innerHTML = `
+                    <h3>Attenzione: non hai raggiunto il punteggio minimo.</h3>
+                    <p>Ti mancano ${needed} risposte corrette per superare il test. Ti consigliamo di rivedere:</p>
+                    <ul>
+                        <li>Le tecniche di valutazione primaria</li>
+                        <li>Le procedure di immobilizzazione</li>
+                        <li>La gestione delle emergenze traumatiche</li>
+                        <li>Le tecniche di comunicazione radio</li>
+                    </ul>
+                    <p>Consulta le spiegazioni per ogni risposta errata per capire dove migliorare.</p>
+                `;
+            }
+            
+            detailedResults.innerHTML = resultsHTML;
+            quizContainer.style.display = 'none';
+            resultsDiv.style.display = 'block';
+            
+            // Scroll to results
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Event listeners
+        prevBtn.addEventListener('click', goToPrevQuestion);
+        nextBtn.addEventListener('click', goToNextQuestion);
+        submitBtn.addEventListener('click', submitQuiz);
+        
+        // Start the quiz
+        showQuestion();
+        
+        // PWA Installation
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            installBtn.style.display = 'block';
+            
+            installBtn.addEventListener('click', () => {
+                e.prompt();
+                installBtn.style.display = 'none';
+            });
+        });
+        
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swUrl = URL.createObjectURL(new Blob([
+                    `const CACHE_NAME = 'first-aid-quiz-v3';
+                    const urlsToCache = [
+                        '/',
+                        '/index.html',
+                        '/styles.css',
+                        '/script.js'
+                    ];
+                    
+                    self.addEventListener('install', event => {
+                        event.waitUntil(
+                            caches.open(CACHE_NAME)
+                                .then(cache => {
+                                    return cache.addAll(urlsToCache);
+                                })
+                        );
+                    });
+                    
+                    self.addEventListener('fetch', event => {
+                        event.respondWith(
+                            caches.match(event.request)
+                                .then(response => {
+                                    return response || fetch(event.request);
+                                })
+                        );
+                    });`
+                ], { type: 'application/javascript' }));
+                
+                navigator.serviceWorker.register(swUrl)
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
