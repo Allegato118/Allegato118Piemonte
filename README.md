@@ -10,6 +10,15 @@
 - <a href="https://allegato118.github.io/Allegato118Piemonte/emergency_medical_pwa.html" target="_blank">Procedure NON UFFICIALI - Utilizzare solo come promemoria</a>
 
 
+# TEST - TEST - TEST
+# CONTINUA AD IMPARARE E ... NON DIMENTICARE
+
+- <a href="https://allegato118.github.io/Allegato118Piemonte/TEST1_deepseek_html_20250708_c7d98d.html" target="_blank">TEST 1</a>
+- <a href="https://allegato118.github.io/Allegato118Piemonte/TEST2_deepseek_html_20250708_9bfd55.html" target="_blank">TEST 2</a>
+- <a href="https://allegato118.github.io/Allegato118Piemonte/TEST3_deepseek_html_20250708_322cb1.html" target="_blank">TEST 3</a>
+- <a href="https://allegato118.github.io/Allegato118Piemonte/" target="_blank">TEST 4</a>
+
+
 # ALTRO Materiale VIDEO
 # NON CERTIFICATO -  NON UFFICIALE -  NON CERTIFICATO
 # VIDEO - ABCDE"
