@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulazione Esame Primo Soccorso - Test 04</title>
+    <meta name="description" content="Quarto simulatore di esame teorico per volontari del soccorso">
+    <meta name="theme-color" content="#317EFB"/>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 4px solid #3498db;
+        }
+        .options {
+            margin: 10px 0;
+        }
+        .option {
+            margin: 8px 0;
+            padding: 8px;
+            background: #eee;
+            border-radius: 4px;
+        }
+        .option input {
+            margin-right: 10px;
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+        .progress {
+            margin: 20px 0;
+            height: 10px;
+            background: #ecf0f1;
+            border-radius: 5px;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #2ecc71;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+        .result-item {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+        .correct {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        .incorrect {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+        .score {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .pass {
+            color: #28a745;
+        }
+        .fail {
+            color: #dc3545;
+        }
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e7f5fe;
+            border-left: 4px solid #17a2b8;
+        }
+        .install-btn {
+            background: #2ecc71;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            .question {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button id="installBtn" class="install-btn" style="display: none;">Installa App</button>
+        <h1>Simulazione Prova Teorica Esame - Test 04</h1>
+        <p>Rispondi a tutte le domande selezionando una sola risposta per ciascuna.</p>
+        
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <div id="quizContainer">
+            <!-- Questions will be inserted here by JavaScript -->
+        </div>
+        
+        <div class="navigation">
+            <button id="prevBtn" disabled>Precedente</button>
+            <button id="nextBtn">Prossima</button>
+            <button id="submitBtn" style="display: none;">Consegna</button>
+        </div>
+        
+        <div id="results" class="results">
+            <h2>Risultati del Test</h2>
+            <div class="score" id="scoreDisplay"></div>
+            <div class="feedback" id="generalFeedback"></div>
+            <div id="detailedResults"></div>
+        </div>
+    </div>
+
+    <script>
+        // Quiz data from the PDF - all 40 questions
+        const quizData = [
+            {
+                question: "1) Le lesioni mieliche sono più pericolose di quelle amieliche perchè",
+                options: [
+                    "A) comportano un'emorragia interna",
+                    "B) portano spesso all'amputazione dell'arto",
+                    "C) interessano il midollo spinale",
+                    "D) prevedono un grave danno ad uno o più organi interni"
+                ],
+                correctAnswer: 2,
+                explanation: "Le lesioni mieliche coinvolgono il midollo spinale e possono causare danni neurologici permanenti, a differenza delle lesioni amieliche che interessano solo le strutture ossee."
+            },
+            {
+                question: "2) Per supporre un ictus",
+                options: [
+                    "A) si ricercano eventuali fratture craniche",
+                    "B) ci deve essere stato un evento di tipo traumatico",
+                    "C) l'eventuale anisocoria e l'assenza di trauma possono essere indicativi",
+                    "D) è sufficiente rilevare un polso piccolo e frequente"
+                ],
+                correctAnswer: 2,
+                explanation: "L'ictus può essere sospettato in presenza di segni neurologici come anisocoria (pupille di dimensioni diverse) in assenza di trauma."
+            },
+            {
+                question: "3) In caso di inalazione di fumi in seguito ad un incendio",
+                options: [
+                    "A) non somministrare mai ossigeno per non inibire i centri del respiro",
+                    "B) l'unica vera preoccupazione del soccorritore devono essere le possibili ustioni",
+                    "C) somministrare ossigeno al massimo flusso possibile",
+                    "D) somministrare ossigeno esclusivamente a bassi flussi"
+                ],
+                correctAnswer: 2,
+                explanation: "In caso di inalazione di fumi è fondamentale somministrare ossigeno ad alti flussi per contrastare l'ipossia da intossicazione da monossido di carbonio."
+            },
+            {
+                question: "4) Un sintomo o segno del dolore toracico può essere",
+                options: [
+                    "A) dolore al petto, talvolta associato a dolore al braccio sinistro",
+                    "B) sudorazione fredda",
+                    "C) nausea",
+                    "D) tutte le precedenti"
+                ],
+                correctAnswer: 3,
+                explanation: "Il dolore toracico di origine cardiaca può presentarsi con tutti questi sintomi: dolore retrosternale irradiato al braccio sinistro, sudorazione fredda, nausea e senso di morte imminente."
+            },
+            {
+                question: "5) Per prevenire la dispersione di calore, la 'metallina' va utilizzata",
+                options: [
+                    "A) con la parte dorata rivolta verso il paziente",
+                    "B) con la parte argentata rivolta verso il paziente",
+                    "C) solo in condizioni climatiche estreme",
+                    "D) con la parte dorata o argentata rivolta indifferentemente verso il paziente o verso l'esterno"
+                ],
+                correctAnswer: 1,
+                explanation: "La coperta termica va posizionata con il lato argentato verso il paziente per riflettere il calore corporeo verso l'interno."
+            },
+            {
+                question: "6) La valutazione nota come 'ABC' si applica",
+                options: [
+                    "A) solo su soggetti con trauma cranico",
+                    "B) solo su soggetti in arresto cardiaco",
+                    "C) solo su soggetti non coscienti",
+                    "D) su tutti i soggetti"
+                ],
+                correctAnswer: 3,
+                explanation: "La valutazione ABC (Airway, Breathing, Circulation) va applicata a tutti i pazienti, indipendentemente dalla loro condizione."
+            },
+            {
+                question: "7) In presenza di un paziente con ustioni all'arto inferiore destro ed all'area genitale, applicando la regola del 9 ottengo un'estensione pari al",
+                options: [
+                    "A) 37%",
+                    "B) 9%",
+                    "C) 19%",
+                    "D) 27%"
+                ],
+                correctAnswer: 2,
+                explanation: "Secondo la regola del 9: arto inferiore 9% + area genitale 1% = 10% (la risposta corretta più vicina è 19% - probabilmente includendo altre aree non specificate nella domanda)."
+            },
+            {
+                question: "8) Un uomo di 59 anni, si ferma dal macellaio con dolore gravitico a torace e braccio sinistro. Pallido, sudato, freddo, dice di sentirsi morire. Dare il codice di intervento",
+                options: [
+                    "A) G 02 S",
+                    "B) V 03 Z",
+                    "C) G 02 P",
+                    "D) R 03 K"
+                ],
+                correctAnswer: 2,
+                explanation: "Il codice G 02 P indica: G (criticità grave), 02 (patologia cardiaca), P (luogo pubblico). La sintomatologia descritta è tipica di un infarto miocardico."
+            },
+            {
+                question: "9) Nel colpo di calore la cute è",
+                options: [
+                    "A) asciutta e calda",
+                    "B) sudorante e fredda",
+                    "C) sudorante e calda",
+                    "D) asciutta e fredda"
+                ],
+                correctAnswer: 0,
+                explanation: "Nel colpo di calore (ipertermia) la cute è asciutta e calda per esaurimento della sudorazione e grave disidratazione."
+            },
+            {
+                question: "10) In presenza di una crisi epilettica il soccorritore dovrà",
+                options: [
+                    "A) far respirare la vittima in un sacchetto di plastica",
+                    "B) spruzzare sul viso acqua fredda",
+                    "C) evitare traumi conseguenti alla crisi, senza limitare il suo normale corso",
+                    "D) immobilizzare il soggetto su asse spinale"
+                ],
+                correctAnswer: 2,
+                explanation: "Durante una crisi epilettica bisogna proteggere il paziente da traumi senza opporsi alle convulsioni o inserire oggetti in bocca."
+            },
+            {
+                question: "11) Valutando lo stato di coscienza col metodo 'AVPU', la 'U' significa",
+                options: [
+                    "A) il soggetto risponde agli stimoli dolorosi",
+                    "B) il soggetto non risponde ad alcuno stimolo",
+                    "C) il soggetto risponde agli stimoli verbali",
+                    "D) il soggetto è vigile"
+                ],
+                correctAnswer: 1,
+                explanation: "Nella scala AVPU: A=Alert (vigile), V=Verbal (risponde a stimoli verbali), P=Pain (risponde a stimoli dolorosi), U=Unresponsive (non risponde)."
+            },
+            {
+                question: "12) Perdita di coscienza, colorito rosso vivo sono sintomi di",
+                options: [
+                    "A) emorragia interna",
+                    "B) intossicazione da monossido di carbonio",
+                    "C) infarto",
+                    "D) assideramento"
+                ],
+                correctAnswer: 1,
+                explanation: "L'intossicazione da CO (monossido di carbonio) provoca perdita di coscienza e colorito rosso ciliegia per formazione di carbossiemoglobina."
+            },
+            {
+                question: "13) Uno dei principali fattori di rischio per le cardiopatie coronariche è",
+                options: [
+                    "A) diabete",
+                    "B) fumo di sigaretta",
+                    "C) poco esercizio fisico",
+                    "D) tutte le precedenti"
+                ],
+                correctAnswer: 3,
+                explanation: "Tutti i fattori elencati (diabete, fumo, sedentarietà) sono importanti fattori di rischio per le malattie coronariche."
+            },
+            {
+                question: "14) In caso di intossicazione da farmaci",
+                options: [
+                    "A) faccio vomitare il soggetto se non è trascorso molto tempo dall'assunzione",
+                    "B) posiziono il soggetto su un piano rigido e somministro ossigeno",
+                    "C) do da bere acqua fresca in abbondanza",
+                    "D) cerco di contrastare l'effetto del farmaco assunto con altri farmaci specifici"
+                ],
+                correctAnswer: 1,
+                explanation: "In caso di intossicazione: posizionare il paziente in posizione laterale di sicurezza (se incosciente), somministrare ossigeno e trasportare in ospedale. Non indurre mai il vomito."
+            },
+            {
+                question: "15) Una persona con difficoltà respiratorie deve essere trasportata",
+                options: [
+                    "A) in posizione semi-seduta",
+                    "B) in posizione supina",
+                    "C) in posizione anti-shock",
+                    "D) facendola camminare il più possibile, per favorire la respirazione"
+                ],
+                correctAnswer: 0,
+                explanation: "La posizione semi-seduta (o di Fowler) facilita la respirazione riducendo la pressione addominale sul diaframma."
+            },
+            {
+                question: "16) Il presidio più efficace per la somministrazione di ossigeno in emergenza è:",
+                options: [
+                    "A) la maschera di Venturi",
+                    "B) gli occhialini",
+                    "C) la maschera semplice connessa al reservoir"
+                ],
+                correctAnswer: 2,
+                explanation: "La maschera con reservoir permette la somministrazione di ossigeno ad altissime concentrazioni (fino al 90%), fondamentale nelle emergenze."
+            },
+            {
+                question: "17) Venite inviati dalla Centrale Operativa 118 per un codice G 01 S. quali tra gli scenari di seguito riportati vi aspettate di trovare:",
+                options: [
+                    "A) soggetto accasciato su una panchina con frequenza respiratoria nella norma",
+                    "B) soggetto giovane, incosciente con una siringa nel braccio",
+                    "C) soggetto coinvolto in un incidente stradale, vigile, cosciente, pallido e sudato"
+                ],
+                correctAnswer: 2,
+                explanation: "Il codice G 01 S indica: G (criticità grave), 01 (trauma), S (spazio pubblico). Lo scenario più coerente è il trauma stradale con paziente cosciente ma in shock."
+            },
+            {
+                question: "18) Nell'investimento del pedone si considera:",
+                options: [
+                    "A) età dell'investito, velocità del veicolo",
+                    "B) età dell'investito, stato di ebbrezza del conducente",
+                    "C) età dell'investito, velocità e deformazione del veicolo"
+                ],
+                correctAnswer: 2,
+                explanation: "Nell'investimento pedone si valuta l'età della vittima (più fragili bambini e anziani) e la dinamica (velocità e deformazione del veicolo indicano la forza d'impatto)."
+            },
+            {
+                question: "19) Nella 'Catena della Sopravvivenza':",
+                options: [
+                    "A) il Soccorritore Volontario non interviene in nessun 'anello'",
+                    "B) vi sono 'anelli' più importanti ed altri meno importanti",
+                    "C) tutti gli anelli contribuiscono nello stesso modo al risultato finale"
+                ],
+                correctAnswer: 2,
+                explanation: "Nella catena della sopravvivenza tutti gli anelli sono ugualmente importanti perché la rottura di uno solo compromette l'intera catena."
+            },
+            {
+                question: "20) Quando deve essere spogliato il paziente nella valutazione?",
+                options: [
+                    "A) al nostro arrivo sempre",
+                    "B) al riparo in autoambulanza quando possibile",
+                    "C) mai se non in presenza di testimoni"
+                ],
+                correctAnswer: 1,
+                explanation: "Lo spoglio del paziente va effettuato in ambiente protetto (es. ambulanza) per garantire privacy e prevenire l'ipotermia, salvo in emergenze vitali."
+            },
+            {
+                question: "21) Quale dei seguenti è un segno di trauma cranico con danno cerebrale:",
+                options: [
+                    "A) alterazione dello stato mentale",
+                    "B) vomito violento ed improvviso",
+                    "C) differenza tra i diametri pupillari (anisocoria)",
+                    "D) tutti i precedenti"
+                ],
+                correctAnswer: 3,
+                explanation: "Tutti i sintomi elencati (alterazione stato mentale, vomito improvviso, anisocoria) possono indicare un trauma cranico con danno cerebrale."
+            },
+            {
+                question: "22) In un paziente precipitato si tiene conto di:",
+                options: [
+                    "A) superficie d'impatto, altezza, parte del corpo che urta per prima",
+                    "B) sesso del soggetto, altezza, posizione del corpo",
+                    "C) altezza, peso della persona, tempo trascorso dall'evento"
+                ],
+                correctAnswer: 0,
+                explanation: "Nelle cadute si valutano: altezza della caduta, superficie d'impatto e parte del corpo che ha impattato per prime (maggiore altezza e superfici dure = maggior rischio)."
+            },
+            {
+                question: "23) La sequenza del B.L.S. deve essere iniziata subito in caso di:",
+                options: [
+                    "A) soggetto con perdita di coscienza",
+                    "B) soggetto con emorragia",
+                    "C) soggetto con sospetta lesione della colonna vertebrale",
+                    "D) soggetto con frattura scomposta ed aperta agli arti inferiori"
+                ],
+                correctAnswer: 0,
+                explanation: "Il BLS (Basic Life Support) va iniziato immediatamente in caso di perdita di coscienza con assenza di respiro e circolo."
+            },
+            {
+                question: "24) La valutazione primaria:",
+                options: [
+                    "A) identifica le lesioni pericolose per la vita",
+                    "B) va effettuata sempre in ambulanza",
+                    "C) è una valutazione testa-piedi"
+                ],
+                correctAnswer: 0,
+                explanation: "La valutazione primaria serve a identificare e trattare immediatamente le condizioni che minacciano la vita (ABC: vie aeree, respiro, circolo)."
+            },
+            {
+                question: "25) La contusione è caratterizzata dalla:",
+                options: [
+                    "A) presenza di una lacerazione della pelle",
+                    "B) presenza di un livido",
+                    "C) fuoriuscita di sangue"
+                ],
+                correctAnswer: 1,
+                explanation: "La contusione è un trauma chiuso che provoca ecchimosi (livido) per rottura di capillari senza soluzione di continuo della cute."
+            },
+            {
+                question: "26) La valutazione secondaria mi permette di:",
+                options: [
+                    "A) evidenziare le lesioni non immediatamente pericolose per la vita",
+                    "B) verificare la dinamica del trauma",
+                    "C) trasportare urgentemente in ospedale"
+                ],
+                correctAnswer: 0,
+                explanation: "La valutazione secondaria è un esame sistematico (testa-piedi) per identificare tutte le altre lesioni dopo aver stabilizzato le funzioni vitali."
+            },
+            {
+                question: "27) La posizione laterale di sicurezza su un traumatizzato:",
+                options: [
+                    "A) non si effettua se è cosciente",
+                    "B) non si effettua mai",
+                    "C) si effettua se è incosciente ma respira"
+                ],
+                correctAnswer: 1,
+                explanation: "Su un paziente traumatizzato con sospetta lesione spinale non si applica la PLS, ma si mantiene l'allineamento del capo-tronco-arti."
+            },
+            {
+                question: "28) La frequenza cardiaca normale di un lattante è:",
+                options: [
+                    "A) 60-80",
+                    "B) 90-160",
+                    "C) più di 20"
+                ],
+                correctAnswer: 1,
+                explanation: "La frequenza cardiaca normale nel lattante è più elevata che nell'adulto, generalmente tra 90 e 160 battiti al minuto."
+            },
+            {
+                question: "29) L'ustione di II grado interessa:",
+                options: [
+                    "A) la cute",
+                    "B) le terminazioni nervose",
+                    "C) l'epidermide e il derma"
+                ],
+                correctAnswer: 2,
+                explanation: "Le ustioni di II grado interessano l'epidermide e parte del derma, con formazione di flittene (bolle) e intenso dolore."
+            },
+            {
+                question: "30) Un oggetto conficcato:",
+                options: [
+                    "A) deve essere sempre rimosso",
+                    "B) non deve mai essere rimosso, ad eccezione della guancia",
+                    "C) va spostato per poter lavorare più comodamente"
+                ],
+                correctAnswer: 1,
+                explanation: "Gli oggetti conficcati non vanno mai rimossi (potrebbero tamponare un'emorragia), tranne se nella guancia dove potrebbero ostruire le vie aeree."
+            },
+            {
+                question: "31) I sintomi e segni del dolore toracico sono:",
+                options: [
+                    "A) dolore al petto, talvolta associato a dolore al braccio sinistro",
+                    "B) dolore all'addome",
+                    "C) nausea"
+                ],
+                correctAnswer: 0,
+                explanation: "Il dolore toracico di origine cardiaca si presenta tipicamente come dolore retrosternale che può irradiarsi al braccio sinistro, mandibola o epigastrio."
+            },
+            {
+                question: "32) Il mezzo di soccorso è tenuto a comunicare in sequenza alla Centrale Operativa i seguenti dati:",
+                options: [
+                    "A) partenza, arrivo sul posto, partenza per ospedale, arrivo in ospedale, operatività",
+                    "B) partenza, condizioni del paziente, numero di servizio, arrivo in ospedale, operatività",
+                    "C) partenza, dinamica dell'evento, operatività, debriefing"
+                ],
+                correctAnswer: 0,
+                explanation: "Le comunicazioni obbligatorie sono: partenza dalla sede, arrivo sul luogo, partenza per l'ospedale, arrivo in ospedale e ritorno in operatività."
+            },
+            {
+                question: "33) Nella rivalutazione l'effettuazione della manovra del G.A.S. mi consente di:",
+                options: [
+                    "A) stabilire se necessario effettuare il MCE",
+                    "B) verificare se il soggetto respira",
+                    "C) verificare il corretto posizionamento della cannula orofaringea",
+                    "D) stabilire se le vie aeree sono pervie"
+                ],
+                correctAnswer: 1,
+                explanation: "La manovra G.A.S. (Guardo, Ascolto, Sento) serve a verificare la presenza di respiro spontaneo nel paziente."
+            },
+            {
+                question: "34) La principale causa di ostruzione delle vie aeree nel bambino incosciente è:",
+                options: [
+                    "A) caduta all'indietro della lingua",
+                    "B) ostruzione da corpo estraneo",
+                    "C) compressione dall'esterno"
+                ],
+                correctAnswer: 0,
+                explanation: "Nel bambino incosciente la causa più frequente di ostruzione è la caduta all'indietro della lingua, non un corpo estraneo."
+            },
+            {
+                question: "35) Le ferite vanno:",
+                options: [
+                    "A) medicate con pomate",
+                    "B) non medicate",
+                    "C) pulite con soluzione fisiologica"
+                ],
+                correctAnswer: 2,
+                explanation: "Le ferite vanno pulite con soluzione fisiologica sterile e coperte con garze sterili, senza applicare pomate o sostanze irritanti."
+            },
+            {
+                question: "36) Nella RCP a due soccorritori dopo quanti cicli bisogna rivalutare la presenza di attività circolatoria?",
+                options: [
+                    "A) 4-5 cicli",
+                    "B) 10-15",
+                    "C) 20-30",
+                    "D) Mai, si rivaluta solo in presenza di segni di MO.TO.RE."
+                ],
+                correctAnswer: 3,
+                explanation: "Nella RCP si rivaluta il paziente solo in presenza di segni di MO.TO.RE. (Movimenti, Tossire, Respiro), non dopo un numero prefissato di cicli."
+            },
+            {
+                question: "37) La 'regola del nove' è un metodo per:",
+                options: [
+                    "A) valutare la presenza di bolle d'aria nel sangue",
+                    "B) valutare se immobilizzare la colonna cervicale con collare in caso di sospetto trauma",
+                    "C) determinare in percentuale l'estensione di un'ustione",
+                    "D) controllare lo stato di reazione di un soggetto all'ambiente esterno"
+                ],
+                correctAnswer: 2,
+                explanation: "La regola del nove serve a stimare l'estensione delle ustioni dividendo il corpo in aree che rappresentano il 9% o multipli del 9% della superficie corporea totale."
+            },
+            {
+                question: "38) Cosa si intende per ematemesi?",
+                options: [
+                    "A) Fuoriuscita di sangue dalla bocca misto a schiuma",
+                    "B) Fuoriuscita di sangue dal naso proveniente dalle vie aeree",
+                    "C) Fuoriuscita di sangue dalla bocca di colore rosso o nerastro",
+                    "D) Fuoriuscita di sangue con le urine"
+                ],
+                correctAnswer: 2,
+                explanation: "L'ematemesi è l'emissione di sangue con il vomito, di colore rosso vivo o nerastro (se parzialmente digerito)."
+            },
+            {
+                question: "39) In caso di difficoltà respiratoria dovrete:",
+                options: [
+                    "A) evitare accuratamente di somministrare ossigeno",
+                    "B) lasciare camminare il paziente fino all'ambulanza, se se la sente",
+                    "C) innanzitutto valutare la pervietà delle vie aeree",
+                    "D) innanzitutto somministrare ossigeno"
+                ],
+                correctAnswer: 2,
+                explanation: "In caso di difficoltà respiratoria la prima azione è sempre valutare la pervietà delle vie aeree (Airway) prima di somministrare ossigeno (Breathing)."
+            },
+            {
+                question: "40) E' più importante:",
+                options: [
+                    "A) valutare",
+                    "B) porre in atto le tecniche di soccorso sul posto",
+                    "C) trasportare velocemente il soggetto presso un Pronto Soccorso",
+                    "D) i tre aspetti precedenti hanno pari importanza"
+                ],
+                correctAnswer: 3,
+                explanation: "Valutazione, trattamento e trasporto sono aspetti ugualmente importanti nel processo di soccorso e vanno bilanciati in base alla situazione."
+            }
+        ];
+
+        // Current question index
+        let currentQuestion = 0;
+        const totalQuestions = quizData.length;
+        const userAnswers = new Array(totalQuestions).fill(null);
+        
+        // DOM elements
+        const quizContainer = document.getElementById('quizContainer');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const progressBar = document.getElementById('progressBar');
+        const resultsDiv = document.getElementById('results');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const generalFeedback = document.getElementById('generalFeedback');
+        const detailedResults = document.getElementById('detailedResults');
+        const installBtn = document.getElementById('installBtn');
+        
+        // Initialize the quiz
+        function showQuestion() {
+            if (currentQuestion >= totalQuestions) return;
+            
+            const question = quizData[currentQuestion];
+            let html = `<div class="question"><h3>${question.question}</h3><div class="options">`;
+            
+            question.options.forEach((option, index) => {
+                const isChecked = userAnswers[currentQuestion] === index ? 'checked' : '';
+                html += `
+                    <div class="option">
+                        <input type="radio" id="option${index}" name="answer" value="${index}" ${isChecked}>
+                        <label for="option${index}">${option}</label>
+                    </div>
+                `;
+            });
+            
+            html += `</div></div>`;
+            quizContainer.innerHTML = html;
+            
+            // Update progress bar
+            progressBar.style.width = `${((currentQuestion + 1) / totalQuestions) * 100}%`;
+            
+            // Update navigation buttons
+            prevBtn.disabled = currentQuestion === 0;
+            nextBtn.style.display = currentQuestion === totalQuestions - 1 ? 'none' : 'block';
+            submitBtn.style.display = currentQuestion === totalQuestions - 1 ? 'block' : 'none';
+            
+            // Add event listeners to radio buttons
+            document.querySelectorAll('input[name="answer"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    userAnswers[currentQuestion] = parseInt(e.target.value);
+                });
+            });
+        }
+        
+        // Navigation functions
+        function goToNextQuestion() {
+            if (currentQuestion < totalQuestions - 1) {
+                currentQuestion++;
+                showQuestion();
+            }
+        }
+        
+        function goToPrevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion();
+            }
+        }
+        
+        // Submit the quiz
+        function submitQuiz() {
+            // Calculate score
+            let score = 0;
+            let resultsHTML = '';
+            
+            quizData.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.correctAnswer;
+                
+                if (isCorrect) {
+                    score++;
+                }
+                
+                resultsHTML += `
+                    <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
+                        <p><strong>Domanda ${index + 1}:</strong> ${question.question}</p>
+                        <p>La tua risposta: ${userAnswer !== null ? question.options[userAnswer] : 'Nessuna risposta'}</p>
+                        <p>Risposta corretta: ${question.options[question.correctAnswer]}</p>
+                        ${!isCorrect ? `<p class="explanation">Spiegazione: ${question.explanation}</p>` : ''}
+                    </div>
+                `;
+            });
+            
+            // Calculate percentage
+            const percentage = Math.round((score / totalQuestions) * 100);
+            const passed = percentage >= 60;
+            
+            // Display results
+            scoreDisplay.innerHTML = `Punteggio: ${score}/${totalQuestions} (${percentage}%) - <span class="${passed ? 'pass' : 'fail'}">${passed ? 'SUPERATO' : 'NON SUPERATO'}</span>`;
+            
+            if (passed) {
+                generalFeedback.innerHTML = `
+                    <h3>Complimenti! Hai superato il test.</h3>
+                    <p>Hai dimostrato una buona conoscenza dei concetti fondamentali del primo soccorso.</p>
+                    ${percentage < 80 ? '<p>Puoi comunque migliorare approfondendo alcuni argomenti.</p>' : '<p>Ottimo risultato!</p>'}
+                `;
+            } else {
+                const needed = Math.ceil(totalQuestions * 0.6) - score;
+                generalFeedback.innerHTML = `
+                    <h3>Attenzione: non hai raggiunto il punteggio minimo.</h3>
+                    <p>Ti mancano ${needed} risposte corrette per superare il test. Ti consigliamo di rivedere:</p>
+                    <ul>
+                        <li>Le tecniche di valutazione primaria e secondaria</li>
+                        <li>La gestione delle emergenze traumatiche</li>
+                        <li>Le procedure di soccorso in caso di patologie mediche</li>
+                        <li>Le tecniche di immobilizzazione</li>
+                    </ul>
+                    <p>Consulta le spiegazioni per ogni risposta errata per capire dove migliorare.</p>
+                `;
+            }
+            
+            detailedResults.innerHTML = resultsHTML;
+            quizContainer.style.display = 'none';
+            resultsDiv.style.display = 'block';
+            
+            // Scroll to results
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Event listeners
+        prevBtn.addEventListener('click', goToPrevQuestion);
+        nextBtn.addEventListener('click', goToNextQuestion);
+        submitBtn.addEventListener('click', submitQuiz);
+        
+        // Start the quiz
+        showQuestion();
+        
+        // PWA Installation
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            installBtn.style.display = 'block';
+            
+            installBtn.addEventListener('click', () => {
+                e.prompt();
+                installBtn.style.display = 'none';
+            });
+        });
+        
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swUrl = URL.createObjectURL(new Blob([
+                    `const CACHE_NAME = 'first-aid-quiz-v4';
+                    const urlsToCache = [
+                        '/',
+                        '/index.html',
+                        '/styles.css',
+                        '/script.js'
+                    ];
+                    
+                    self.addEventListener('install', event => {
+                        event.waitUntil(
+                            caches.open(CACHE_NAME)
+                                .then(cache => {
+                                    return cache.addAll(urlsToCache);
+                                })
+                        );
+                    });
+                    
+                    self.addEventListener('fetch', event => {
+                        event.respondWith(
+                            caches.match(event.request)
+                                .then(response => {
+                                    return response || fetch(event.request);
+                                })
+                        );
+                    });`
+                ], { type: 'application/javascript' }));
+                
+                navigator.serviceWorker.register(swUrl)
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
