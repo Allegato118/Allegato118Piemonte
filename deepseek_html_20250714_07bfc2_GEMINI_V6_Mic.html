@@ -347,6 +347,38 @@
             <button class="tab" data-tab="storico">Storico</button>
             <button class="tab" data-tab="patologie">Codici Patologie</button>
         </div>
+
+<div id="nuovo-servizio" class="tab-content active">
+    <form id="servizio-form">
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label for="data">Data</label>
+                    <input type="date" id="data" required>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="scheda118-main">Numero Scheda 118 (Servizio Principale)</label>
+                    <input type="text" id="scheda118-main" placeholder="es: 01 AS 3161 / 01" maxlength="14">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label for="dalle-ore">Dalle Ore</label>
+                    <input type="text" id="dalle-ore" required placeholder="HH:MM" inputmode="numeric" pattern="^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$">
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="alle-ore">Alle Ore</label>
+                    <input type="text" id="alle-ore" required placeholder="HH:MM" inputmode="numeric" pattern="^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$">
+                </div>
+
+
         
                 <div class="form-group">
                     <label for="team-select">Aggiungi Membro Team</label>
