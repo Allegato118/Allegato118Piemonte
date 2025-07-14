@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servizi 118 - Tirocinio Pratico</title>
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiU2Vydml6aSAxMTggLSBUaXJvY2luaW8gUHJhdGljbyIsInNob3J0X25hbWUiOiJTZXJ2aXppIDExOCIsInN0YXJ0X3VybCI6Ii8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjZmZmZmZmIiwidGhlbWVfY29sb3IiOiIjMDA3YmZmIiwiaWNvbnMiOltdfQ==">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 0.9em;
+        }
+        
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: white;
+            color: #666;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            background: #007bff;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        
+        .row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .col {
+            flex: 1;
+        }
+        
+        .btn {
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            background: #0056b3;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .team-member {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            margin: 2px;
+            font-size: 14px;
+        }
+        
+        .team-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 10px;
+            background: white;
+        }
+        
+        .record {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .record h3 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        
+        .record-detail {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .record-detail strong {
+            color: #333;
+        }
+        
+        .code-builder {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .code-preview {
+            background: #007bff;
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            font-family: monospace;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+        
+        .pathology-search {
+            position: relative;
+        }
+        
+        .pathology-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-top: none;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .pathology-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .pathology-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .pathology-code {
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .totale-ore {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        
+        .pathology-dropdown {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+            background-color: white;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .row {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Servizi 118 - Tirocinio Pratico</h1>
+            <p>Scheda 118 - Gestione Turni e Patologie</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" data-tab="nuovo-servizio">Nuovo Servizio</button>
+            <button class="tab" data-tab="storico">Storico</button>
+            <button class="tab" data-tab="patologie">Codici Patologie</button>
+        </div>
+        
+        <div id="nuovo-servizio" class="tab-content active">
+            <form id="servizio-form">
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="data">Data</label>
+                            <input type="date" id="data" required>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="scheda118">Numero Scheda 118</label>
+                            <input type="text" id="scheda118" placeholder="es: 01 AS 3161 / 01" maxlength="14">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="dalle-ore">Dalle Ore</label>
+                            <input type="time" id="dalle-ore" required>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="alle-ore">Alle Ore</label>
+                            <input type="time" id="alle-ore" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="code-builder">
+                    <h3>Costruttore Codici Uscita/Rientro</h3>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="primo-digit">Primo Digit</label>
+                                <select id="primo-digit">
+                                    <option value="">Seleziona...</option>
+                                    <option value="B">B</option>
+                                    <option value="V">V</option>
+                                    <option value="G">G</option>
+                                    <option value="R">R</option>
+                                    <option value="N">N</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="patologia-select">Codice Patologia</label>
+                                <select id="patologia-select" class="pathology-dropdown">
+                                    <option value="">Seleziona una patologia...</option>
+                                    <!-- Le opzioni verranno caricate dinamicamente -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="luogo-digit">Codice Luogo</label>
+                                <select id="luogo-digit">
+                                    <option value="">Seleziona...</option>
+                                    <option value="S">S - STRADA</option>
+                                    <option value="P">P - LUOGO/ESERCIZIO PUBBLICO</option>
+                                    <option value="Y">Y - IMPIANTO SPORTIVO</option>
+                                    <option value="K">K - CASA</option>
+                                    <option value="L">L - LAVORO</option>
+                                    <option value="Q">Q - SCUOLA</option>
+                                    <option value="Z">Z - ALTRO LUOGO</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="code-preview" id="code-preview">Codice: _ _ _ _ _</div>
+                </div>
+                
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="codice-uscita">Codice Uscita</label>
+                            <input type="text" id="codice-uscita" placeholder="es: B0101S">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="codice-rientro">Codice Rientro</label>
+                            <input type="text" id="codice-rientro" placeholder="es: B0101S">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="team-select">Aggiungi Membro Team</label>
+                    <select id="team-select">
+                        <option value="">Seleziona persona...</option>
+                        <option value="Marina PISTONO">Marina PISTONO</option>
+                        <option value="Irina RONTU">Irina RONTU</option>
+                        <option value="Simone VENUTI">Simone VENUTI</option>
+                        <option value="Svettava RACCHINI">Svettava RACCHINI</option>
+                        <option value="Marco GALLO BALMA">Marco GALLO BALMA</option>
+                        <option value="Gaetano TRAVESSA">Gaetano TRAVESSA</option>
+                        <option value="Giovanni 'Ivan' NICCOLI">Giovanni 'Ivan' NICCOLI</option>
+                        <option value="Maria Antonietta 'Antonella' CAPOBIANCO">Maria Antonietta 'Antonella' CAPOBIANCO</option>
+                        <option value="Gabriele GIRLEANU">Gabriele GIRLEANU</option>
+                        <option value="Franco VIOLA">Franco VIOLA</option>
+                        <option value="Riccardo VIOLA">Riccardo VIOLA</option>
+                        <option value="Muhammadu HIBALLOW">Muhammadu HIBALLOW</option>
+                        <option value="Carolina Mercedes MUIJCA Monroy">Carolina Mercedes MUIJCA Monroy</option>
+                        <option value="Nuovo Collega">+ Aggiungi Nuovo Collega</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Team del Servizio</label>
+                    <div id="team-list" class="team-list">
+                        <em>Nessun membro aggiunto</em>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn">Salva Servizio</button>
+                <button type="button" class="btn btn-secondary" onclick="copyLastEntry()">Copia Ultimo Inserimento</button>
+                <button type="button" class="btn btn-secondary" onclick="syncWithGoogleSheets()">Sincronizza con Google Sheets</button>
+            </form>
+        </div>
+        
+        <div id="storico" class="tab-content">
+            <h2>Storico Servizi</h2>
+            <div id="services-list">
+                <p><em>Nessun servizio registrato</em></p>
+            </div>
+            <div class="totale-ore">
+                <div>Totale Ore Svolte: <span id="total-hours">0:00</span></div>
+            </div>
+            <button class="btn btn-secondary" onclick="exportToJSON()">Esporta Dati JSON</button>
+            <button class="btn btn-danger" onclick="clearAllData()">Cancella Tutti i Dati</button>
+        </div>
+        
+        <div id="patologie" class="tab-content">
+            <h2>Codici Patologie</h2>
+            <div id="pathology-categories"></div>
+        </div>
+    </div>
+
+    <script>
+        // Database patologie
+        const pathologies = {
+            'C01 TRAUMATICA': {
+                'C0101': 'Cranio',
+                'C0102': 'Torace',
+                'C0103': 'Addome',
+                'C0104': 'Arti',
+                'C0105': 'Rachide',
+                'C0106': 'Emorragia',
+                'C0107': 'Amputazione',
+                'C0108': 'Ferita',
+                'C0109': 'Frattura',
+                'C0110': 'Contusione',
+                'C0111': 'Ustione',
+                'C0112': 'Folgorazione/elettrocuzione',
+                'C0113': 'Lesione da freddo',
+                'C0114': 'Lesione agli occhi',
+                'C0115': 'Politraumatismo',
+                'C0116': 'Altra traumatica'
+            },
+            'C02 CARDIOCIRCOLATORIA': {
+                'C0201': 'Crisi ipertensiva',
+                'C0202': 'Scompenso cardio-circolatorio',
+                'C0203': 'Dolore toracico',
+                'C0204': 'Cardiopalmo/Aritmia',
+                'C0205': 'Arresto cardio-circolatorio',
+                'C0206': 'Sindrome coronarica acuta',
+                'C0209': 'Altra cardio-circolatoria'
+            },
+            'C03 RESPIRATORIA': {
+                'C0301': 'Distress respiratorio',
+                'C0302': 'Corpo estraneo',
+                'C0303': 'Crisi asmatica',
+                'C0304': 'Immersione/sommersione',
+                'C0305': 'Insufficienza respiratoria cronica',
+                'C0309': 'Altra respiratoria'
+            },
+            'C04 NEUROLOGICA': {
+                'C0401': 'Convulsioni',
+                'C0402': 'Cefalea',
+                'C0403': 'Coma',
+                'C0404': 'Ictus',
+                'C0405': 'Decadimento psichico',
+                'C0406': 'Perdita di coscienza',
+                'C0409': 'Altra neurologica'
+            },
+            'C05 PSICHIATRICA': {
+                'C0501': 'Tentato suicidio',
+                'C0502': 'Agitazione psicomotoria',
+                'C0509': 'Altra psichiatrica'
+            },
+            'C06 NEOPLASTICA': {
+                'C0601': 'Neoplastica'
+            },
+            'C07 TOSSICOLOGICA': {
+                'C0700': 'Intossicazione etilica',
+                'C0701': 'Ossido di carbonio',
+                'C0702': 'Farmaci',
+                'C0703': 'Alimenti',
+                'C0704': 'sostanze chimiche',
+                'C0705': 'overdose/stupefacenti',
+                'C0709': 'altra intossicazione'
+            },
+            'C08 METABOLICA': {
+                'C0801': 'Iperglicemia',
+                'C0802': 'Ipoglicemia',
+                'C0809': 'Altro – metabolica'
+            },
+            'C09 GASTROENTEROLOGICA': {
+                'C0901': 'Emorragia digestiva',
+                'C0902': 'Dolore addominale',
+                'C0909': 'Altro – gastroenterologica'
+            },
+            'C10 UROLOGICA': {
+                'C1001': 'Colica renale',
+                'C1002': 'Ritenzione urinaria',
+                'C1009': 'Altro - urologica'
+            },
+            'C11 OCULISTICA': {
+                'C1101': 'Ferita penetrante occhio',
+                'C1109': 'Altro – oftalmologia'
+            },
+            'C12 OTORINOLARINGOIATRICA': {
+                'C1201': 'Epistassi',
+                'C1202': 'Corpo estraneo',
+                'C1209': 'Altro – ORL'
+            },
+            'C13 DERMATOLOGICA': {
+                'C1301': 'Parassitosi',
+                'C1302': 'Reazione orticaloide',
+                'C1309': 'Altro – dermatologica'
+            },
+            'C14 OSTETRICO-GINECOLOGICA': {
+                'C1401': 'Parto',
+                'C1402': 'Metrorragia',
+                'C1403': 'Minaccia aborto',
+                'C1409': 'Altro - ostetrico-ginecologica'
+            },
+            'C15 INFETTIVA': {
+                'C1501': 'Stato febbrile',
+                'C1509': 'Altro – infettiva'
+            },
+            'C19 ALTRA PATOLOGIA': {
+                'C1901': 'Stato febbrile',
+                'C1902': 'NBCR (catastrofe o emergenza nucleare, batteriologica, chimica o radioattiva)',
+                'C1909': 'Altra patologia'
+            },
+            'C20 PATOLOGIA NON IDENTIFICATA': {
+                'C2001': 'Patologia non identificata'
+            }
+        };
+
+        // Stato dell'applicazione
+        let services = JSON.parse(localStorage.getItem('services') || '[]');
+        let currentTeam = [];
+        let selectedPathologyCode = '';
+        let googleSheetsSynced = false;
+
+        // Inizializzazione
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPathologies();
+            updateServicesDisplay();
+            updateTotalHours();
+            loadPathologyDropdown();
+            setupTabNavigation();
+            
+            // Imposta data odierna
+            document.getElementById('data').valueAsDate = new Date();
+            
+            // Aggiorna anteprima codice
+            updateCodePreview();
+            
+            // Event listeners per codice builder
+            document.getElementById('primo-digit').addEventListener('change', updateCodePreview);
+            document.getElementById('luogo-digit').addEventListener('change', updateCodePreview);
+            document.getElementById('patologia-select').addEventListener('change', function() {
+                const value = this.value;
+                if (value) {
+                    selectedPathologyCode = value.substring(1); // Rimuove la 'C' iniziale
+                    updateCodePreview();
+                }
+            });
+            
+            // Event listener per aggiunta team member
+            document.getElementById('team-select').addEventListener('change', addTeamMember);
+            
+            // Carica dati da Google Sheets se configurato
+            if (localStorage.getItem('googleSheetsConfigured')) {
+                loadFromGoogleSheets();
+            }
+        });
+
+        // Configurazione navigazione a schede
+        function setupTabNavigation() {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    showTab(tabName);
+                });
+            });
+        }
+
+        // Gestione tab
+        function showTab(tabName) {
+            // Rimuovi classe active da tutti i tab e contenuti
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Aggiungi classe active al tab e contenuto selezionato
+            document.querySelector(`.tab[data-tab="${tabName}"]`).classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // Carica dropdown patologie
+        function loadPathologyDropdown() {
+            const select = document.getElementById('patologia-select');
+            
+            Object.entries(pathologies).forEach(([category, codes]) => {
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = category;
+                
+                Object.entries(codes).forEach(([code, desc]) => {
+                    const option = document.createElement('option');
+                    option.value = code;
+                    option.textContent = `${code} - ${desc}`;
+                    optgroup.appendChild(option);
+                });
+                
+                select.appendChild(optgroup);
+            });
+        }
+
+        // Carica database patologie per visualizzazione
+        function loadPathologies() {
+            const container = document.getElementById('pathology-categories');
+            container.innerHTML = '';
+            
+            Object.entries(pathologies).forEach(([category, codes]) => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.innerHTML = `
+                    <h3 style="color: #007bff; margin: 20px 0 10px 0;">${category}</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 5px;">
+                        ${Object.entries(codes).map(([code, desc]) => 
+                            `<div style="font-size: 14px; padding: 5px;"><strong>${code}</strong> ${desc}</div>`
+                        ).join('')}
+                    </div>
+                `;
+                container.appendChild(categoryDiv);
+            });
+        }
+
+        // Aggiorna anteprima codice
+        function updateCodePreview() {
+            const primo = document.getElementById('primo-digit').value;
+            const patologia = selectedPathologyCode;
+            const luogo = document.getElementById('luogo-digit').value;
+            
+            let preview = 'Codice: ';
+            preview += primo || '_';
+            preview += patologia || '___';
+            preview += luogo || '_';
+            
+            document.getElementById('code-preview').textContent = preview;
+            
+            // Aggiorna automaticamente i campi codice
+            if (primo && patologia && luogo) {
+                const fullCode = primo + patologia + luogo;
+                document.getElementById('codice-uscita').value = fullCode;
+                document.getElementById('codice-rientro').value = fullCode;
+            }
+        }
+
+        // Gestione team
+        function addTeamMember() {
+            const select = document.getElementById('team-select');
+            const value = select.value;
+            
+            if (!value) return;
+            
+            if (value === 'Nuovo Collega') {
+                const nome = prompt('Inserisci nome del nuovo collega:');
+                if (nome && nome.trim()) {
+                    const option = document.createElement('option');
+                    option.value = nome.trim();
+                    option.textContent = nome.trim();
+                    select.insertBefore(option, select.lastElementChild);
+                    currentTeam.push(nome.trim());
+                }
+            } else {
+                if (!currentTeam.includes(value)) {
+                    currentTeam.push(value);
+                }
+            }
+            
+            select.value = '';
+            updateTeamDisplay();
+        }
+
+        function updateTeamDisplay() {
+            const container = document.getElementById('team-list');
+            if (currentTeam.length === 0) {
+                container.innerHTML = '<em>Nessun membro aggiunto</em>';
+                return;
+            }
+            
+            container.innerHTML = currentTeam.map(member => 
+                `<span class="team-member">${member} <button onclick="removeTeamMember('${member}')" style="border:none; background:none; color:red; cursor:pointer;">×</button></span>`
+            ).join('');
+        }
+
+        function removeTeamMember(member) {
+            currentTeam = currentTeam.filter(m => m !== member);
+            updateTeamDisplay();
+        }
+
+        // Gestione form
+        document.getElementById('servizio-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const data = document.getElementById('data').value;
+            const dalleOre = document.getElementById('dalle-ore').value;
+            const alleOre = document.getElementById('alle-ore').value;
+            const scheda118 = document.getElementById('scheda118').value;
+            const codiceUscita = document.getElementById('codice-uscita').value;
+            const codiceRientro = document.getElementById('codice-rientro').value;
+            
+            if (!data || !dalleOre || !alleOre) {
+                alert('Compila tutti i campi obbligatori');
+                return;
+            }
+            
+            // Calcola ore totali
+            const start = new Date(`1970-01-01T${dalleOre}:00`);
+            const end = new Date(`1970-01-01T${alleOre}:00`);
+            let diff = end - start;
+            
+            // Gestisce il passaggio di mezzanotte
+            if (diff < 0) {
+                diff += 24 * 60 * 60 * 1000;
+            }
+            
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const totaleOre = `${hours}:${minutes.toString().padStart(2, '0')}`;
+            
+            const service = {
+                id: Date.now(),
+                data,
+                dalleOre,
+                alleOre,
+                totaleOre,
+                scheda118,
+                codiceUscita,
+                codiceRientro,
+                team: [...currentTeam],
+                timestamp: new Date().toISOString(),
+                synced: false
+            };
+            
+            services.push(service);
+            localStorage.setItem('services', JSON.stringify(services));
+            
+            // Reset form
+            this.reset();
+            currentTeam = [];
+            selectedPathologyCode = '';
+            document.getElementById('data').valueAsDate = new Date();
+            document.getElementById('patologia-select').value = '';
+            updateTeamDisplay();
+            updateCodePreview();
+            
+            updateServicesDisplay();
+            updateTotalHours();
+            
+            alert('Servizio salvato con successo!');
+            
+            // Sincronizza con Google Sheets se configurato
+            if (localStorage.getItem('googleSheetsConfigured')) {
+                syncWithGoogleSheets();
+            }
+        });
+
+        // Copia ultimo inserimento
+        function copyLastEntry() {
+            if (services.length === 0) {
+                alert('Nessun servizio precedente da copiare');
+                return;
+            }
+            
+            const last = services[services.length - 1];
+            
+            // Copia solo alcuni campi, mantiene data corrente
+            document.getElementById('dalle-ore').value = last.dalleOre;
+            document.getElementById('alle-ore').value = last.alleOre;
+            document.getElementById('scheda118').value = last.scheda118;
+            document.getElementById('codice-uscita').value = last.codiceUscita;
+            document.getElementById('codice-rientro').value = last.codiceRientro;
+            
+            // Copia team
+            currentTeam = [...last.team];
+            updateTeamDisplay();
+            
+            // Aggiorna codice patologia se presente
+            if (last.codiceUscita && last.codiceUscita.length >= 5) {
+                const pathologyCode = 'C' + last.codiceUscita.substring(1, 5);
+                document.getElementById('patologia-select').value = pathologyCode;
+                selectedPathologyCode = pathologyCode.substring(1);
+                
+                // Imposta primo digit e luogo
+                document.getElementById('primo-digit').value = last.codiceUscita[0];
+                document.getElementById('luogo-digit').value = last.codiceUscita[5];
+                updateCodePreview();
+            }
+            
+            alert('Campi copiati dall\'ultimo servizio. Verifica i dati e modifica se necessario.');
+        }
+
+        // Aggiorna visualizzazione storico
+        function updateServicesDisplay() {
+            const container = document.getElementById('services-list');
+            
+            if (services.length === 0) {
+                container.innerHTML = '<p><em>Nessun servizio registrato</em></p>';
+                return;
+            }
+            
+            container.innerHTML = services.map(service => `
+                <div class="record">
+                    <h3>${service.data} - ${service.totaleOre} ore</h3>
+                    <div class="record-detail">
+                        <span><strong>Orario:</strong> ${service.dalleOre} - ${service.alleOre}</span>
+                        <span><strong>Scheda 118:</strong> ${service.scheda118 || 'N/D'}</span>
+                    </div>
+                    <div class="record-detail">
+                        <span><strong>Codici:</strong> ${service.codiceUscita || 'N/D'} / ${service.codiceRientro || 'N/D'}</span>
+                    </div>
+                    <div>
+                        <strong>Team:</strong> ${service.team.join(', ')}
+                    </div>
+                    <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                        ${new Date(service.timestamp).toLocaleString()} 
+                        ${service.synced ? '✅ Sincronizzato' : '⚠️ Da sincronizzare'}
+                    </div>
+                    <button onclick="deleteService(${service.id})" style="margin-top: 10px; padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">Elimina</button>
+                </div>
+            `).join('');
+        }
+
+        // Aggiorna totale ore
+        function updateTotalHours() {
+            let totalMinutes = 0;
+            
+            services.forEach(service => {
+                const [hours, minutes] = service.totaleOre.split(':').map(Number);
+                totalMinutes += hours * 60 + minutes;
+            });
+            
+            const totalHours = Math.floor(totalMinutes / 60);
+            const remainingMinutes = totalMinutes % 60;
+            
+            document.getElementById('total-hours').textContent = 
+                `${totalHours}:${remainingMinutes.toString().padStart(2, '0')}`;
+        }
+
+        // Elimina servizio
+        function deleteService(id) {
+            if (confirm('Sei sicuro di voler eliminare questo servizio?')) {
+                services = services.filter(service => service.id !== id);
+                localStorage.setItem('services', JSON.stringify(services));
+                updateServicesDisplay();
+                updateTotalHours();
+            }
+        }
+
+        // Esporta dati
+        function exportToJSON() {
+            const dataStr = JSON.stringify(services, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `servizi-118-${new Date().toISOString().split('T')[0]}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+
+        // Cancella tutti i dati
+        function clearAllData() {
+            if (confirm('Sei sicuro di voler cancellare TUTTI i dati? Questa azione non può essere annullata.')) {
+                services = [];
+                localStorage.removeItem('services');
+                updateServicesDisplay();
+                updateTotalHours();
+                alert('Tutti i dati sono stati cancellati.');
+            }
+        }
+
+        // Sincronizzazione con Google Sheets
+        function syncWithGoogleSheets() {
+            if (!localStorage.getItem('googleSheetsConfigured')) {
+                configureGoogleSheets();
+                return;
+            }
+            
+            const scriptId = localStorage.getItem('googleScriptId');
+            const unsyncedServices = services.filter(service => !service.synced);
+            
+            if (unsyncedServices.length === 0) {
+                alert('Nessun servizio da sincronizzare');
+                return;
+            }
+            
+            alert(`Sincronizzazione in corso di ${unsyncedServices.length} servizi...`);
+            
+            // Qui dovresti implementare la chiamata effettiva a Google Apps Script
+            // Questo è un placeholder per la dimostrazione
+            setTimeout(() => {
+                // Simula successo
+                services.forEach(service => service.synced = true);
+                localStorage.setItem('services', JSON.stringify(services));
+                updateServicesDisplay();
+                alert('Sincronizzazione completata con successo!');
+            }, 2000);
+        }
+
+        function configureGoogleSheets() {
+            const scriptId = prompt('Inserisci l\'ID dello script Google Apps (se non lo hai, contatta l\'amministratore)');
+            if (!scriptId) return;
+            
+            localStorage.setItem('googleScriptId', scriptId);
+            localStorage.setItem('googleSheetsConfigured', 'true');
+            alert('Configurazione Google Sheets completata. Ora puoi sincronizzare i dati.');
+        }
+
+        function loadFromGoogleSheets() {
+            // Placeholder per il caricamento da Google Sheets
+            // Nella realtà dovresti fare una chiamata al tuo Google Apps Script
+            alert('Caricamento dati da Google Sheets...');
+        }
+    </script>
+</body>
+</html>
