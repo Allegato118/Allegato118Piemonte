@@ -9,6 +9,7 @@
 - <a href="https://allegato118.github.io/Allegato118Piemonte/SLIDESCGA202502" target="_blank">Slide CGA 202502</a>
 - <a href="https://allegato118.github.io/Allegato118Piemonte/Index_V5_ProblemaEDGE_iOS_V3.html" target="_blank">Check List Dino - 406</a>
 - <a href="https://allegato118.github.io/Allegato118Piemonte/emergency_medical_pwa.html" target="_blank">Procedure NON UFFICIALI - Utilizzare solo come promemoria</a>
+- <a href="https://allegato118.github.io/Allegato118Piemonte/Scheda_118_-_campi_obbligatori_da_compilare[1]" target="_blank">Scheda 118 Piemonte - Campi Obbligatori</a>
 
 
 # *** TEST ****
